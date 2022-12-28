@@ -1,0 +1,11 @@
+plugins {
+	id "fabric-loom" version "1.0-SNAPSHOT"
+}
+
+dependencies {
+	implementation(project(":tensai-api"))
+
+	minecraft("com.mojang:minecraft:1.19.3")
+	mappings("net.fabricmc:yarn:1.19.3+build.5:v2")
+	modImplementation("net.fabricmc:fabric-loader:0.14.12")
+}

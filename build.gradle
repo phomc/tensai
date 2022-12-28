@@ -1,0 +1,47 @@
+plugins {
+	id "idea"
+	id "eclipse"
+    id "java-library"
+	id "com.diffplug.spotless" version "6.8.0"
+}
+
+allprojects {
+	apply plugin: "java-library"
+	apply plugin: "checkstyle"
+	apply plugin: "com.diffplug.spotless"
+
+	java {
+		sourceCompatibility = JavaVersion.VERSION_11
+		targetCompatibility = JavaVersion.VERSION_11
+	}
+
+	repositories {
+		mavenCentral()
+		maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+		maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
+		maven { url = "https://oss.sonatype.org/content/repositories/central" }
+	}
+
+	java {
+		withSourcesJar()
+	}
+
+	tasks.withType(ProcessResources).configureEach {
+		inputs.property("version", project.version)
+
+		filesMatching(["fabric.mod.json", "plugin.yml"]) {
+			expand("version": project.version)
+		}
+	}
+
+	spotless {
+		java {
+			licenseHeaderFile(rootProject.file("HEADER")).yearSeparator("-")
+		}
+	}
+
+	checkstyle {
+		toolVersion = "10.5.0"
+		configFile = rootProject.file("checkstyle.xml")
+	}
+}

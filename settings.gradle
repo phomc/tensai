@@ -1,0 +1,21 @@
+pluginManagement {
+	pluginManagement {
+		repositories {
+			gradlePluginPortal()
+			maven {
+				name = "Fabric"
+				url = "https://maven.fabricmc.net/"
+			}
+		}
+	}
+}
+
+rootProject.name = 'tensai'
+
+[
+		"api",
+		"fabric",
+		"spigot",
+].forEach {
+	include("tensai-$it")
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "tensai",
+  "name": "Tensai",
+  "version": "${version}",
+  "environment": "server",
+  "license": "MIT",
+  "authors": [
+    "VMSA"
+  ],
+  "depends": {
+    "java": ">=17",
+    "minecraft": ">=1.16.5"
+  },
+  "entrypoints": {
+    "main": [
+      "dev.vmsa.tensai.fabric.TensaiFabric"
+    ]
+  }
+}
