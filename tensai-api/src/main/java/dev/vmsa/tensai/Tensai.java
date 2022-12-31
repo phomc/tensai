@@ -24,5 +24,52 @@
 
 package dev.vmsa.tensai;
 
-public class Tensai {
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+public abstract class Tensai implements Closeable {
+	private static Tensai INSTANCE;
+	private static Function<Object, Tensai> INSTANCE_GETTER;
+
+	/**
+	 * <p>Obtain the singleton instance of {@link Tensai}, which allows you to use most of Tensai features.</p>
+	 * <p>On Spigot, you can obtain this in your plugin's <code>onEnable</code> method (assuming you have
+	 * {@code depends: [Tensai]} in your plugin.yml.</p>
+	 * <p>On Fabric, you can obtain this by listening to {@code TensaiFabricEvents.INSTANCE_CREATE} event
+	 * callback.</p>
+	 * @return
+	 */
+	public static Tensai getInstance() {
+		if (INSTANCE == null && INSTANCE_GETTER != null) return INSTANCE_GETTER.apply(null);
+		return INSTANCE;
+	}
+
+	public static Tensai getInstance(Object minecraftServer) {
+		if (INSTANCE_GETTER == null) {
+			if (INSTANCE != null) return INSTANCE;
+			return null;
+		}
+
+		return INSTANCE_GETTER.apply(minecraftServer);
+	}
+
+	public static void createInstance(Supplier<Tensai> supplier) {
+		if (INSTANCE != null) throw new IllegalStateException("Tensai instance is already initialized");
+		INSTANCE = supplier.get();
+	}
+
+	public static boolean isInstancePresent() {
+		return INSTANCE != null;
+	}
+
+	public static void setInstanceGetter(Function<Object, Tensai> getter) {
+		INSTANCE_GETTER = getter;
+	}
+
+	@Override
+	public void close() throws IOException {
+		if (INSTANCE == this) INSTANCE = null;
+	}
 }

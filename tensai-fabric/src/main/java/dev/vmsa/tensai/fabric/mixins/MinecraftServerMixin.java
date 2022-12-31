@@ -22,35 +22,32 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.spigot;
+package dev.vmsa.tensai.fabric.mixins;
 
-import java.io.IOException;
-import java.util.logging.Logger;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import net.minecraft.server.MinecraftServer;
 
-import dev.vmsa.tensai.Tensai;
+import dev.vmsa.tensai.fabric.TensaiFabricEvents;
 
-public class TensaiSpigot extends JavaPlugin {
-	private TensaiSpigotInstance instance;
-	protected Logger logger;
-
-	@Override
-	public void onEnable() {
-		logger = getLogger();
-		Tensai.createInstance(() -> instance = new TensaiSpigotInstance(this));
-		Tensai.setInstanceGetter(server -> getServer() == server? instance : null);
+@Mixin(MinecraftServer.class)
+public class MinecraftServerMixin {
+	@Inject(method = "runServer",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;setupServer()Z"))
+	private void events$startingServer(CallbackInfo ci) {
+		TensaiFabricEvents.SERVER_STARTING.emit((MinecraftServer) (Object) this);
 	}
 
-	@Override
-	public void onDisable() {
-		try {
-			instance.close();
-		} catch (IOException e) {
-			logger.severe("Failed to close TensaiSpigotInstance: An exception thrown");
-			e.printStackTrace();
-			logger.info("Please create a new issue in https://github.com/vmsa-dev/tensai/issues");
-			logger.info("Additionally, if you are using /reload, please restart the server to avoid memory leaks.");
-		}
+	@Inject(method = "shutdown", at = @At("HEAD"))
+	private void events$stoppingServer(CallbackInfo ci) {
+		TensaiFabricEvents.SERVER_STOPPING.emit((MinecraftServer) (Object) this);
+	}
+
+	@Inject(method = "shutdown", at = @At("TAIL"))
+	private void events$stoppedServer(CallbackInfo ci) {
+		TensaiFabricEvents.SERVER_STOPPED.emit((MinecraftServer) (Object) this);
 	}
 }
