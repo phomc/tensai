@@ -22,23 +22,14 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai;
+package dev.vmsa.tensai.players;
 
-import dev.vmsa.tensai.animations.AnimationProperty;
 import dev.vmsa.tensai.animations.AnimationsPlayer;
 
 /**
- * <p>An entry point to all Tensai APIs.</p>
- * <p><b>For Spigot: </b>Use {@code TensaiSpigot.getInstance()}.</p>
- * <p><b>For Fabric: </b>Use {@code (Tensai) (Object) minecraftServer}.</p>
+ * <p>Represent the player. In Spigot, this handle wraps around {@code org.bukkit.Player}. In Fabric, this
+ * handle is a bridge for {@code ServerPlayerEntity}</p>
  *
  */
-public interface Tensai extends AnimationsPlayer {
-	/**
-	 * <p>Play animation to all online players. Anti-lag measures, such as "only send animation to players
-	 * near a specified location" won't works, since the position data could be part of animation properties.
-	 * See {@link AnimationsPlayer#playAnimationOnce(String, double, double, AnimationProperty...)} for details.</p>
-	 */
-	@Override
-	void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties);
+public interface PlayerHandle extends AnimationsPlayer {
 }

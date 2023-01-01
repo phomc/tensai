@@ -22,23 +22,13 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai;
+package dev.vmsa.tensai.networking;
 
-import dev.vmsa.tensai.animations.AnimationProperty;
-import dev.vmsa.tensai.animations.AnimationsPlayer;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * <p>An entry point to all Tensai APIs.</p>
- * <p><b>For Spigot: </b>Use {@code TensaiSpigot.getInstance()}.</p>
- * <p><b>For Fabric: </b>Use {@code (Tensai) (Object) minecraftServer}.</p>
- *
- */
-public interface Tensai extends AnimationsPlayer {
-	/**
-	 * <p>Play animation to all online players. Anti-lag measures, such as "only send animation to players
-	 * near a specified location" won't works, since the position data could be part of animation properties.
-	 * See {@link AnimationsPlayer#playAnimationOnce(String, double, double, AnimationProperty...)} for details.</p>
-	 */
-	@Override
-	void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties);
+public interface Serializer<T> {
+	void serialize(T obj, DataOutput stream) throws IOException;
+	T deserialize(DataInput stream) throws IOException;
 }
