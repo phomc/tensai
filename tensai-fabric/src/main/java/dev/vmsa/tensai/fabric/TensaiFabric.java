@@ -24,29 +24,16 @@
 
 package dev.vmsa.tensai.fabric;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.minecraft.server.MinecraftServer;
-
 import net.fabricmc.api.ModInitializer;
-
-import dev.vmsa.tensai.Tensai;
 
 public class TensaiFabric implements ModInitializer {
 	public static final String MOD_ID = "tensai";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	protected final static Map<MinecraftServer, TensaiFabricInstance> INSTANCES = new HashMap<>();
-
 	@Override
 	public void onInitialize() {
-		Tensai.setInstanceGetter(server -> {
-			if (server instanceof MinecraftServer) INSTANCES.get((MinecraftServer) server);
-			return null;
-		});
 	}
 }

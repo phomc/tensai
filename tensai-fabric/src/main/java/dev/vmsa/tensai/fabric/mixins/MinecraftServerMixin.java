@@ -25,29 +25,11 @@
 package dev.vmsa.tensai.fabric.mixins;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.server.MinecraftServer;
 
-import dev.vmsa.tensai.fabric.TensaiFabricEvents;
+import dev.vmsa.tensai.Tensai;
 
 @Mixin(MinecraftServer.class)
-public class MinecraftServerMixin {
-	@Inject(method = "runServer",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;setupServer()Z"))
-	private void events$startingServer(CallbackInfo ci) {
-		TensaiFabricEvents.SERVER_STARTING.emit((MinecraftServer) (Object) this);
-	}
-
-	@Inject(method = "shutdown", at = @At("HEAD"))
-	private void events$stoppingServer(CallbackInfo ci) {
-		TensaiFabricEvents.SERVER_STOPPING.emit((MinecraftServer) (Object) this);
-	}
-
-	@Inject(method = "shutdown", at = @At("TAIL"))
-	private void events$stoppedServer(CallbackInfo ci) {
-		TensaiFabricEvents.SERVER_STOPPED.emit((MinecraftServer) (Object) this);
-	}
+public class MinecraftServerMixin implements Tensai {
 }
