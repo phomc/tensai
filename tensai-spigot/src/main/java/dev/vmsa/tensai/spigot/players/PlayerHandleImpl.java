@@ -22,66 +22,43 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.spigot;
+package dev.vmsa.tensai.spigot.players;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
+import java.lang.ref.WeakReference;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import dev.vmsa.tensai.Tensai;
+import com.google.common.base.Preconditions;
+
 import dev.vmsa.tensai.animations.AnimationProperty;
 import dev.vmsa.tensai.players.PlayerHandle;
+import dev.vmsa.tensai.spigot.TensaiSpigot;
 import dev.vmsa.tensai.spigot.networking.AnimationPluginMessage;
 import dev.vmsa.tensai.spigot.networking.PluginMessage;
-import dev.vmsa.tensai.spigot.players.PlayerHandleImpl;
-import dev.vmsa.tensai.spigot.players.PlayerQuitEventsListener;
 
-public class TensaiSpigot extends JavaPlugin implements Tensai {
-	private static TensaiSpigot INSTANCE;
+public class PlayerHandleImpl implements PlayerHandle {
+	private TensaiSpigot plugin;
+	private WeakReference<Player> playerRef;
 
-	public static TensaiSpigot getInstance() {
-		return INSTANCE;
+	public PlayerHandleImpl(TensaiSpigot plugin, Player player) {
+		Preconditions.checkNotNull(plugin);
+		Preconditions.checkNotNull(player);
+		this.plugin = plugin;
+		this.playerRef = new WeakReference<Player>(player);
 	}
 
-	protected Logger logger;
-
-	@Override
-	public void onEnable() {
-		logger = getLogger();
-		INSTANCE = this;
-
-		// Plugin messaging channels
-		getServer().getMessenger().registerOutgoingPluginChannel(this, PluginMessage.VFX_CHANNEL);
-
-		// Events
-		getServer().getPluginManager().registerEvents(new PlayerQuitEventsListener(), this);
+	public Player getPlayer() {
+		return playerRef.get();
 	}
 
-	@Override
-	public void onDisable() {
+	public void sendPluginMessage(PluginMessage message) {
+		Player p = getPlayer();
+		if (p == null) return; // TODO: player is dereferenced, maybe throw an exception?
+		p.sendPluginMessage(plugin, message.channel, message.createBytes());
 	}
 
-	// Wrappers
-	private static final Map<UUID, PlayerHandle> PLAYERS = new HashMap<>();
-
-	public static PlayerHandle of(Player player) {
-		UUID uuid = player.getUniqueId();
-		if (!PLAYERS.containsKey(uuid)) PLAYERS.put(uuid, new PlayerHandleImpl(INSTANCE, player));
-		return PLAYERS.get(uuid);
-	}
-
-	public static void internalReset(Player player) {
-		PLAYERS.remove(player.getUniqueId());
-	}
-
-	// APIs
 	@Override
 	public void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties) {
-		AnimationPluginMessage message = new AnimationPluginMessage(type, AnimationPluginMessage.PLAY_ONCE, startSec, durationSec, properties);
-		getServer().sendPluginMessage(INSTANCE, message.channel, message.createBytes());
+		sendPluginMessage(new AnimationPluginMessage(type, AnimationPluginMessage.PLAY_ONCE, startSec, durationSec, properties));
 	}
 }
