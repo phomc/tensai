@@ -24,5 +24,11 @@
 
 package dev.vmsa.tensai;
 
-public class Tensai {
+/**
+ * <p>An entry point to all Tensai APIs.</p>
+ * <p><b>For Spigot: </b>Use {@code TensaiSpigot.getInstance()}.</p>
+ * <p><b>For Fabric: </b>Use {@code (Tensai) (Object) minecraftServer}.</p>
+ *
+ */
+public interface Tensai {
 }

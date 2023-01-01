@@ -31,7 +31,7 @@ import net.fabricmc.api.ModInitializer;
 
 public class TensaiFabric implements ModInitializer {
 	public static final String MOD_ID = "tensai";
-	public static final Logger LOGGEr = LoggerFactory.getLogger(MOD_ID);
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@Override
 	public void onInitialize() {

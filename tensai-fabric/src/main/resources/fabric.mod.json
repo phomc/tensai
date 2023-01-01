@@ -16,5 +16,8 @@
     "main": [
       "dev.vmsa.tensai.fabric.TensaiFabric"
     ]
-  }
+  },
+  "mixins": [
+    "tensai.mixins.json"
+  ]
 }

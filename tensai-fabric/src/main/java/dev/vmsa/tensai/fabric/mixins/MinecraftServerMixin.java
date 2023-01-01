@@ -22,30 +22,14 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.spigot;
+package dev.vmsa.tensai.fabric.mixins;
 
-import java.util.logging.Logger;
+import org.spongepowered.asm.mixin.Mixin;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import net.minecraft.server.MinecraftServer;
 
 import dev.vmsa.tensai.Tensai;
 
-public class TensaiSpigot extends JavaPlugin implements Tensai {
-	private static TensaiSpigot INSTANCE;
-
-	public static TensaiSpigot getInstance() {
-		return INSTANCE;
-	}
-
-	protected Logger logger;
-
-	@Override
-	public void onEnable() {
-		logger = getLogger();
-		INSTANCE = this;
-	}
-
-	@Override
-	public void onDisable() {
-	}
+@Mixin(MinecraftServer.class)
+public class MinecraftServerMixin implements Tensai {
 }
