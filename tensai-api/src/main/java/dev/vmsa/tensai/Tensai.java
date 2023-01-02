@@ -24,8 +24,8 @@
 
 package dev.vmsa.tensai;
 
+import dev.vmsa.tensai.vfx.VisualEffects;
 import dev.vmsa.tensai.vfx.animations.AnimationProperty;
-import dev.vmsa.tensai.vfx.animations.AnimationsPlayer;
 
 /**
  * <p>An entry point to all Tensai APIs.</p>
@@ -33,12 +33,12 @@ import dev.vmsa.tensai.vfx.animations.AnimationsPlayer;
  * <p><b>For Fabric: </b>Use {@code (Tensai) (Object) minecraftServer}.</p>
  *
  */
-public interface Tensai extends AnimationsPlayer {
+public interface Tensai {
 	/**
-	 * <p>Play animation to all online players. Anti-lag measures, such as "only send animation to players
-	 * near a specified location" won't works, since the position data could be part of animation properties.
-	 * See {@link AnimationsPlayer#playAnimationOnce(String, double, double, AnimationProperty...)} for details.</p>
+	 * <p>Get the global visual effects API. This global VFX will applies visual effects to all online players. Please
+	 * note that methods like {@link VisualEffects#playAnimationOnce(String, AnimationProperty...)} might not takes
+	 * player's position into account, which leads to wasted bandwidth.</p>
+	 * @return Global visual effects API.
 	 */
-	@Override
-	void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties);
+	VisualEffects getGlobalVfx();
 }

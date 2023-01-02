@@ -22,43 +22,9 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.spigot.networking;
+package dev.vmsa.tensai.vfx;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import dev.vmsa.tensai.vfx.animations.AnimationsPlayer;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-
-/**
- * <p><b>Message format: </b>{@code [Message Type: UTF-8][Contents...]}.</p>
- *
- */
-public abstract class PluginMessage {
-	public static final String VFX_CHANNEL = "tensai:vfx";
-
-	public final String channel;
-	public final String messageType;
-
-	public PluginMessage(String channel, String messageType) {
-		this.channel = channel;
-		this.messageType = messageType;
-	}
-
-	public void write(DataOutput stream) throws IOException { }
-	public void read(DataInput stream) throws IOException { }
-
-	public byte[] createBytes() {
-		ByteArrayDataOutput stream = ByteStreams.newDataOutput();
-
-		try {
-			stream.writeUTF(messageType);
-			write(stream);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return stream.toByteArray();
-	}
+public interface VisualEffects extends AnimationsPlayer {
 }

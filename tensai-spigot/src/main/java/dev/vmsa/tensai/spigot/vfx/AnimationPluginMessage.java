@@ -22,11 +22,12 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.spigot.networking;
+package dev.vmsa.tensai.spigot.vfx;
 
 import java.io.DataOutput;
 import java.io.IOException;
 
+import dev.vmsa.tensai.spigot.networking.PluginMessage;
 import dev.vmsa.tensai.vfx.animations.AnimationProperty;
 
 public class AnimationPluginMessage extends PluginMessage {

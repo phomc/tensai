@@ -32,19 +32,23 @@ import com.google.common.base.Preconditions;
 
 import dev.vmsa.tensai.clients.ClientHandle;
 import dev.vmsa.tensai.spigot.TensaiSpigot;
-import dev.vmsa.tensai.spigot.networking.AnimationPluginMessage;
 import dev.vmsa.tensai.spigot.networking.PluginMessage;
-import dev.vmsa.tensai.vfx.animations.AnimationProperty;
+import dev.vmsa.tensai.spigot.vfx.ClientVisualEffectsImpl;
+import dev.vmsa.tensai.vfx.VisualEffects;
 
 public class ClientHandleImpl implements ClientHandle {
 	private TensaiSpigot plugin;
 	private WeakReference<Player> playerRef;
+
+	private ClientVisualEffectsImpl vfx;
 
 	public ClientHandleImpl(TensaiSpigot plugin, Player player) {
 		Preconditions.checkNotNull(plugin);
 		Preconditions.checkNotNull(player);
 		this.plugin = plugin;
 		this.playerRef = new WeakReference<Player>(player);
+
+		this.vfx = new ClientVisualEffectsImpl(this);
 	}
 
 	public Player getPlayer() {
@@ -58,7 +62,7 @@ public class ClientHandleImpl implements ClientHandle {
 	}
 
 	@Override
-	public void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties) {
-		sendPluginMessage(new AnimationPluginMessage(type, AnimationPluginMessage.PLAY_ONCE, startSec, durationSec, properties));
+	public VisualEffects getVfx() {
+		return vfx;
 	}
 }

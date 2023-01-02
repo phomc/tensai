@@ -24,12 +24,13 @@
 
 package dev.vmsa.tensai.clients;
 
-import dev.vmsa.tensai.vfx.animations.AnimationsPlayer;
+import dev.vmsa.tensai.vfx.VisualEffects;
 
 /**
- * <p>Represent the player. In Spigot, this handle wraps around {@code org.bukkit.Player}. In Fabric, this
- * handle is a bridge for {@code ServerPlayerEntity}</p>
+ * <p>Represent the connection of the player. In Spigot, this handle wraps around {@code org.bukkit.Player}.
+ * In Fabric, this handle is a bridge for {@code ServerPlayerEntity}</p>
  *
  */
-public interface ClientHandle extends AnimationsPlayer {
+public interface ClientHandle {
+	VisualEffects getVfx();
 }

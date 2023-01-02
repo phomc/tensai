@@ -36,9 +36,9 @@ import dev.vmsa.tensai.Tensai;
 import dev.vmsa.tensai.clients.ClientHandle;
 import dev.vmsa.tensai.spigot.clients.ClientHandleImpl;
 import dev.vmsa.tensai.spigot.clients.PlayerQuitEventsListener;
-import dev.vmsa.tensai.spigot.networking.AnimationPluginMessage;
 import dev.vmsa.tensai.spigot.networking.PluginMessage;
-import dev.vmsa.tensai.vfx.animations.AnimationProperty;
+import dev.vmsa.tensai.spigot.vfx.GlobalVisualEffectsImpl;
+import dev.vmsa.tensai.vfx.VisualEffects;
 
 public class TensaiSpigot extends JavaPlugin implements Tensai {
 	private static TensaiSpigot INSTANCE;
@@ -48,6 +48,7 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 	}
 
 	protected Logger logger;
+	private GlobalVisualEffectsImpl globalVfx;
 
 	@Override
 	public void onEnable() {
@@ -59,6 +60,8 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 
 		// Events
 		getServer().getPluginManager().registerEvents(new PlayerQuitEventsListener(), this);
+
+		globalVfx = new GlobalVisualEffectsImpl(this);
 	}
 
 	@Override
@@ -80,8 +83,7 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 
 	// APIs
 	@Override
-	public void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties) {
-		AnimationPluginMessage message = new AnimationPluginMessage(type, AnimationPluginMessage.PLAY_ONCE, startSec, durationSec, properties);
-		getServer().sendPluginMessage(INSTANCE, message.channel, message.createBytes());
+	public VisualEffects getGlobalVfx() {
+		return globalVfx;
 	}
 }
