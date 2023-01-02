@@ -22,40 +22,39 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.spigot.vfx;
+package dev.vmsa.tensai.networking;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
-import dev.vmsa.tensai.spigot.networking.PluginMessage;
-import dev.vmsa.tensai.vfx.animations.AnimationProperty;
+public abstract class PluginMessage {
+	public static final String CHANNEL_VFX = "tensai:vfx";
 
-public class AnimationPluginMessage extends PluginMessage {
-	public static final int PLAY_ONCE = 0x00;
+	public final String channel;
+	public final String messageType;
 
-	public final String animationType;
-	public final int playMode;
-	public final double startSec;
-	public final double durationSec;
-	public final AnimationProperty<?>[] properties;
-
-	public AnimationPluginMessage(String animationType, int playMode, double startSec, double durationSec, AnimationProperty<?>... properties) {
-		super(PluginMessage.VFX_CHANNEL, "animation");
-		this.animationType = animationType;
-		this.playMode = playMode;
-		this.startSec = startSec;
-		this.durationSec = durationSec;
-		this.properties = properties;
+	public PluginMessage(String channel, String messageType) {
+		this.channel = channel;
+		this.messageType = messageType;
 	}
 
-	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeUTF(animationType);
-		stream.writeByte(playMode);
-		stream.writeDouble(startSec);
-		stream.writeDouble(durationSec);
+	public void write(DataOutput stream) throws IOException { }
+	public void read(DataInput stream) throws IOException { }
 
-		stream.writeInt(properties.length);
-		for (AnimationProperty<?> prop : properties) AnimationProperty.SERIALIZER.serialize(prop, stream);
+	public byte[] createBytes() {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		DataOutputStream wrapped = new DataOutputStream(stream);
+
+		try {
+			wrapped.writeUTF(messageType);
+			write(wrapped);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		return stream.toByteArray();
 	}
 }

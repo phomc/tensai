@@ -22,43 +22,39 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.spigot.networking;
+package dev.vmsa.tensai.vfx.animations;
 
-import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
+import dev.vmsa.tensai.networking.PluginMessage;
 
-/**
- * <p><b>Message format: </b>{@code [Message Type: UTF-8][Contents...]}.</p>
- *
- */
-public abstract class PluginMessage {
-	public static final String VFX_CHANNEL = "tensai:vfx";
+public class AnimationPluginMessage extends PluginMessage {
+	public static final int PLAY_ONCE = 0x00;
 
-	public final String channel;
-	public final String messageType;
+	public final String animationType;
+	public final int playMode;
+	public final double startSec;
+	public final double durationSec;
+	public final AnimationProperty<?>[] properties;
 
-	public PluginMessage(String channel, String messageType) {
-		this.channel = channel;
-		this.messageType = messageType;
+	public AnimationPluginMessage(String animationType, int playMode, double startSec, double durationSec, AnimationProperty<?>... properties) {
+		super(PluginMessage.CHANNEL_VFX, "animation");
+		this.animationType = animationType;
+		this.playMode = playMode;
+		this.startSec = startSec;
+		this.durationSec = durationSec;
+		this.properties = properties;
 	}
 
-	public void write(DataOutput stream) throws IOException { }
-	public void read(DataInput stream) throws IOException { }
+	@Override
+	public void write(DataOutput stream) throws IOException {
+		stream.writeUTF(animationType);
+		stream.writeByte(playMode);
+		stream.writeDouble(startSec);
+		stream.writeDouble(durationSec);
 
-	public byte[] createBytes() {
-		ByteArrayDataOutput stream = ByteStreams.newDataOutput();
-
-		try {
-			stream.writeUTF(messageType);
-			write(stream);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return stream.toByteArray();
+		stream.writeInt(properties.length);
+		for (AnimationProperty<?> prop : properties) AnimationProperty.SERIALIZER.serialize(prop, stream);
 	}
 }

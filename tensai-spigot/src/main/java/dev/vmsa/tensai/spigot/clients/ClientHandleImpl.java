@@ -32,7 +32,7 @@ import com.google.common.base.Preconditions;
 
 import dev.vmsa.tensai.clients.ClientHandle;
 import dev.vmsa.tensai.spigot.TensaiSpigot;
-import dev.vmsa.tensai.spigot.networking.PluginMessage;
+import dev.vmsa.tensai.networking.PluginMessage;
 import dev.vmsa.tensai.spigot.vfx.ClientVisualEffectsImpl;
 import dev.vmsa.tensai.vfx.VisualEffects;
 

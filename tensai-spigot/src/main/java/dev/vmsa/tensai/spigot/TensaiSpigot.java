@@ -36,7 +36,7 @@ import dev.vmsa.tensai.Tensai;
 import dev.vmsa.tensai.clients.ClientHandle;
 import dev.vmsa.tensai.spigot.clients.ClientHandleImpl;
 import dev.vmsa.tensai.spigot.clients.PlayerQuitEventsListener;
-import dev.vmsa.tensai.spigot.networking.PluginMessage;
+import dev.vmsa.tensai.networking.PluginMessage;
 import dev.vmsa.tensai.spigot.vfx.GlobalVisualEffectsImpl;
 import dev.vmsa.tensai.vfx.VisualEffects;
 
@@ -56,7 +56,7 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 		INSTANCE = this;
 
 		// Plugin messaging channels
-		getServer().getMessenger().registerOutgoingPluginChannel(this, PluginMessage.VFX_CHANNEL);
+		getServer().getMessenger().registerOutgoingPluginChannel(this, PluginMessage.CHANNEL_VFX);
 
 		// Events
 		getServer().getPluginManager().registerEvents(new PlayerQuitEventsListener(), this);

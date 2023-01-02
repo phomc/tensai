@@ -26,6 +26,7 @@ package dev.vmsa.tensai.spigot.vfx;
 
 import dev.vmsa.tensai.spigot.TensaiSpigot;
 import dev.vmsa.tensai.vfx.VisualEffects;
+import dev.vmsa.tensai.vfx.animations.AnimationPluginMessage;
 import dev.vmsa.tensai.vfx.animations.AnimationProperty;
 
 public class GlobalVisualEffectsImpl implements VisualEffects {
