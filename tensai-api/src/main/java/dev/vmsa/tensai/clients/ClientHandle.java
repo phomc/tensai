@@ -22,24 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.fabric.mixins;
+package dev.vmsa.tensai.clients;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-
-import net.minecraft.server.MinecraftServer;
-
-import dev.vmsa.tensai.Tensai;
-import dev.vmsa.tensai.fabric.vfx.GlobalVisualEffectsImpl;
 import dev.vmsa.tensai.vfx.VisualEffects;
 
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements Tensai {
-	@Unique private GlobalVisualEffectsImpl globalVfx;
-
-	@Override
-	public VisualEffects getGlobalVfx() {
-		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
-		return globalVfx;
-	}
+/**
+ * <p>Represent the connection of the player. In Spigot, this handle wraps around {@code org.bukkit.Player}.
+ * In Fabric, this handle is a bridge for {@code ServerPlayerEntity}</p>
+ * <p><b>Getting {@link ClientHandle} in Fabric: </b>Simply cast {@code ServerPlayerEntity} to {@link ClientHandle}
+ * and you're done.</p>
+ *
+ */
+public interface ClientHandle {
+	VisualEffects getVfx();
 }

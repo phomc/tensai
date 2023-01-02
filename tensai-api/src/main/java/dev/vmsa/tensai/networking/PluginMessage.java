@@ -22,24 +22,39 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.fabric.mixins;
+package dev.vmsa.tensai.networking;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-import net.minecraft.server.MinecraftServer;
+public abstract class PluginMessage {
+	public static final String CHANNEL_VFX = "tensai:vfx";
 
-import dev.vmsa.tensai.Tensai;
-import dev.vmsa.tensai.fabric.vfx.GlobalVisualEffectsImpl;
-import dev.vmsa.tensai.vfx.VisualEffects;
+	public final String channel;
+	public final String messageType;
 
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements Tensai {
-	@Unique private GlobalVisualEffectsImpl globalVfx;
+	public PluginMessage(String channel, String messageType) {
+		this.channel = channel;
+		this.messageType = messageType;
+	}
 
-	@Override
-	public VisualEffects getGlobalVfx() {
-		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
-		return globalVfx;
+	public void write(DataOutput stream) throws IOException { }
+	public void read(DataInput stream) throws IOException { }
+
+	public byte[] createBytes() {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		DataOutputStream wrapped = new DataOutputStream(stream);
+
+		try {
+			wrapped.writeUTF(messageType);
+			write(wrapped);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		return stream.toByteArray();
 	}
 }

@@ -22,24 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.fabric.mixins;
+package dev.vmsa.tensai.spigot.clients;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import net.minecraft.server.MinecraftServer;
+import dev.vmsa.tensai.spigot.TensaiSpigot;
 
-import dev.vmsa.tensai.Tensai;
-import dev.vmsa.tensai.fabric.vfx.GlobalVisualEffectsImpl;
-import dev.vmsa.tensai.vfx.VisualEffects;
-
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements Tensai {
-	@Unique private GlobalVisualEffectsImpl globalVfx;
-
-	@Override
-	public VisualEffects getGlobalVfx() {
-		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
-		return globalVfx;
+public class PlayerQuitEventsListener implements Listener {
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		TensaiSpigot.internalReset(event.getPlayer());
 	}
 }

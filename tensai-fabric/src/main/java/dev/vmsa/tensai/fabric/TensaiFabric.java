@@ -28,6 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+
+import dev.vmsa.tensai.fabric.clients.FabricClientHandle;
 
 public class TensaiFabric implements ModInitializer {
 	public static final String MOD_ID = "tensai";
@@ -35,5 +38,8 @@ public class TensaiFabric implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
+			((FabricClientHandle) oldPlayer).transferTo(newPlayer);
+		});
 	}
 }

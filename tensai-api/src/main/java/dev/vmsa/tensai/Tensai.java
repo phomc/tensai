@@ -24,6 +24,9 @@
 
 package dev.vmsa.tensai;
 
+import dev.vmsa.tensai.vfx.VisualEffects;
+import dev.vmsa.tensai.vfx.animations.AnimationProperty;
+
 /**
  * <p>An entry point to all Tensai APIs.</p>
  * <p><b>For Spigot: </b>Use {@code TensaiSpigot.getInstance()}.</p>
@@ -31,4 +34,11 @@ package dev.vmsa.tensai;
  *
  */
 public interface Tensai {
+	/**
+	 * <p>Get the global visual effects API. This global VFX will applies visual effects to all online players. Please
+	 * note that methods like {@link VisualEffects#playAnimationOnce(String, AnimationProperty...)} might not takes
+	 * player's position into account, which leads to wasted bandwidth.</p>
+	 * @return Global visual effects API.
+	 */
+	VisualEffects getGlobalVfx();
 }

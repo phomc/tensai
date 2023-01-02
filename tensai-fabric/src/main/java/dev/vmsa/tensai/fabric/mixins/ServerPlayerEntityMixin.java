@@ -27,19 +27,43 @@ package dev.vmsa.tensai.fabric.mixins;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 
-import dev.vmsa.tensai.Tensai;
-import dev.vmsa.tensai.fabric.vfx.GlobalVisualEffectsImpl;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+
+import dev.vmsa.tensai.fabric.clients.FabricClientHandle;
+import dev.vmsa.tensai.fabric.vfx.ClientVisualEffectsImpl;
+import dev.vmsa.tensai.networking.PluginMessage;
 import dev.vmsa.tensai.vfx.VisualEffects;
 
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements Tensai {
-	@Unique private GlobalVisualEffectsImpl globalVfx;
+@Mixin(ServerPlayerEntity.class)
+public abstract class ServerPlayerEntityMixin implements FabricClientHandle {
+	@Unique private ClientVisualEffectsImpl vfx;
 
 	@Override
-	public VisualEffects getGlobalVfx() {
-		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
-		return globalVfx;
+	public void sendPluginMessage(PluginMessage message) {
+		PacketByteBuf buf = PacketByteBufs.create();
+		buf.writeBytes(message.createBytes());
+		ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, new Identifier(message.channel), buf);
+	}
+
+	@Override
+	public void transferTo(ServerPlayerEntity newPlayer) {
+		FabricClientHandle newClientHandle = (FabricClientHandle) newPlayer;
+		newClientHandle.setVfx(this.vfx); this.vfx = null;
+	}
+
+	@Override
+	public VisualEffects getVfx() {
+		if (vfx == null) vfx = new ClientVisualEffectsImpl((ServerPlayerEntity) (Object) this);
+		return vfx;
+	}
+
+	@Override
+	public void setVfx(ClientVisualEffectsImpl vfx) {
+		this.vfx = vfx;
 	}
 }

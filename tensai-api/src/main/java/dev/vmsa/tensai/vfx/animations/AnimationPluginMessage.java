@@ -22,24 +22,39 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.fabric.mixins;
+package dev.vmsa.tensai.vfx.animations;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import java.io.DataOutput;
+import java.io.IOException;
 
-import net.minecraft.server.MinecraftServer;
+import dev.vmsa.tensai.networking.PluginMessage;
 
-import dev.vmsa.tensai.Tensai;
-import dev.vmsa.tensai.fabric.vfx.GlobalVisualEffectsImpl;
-import dev.vmsa.tensai.vfx.VisualEffects;
+public class AnimationPluginMessage extends PluginMessage {
+	public static final int PLAY_ONCE = 0x00;
 
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements Tensai {
-	@Unique private GlobalVisualEffectsImpl globalVfx;
+	public final String animationType;
+	public final int playMode;
+	public final double startSec;
+	public final double durationSec;
+	public final AnimationProperty<?>[] properties;
+
+	public AnimationPluginMessage(String animationType, int playMode, double startSec, double durationSec, AnimationProperty<?>... properties) {
+		super(PluginMessage.CHANNEL_VFX, "animation");
+		this.animationType = animationType;
+		this.playMode = playMode;
+		this.startSec = startSec;
+		this.durationSec = durationSec;
+		this.properties = properties;
+	}
 
 	@Override
-	public VisualEffects getGlobalVfx() {
-		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
-		return globalVfx;
+	public void write(DataOutput stream) throws IOException {
+		stream.writeUTF(animationType);
+		stream.writeByte(playMode);
+		stream.writeDouble(startSec);
+		stream.writeDouble(durationSec);
+
+		stream.writeInt(properties.length);
+		for (AnimationProperty<?> prop : properties) AnimationProperty.SERIALIZER.serialize(prop, stream);
 	}
 }

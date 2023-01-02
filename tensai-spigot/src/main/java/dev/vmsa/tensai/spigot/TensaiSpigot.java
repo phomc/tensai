@@ -24,11 +24,21 @@
 
 package dev.vmsa.tensai.spigot;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.vmsa.tensai.Tensai;
+import dev.vmsa.tensai.clients.ClientHandle;
+import dev.vmsa.tensai.spigot.clients.ClientHandleImpl;
+import dev.vmsa.tensai.spigot.clients.PlayerQuitEventsListener;
+import dev.vmsa.tensai.networking.PluginMessage;
+import dev.vmsa.tensai.spigot.vfx.GlobalVisualEffectsImpl;
+import dev.vmsa.tensai.vfx.VisualEffects;
 
 public class TensaiSpigot extends JavaPlugin implements Tensai {
 	private static TensaiSpigot INSTANCE;
@@ -38,14 +48,42 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 	}
 
 	protected Logger logger;
+	private GlobalVisualEffectsImpl globalVfx;
 
 	@Override
 	public void onEnable() {
 		logger = getLogger();
 		INSTANCE = this;
+
+		// Plugin messaging channels
+		getServer().getMessenger().registerOutgoingPluginChannel(this, PluginMessage.CHANNEL_VFX);
+
+		// Events
+		getServer().getPluginManager().registerEvents(new PlayerQuitEventsListener(), this);
+
+		globalVfx = new GlobalVisualEffectsImpl(this);
 	}
 
 	@Override
 	public void onDisable() {
+	}
+
+	// Wrappers
+	private static final Map<UUID, ClientHandle> CLIENTS = new HashMap<>();
+
+	public static ClientHandle getClient(Player player) {
+		UUID uuid = player.getUniqueId();
+		if (!CLIENTS.containsKey(uuid)) CLIENTS.put(uuid, new ClientHandleImpl(INSTANCE, player));
+		return CLIENTS.get(uuid);
+	}
+
+	public static void internalReset(Player player) {
+		CLIENTS.remove(player.getUniqueId());
+	}
+
+	// APIs
+	@Override
+	public VisualEffects getGlobalVfx() {
+		return globalVfx;
 	}
 }

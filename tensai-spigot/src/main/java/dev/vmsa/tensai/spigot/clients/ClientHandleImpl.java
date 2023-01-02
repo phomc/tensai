@@ -22,24 +22,47 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.fabric.mixins;
+package dev.vmsa.tensai.spigot.clients;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import java.lang.ref.WeakReference;
 
-import net.minecraft.server.MinecraftServer;
+import org.bukkit.entity.Player;
 
-import dev.vmsa.tensai.Tensai;
-import dev.vmsa.tensai.fabric.vfx.GlobalVisualEffectsImpl;
+import com.google.common.base.Preconditions;
+
+import dev.vmsa.tensai.clients.ClientHandle;
+import dev.vmsa.tensai.spigot.TensaiSpigot;
+import dev.vmsa.tensai.networking.PluginMessage;
+import dev.vmsa.tensai.spigot.vfx.ClientVisualEffectsImpl;
 import dev.vmsa.tensai.vfx.VisualEffects;
 
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements Tensai {
-	@Unique private GlobalVisualEffectsImpl globalVfx;
+public class ClientHandleImpl implements ClientHandle {
+	private TensaiSpigot plugin;
+	private WeakReference<Player> playerRef;
+
+	private ClientVisualEffectsImpl vfx;
+
+	public ClientHandleImpl(TensaiSpigot plugin, Player player) {
+		Preconditions.checkNotNull(plugin);
+		Preconditions.checkNotNull(player);
+		this.plugin = plugin;
+		this.playerRef = new WeakReference<Player>(player);
+
+		this.vfx = new ClientVisualEffectsImpl(this);
+	}
+
+	public Player getPlayer() {
+		return playerRef.get();
+	}
+
+	public void sendPluginMessage(PluginMessage message) {
+		Player p = getPlayer();
+		if (p == null) return; // TODO: player is dereferenced, maybe throw an exception?
+		p.sendPluginMessage(plugin, message.channel, message.createBytes());
+	}
 
 	@Override
-	public VisualEffects getGlobalVfx() {
-		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
-		return globalVfx;
+	public VisualEffects getVfx() {
+		return vfx;
 	}
 }
