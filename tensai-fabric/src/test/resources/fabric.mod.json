@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "tensai-testmod",
+  "name": "Tensai Test Mod",
+  "version": "${version}",
+  "environment": "*",
+  "license": "MIT",
+  "authors": [
+    "VMSA"
+  ],
+  "depends": {
+    "tensai": "*"
+  },
+  "entrypoints": {
+    "main": [
+      "dev.vmsa.tensai.fabric.test.TensaiFabricTestMod"
+    ],
+    "client": [
+      "dev.vmsa.tensai.fabric.test.client.TensaiFabricTestClient"
+    ]
+  },
+  "mixins": [
+  ]
+}

@@ -27,6 +27,7 @@ package dev.vmsa.tensai.utils;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Objects;
 
 import dev.vmsa.tensai.networking.Serializer;
 import dev.vmsa.tensai.vfx.animations.AnimationProperty;
@@ -74,6 +75,24 @@ public class Vec4 {
 	@Override
 	public String toString() {
 		return "Vec4 [x=" + x + ", y=" + y + ", z=" + z + ", w=" + w + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(w, x, y, z);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+
+		Vec4 other = (Vec4) obj;
+		return Double.doubleToLongBits(w) == Double.doubleToLongBits(other.w)
+				&& Double.doubleToLongBits(x) == Double.doubleToLongBits(other.x)
+				&& Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y)
+				&& Double.doubleToLongBits(z) == Double.doubleToLongBits(other.z);
 	}
 
 	public static final Serializer<Vec4> SERIALIZER = new Serializer<Vec4>() {

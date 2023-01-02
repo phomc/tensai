@@ -10,3 +10,19 @@ dependencies {
 	modImplementation("net.fabricmc:fabric-loader:0.14.12")
 	modImplementation("net.fabricmc.fabric-api:fabric-api:0.70.0+1.19.3")
 }
+
+loom {
+	runs {
+		testClient {
+			inherit client
+			configName = "Test Minecraft Client"
+			source = sourceSets.test
+		}
+
+		testServer {
+			inherit server
+			configName = "Test Minecraft Server"
+			source = sourceSets.test
+		}
+	}
+}
