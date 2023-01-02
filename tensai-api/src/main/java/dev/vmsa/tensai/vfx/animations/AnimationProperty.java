@@ -29,6 +29,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import dev.vmsa.tensai.networking.Serializer;
+import dev.vmsa.tensai.utils.Vec4;
 
 public class AnimationProperty<T> {
 	private String name;
@@ -56,20 +57,25 @@ public class AnimationProperty<T> {
 		private static final int TYPE_INT = 0x00; // byte + short + int + long -> int64
 		private static final int TYPE_FLOAT = 0x01; // float + double -> float64
 		private static final int TYPE_STRING = 0x02;
+		private static final int TYPE_VEC4 = 0x03;
 
 		@Override
 		public void serialize(AnimationProperty<?> obj, DataOutput stream) throws IOException {
 			stream.writeUTF(obj.name);
+			Object v = obj.value;
 
-			if (obj.value instanceof Byte || obj.value instanceof Short || obj.value instanceof Integer || obj.value instanceof Long) {
+			if (v instanceof Byte || v instanceof Short || v instanceof Integer || v instanceof Long) {
 				stream.writeByte(TYPE_INT);
 				stream.writeLong(((Number) obj.value).longValue());
-			} else if (obj.value instanceof Float || obj.value instanceof Double) {
+			} else if (v instanceof Float || v instanceof Double) {
 				stream.writeByte(TYPE_FLOAT);
 				stream.writeDouble(((Number) obj.value).doubleValue());
-			} else if (obj.value instanceof String) {
+			} else if (v instanceof String) {
 				stream.writeByte(TYPE_STRING);
 				stream.writeUTF((String) obj.value);
+			} else if (v instanceof Vec4) {
+				stream.writeByte(TYPE_VEC4);
+				Vec4.SERIALIZER.serialize((Vec4) v, stream);
 			}
 		}
 
@@ -82,6 +88,7 @@ public class AnimationProperty<T> {
 				case TYPE_INT: return new AnimationProperty<>(name, stream.readLong());
 				case TYPE_FLOAT: return new AnimationProperty<>(name, stream.readDouble());
 				case TYPE_STRING: return new AnimationProperty<>(name, stream.readUTF());
+				case TYPE_VEC4: return new AnimationProperty<>(name, Vec4.SERIALIZER.deserialize(stream));
 				default: return null;
 			}
 		}
