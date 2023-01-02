@@ -71,7 +71,7 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 	// Wrappers
 	private static final Map<UUID, ClientHandle> CLIENTS = new HashMap<>();
 
-	public static ClientHandle of(Player player) {
+	public static ClientHandle getClient(Player player) {
 		UUID uuid = player.getUniqueId();
 		if (!CLIENTS.containsKey(uuid)) CLIENTS.put(uuid, new ClientHandleImpl(INSTANCE, player));
 		return CLIENTS.get(uuid);
