@@ -27,7 +27,7 @@ package dev.vmsa.tensai.spigot.networking;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import dev.vmsa.tensai.animations.AnimationProperty;
+import dev.vmsa.tensai.vfx.animations.AnimationProperty;
 
 public class AnimationPluginMessage extends PluginMessage {
 	public static final int PLAY_ONCE = 0x00;

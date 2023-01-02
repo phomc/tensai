@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.spigot.players;
+package dev.vmsa.tensai.spigot.clients;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

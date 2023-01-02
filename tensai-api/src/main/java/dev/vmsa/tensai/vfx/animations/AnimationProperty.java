@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.animations;
+package dev.vmsa.tensai.vfx.animations;
 
 import java.io.DataInput;
 import java.io.DataOutput;

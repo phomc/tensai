@@ -33,12 +33,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.vmsa.tensai.Tensai;
-import dev.vmsa.tensai.animations.AnimationProperty;
-import dev.vmsa.tensai.players.PlayerHandle;
+import dev.vmsa.tensai.clients.ClientHandle;
+import dev.vmsa.tensai.spigot.clients.ClientHandleImpl;
+import dev.vmsa.tensai.spigot.clients.PlayerQuitEventsListener;
 import dev.vmsa.tensai.spigot.networking.AnimationPluginMessage;
 import dev.vmsa.tensai.spigot.networking.PluginMessage;
-import dev.vmsa.tensai.spigot.players.PlayerHandleImpl;
-import dev.vmsa.tensai.spigot.players.PlayerQuitEventsListener;
+import dev.vmsa.tensai.vfx.animations.AnimationProperty;
 
 public class TensaiSpigot extends JavaPlugin implements Tensai {
 	private static TensaiSpigot INSTANCE;
@@ -66,16 +66,16 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 	}
 
 	// Wrappers
-	private static final Map<UUID, PlayerHandle> PLAYERS = new HashMap<>();
+	private static final Map<UUID, ClientHandle> CLIENTS = new HashMap<>();
 
-	public static PlayerHandle of(Player player) {
+	public static ClientHandle of(Player player) {
 		UUID uuid = player.getUniqueId();
-		if (!PLAYERS.containsKey(uuid)) PLAYERS.put(uuid, new PlayerHandleImpl(INSTANCE, player));
-		return PLAYERS.get(uuid);
+		if (!CLIENTS.containsKey(uuid)) CLIENTS.put(uuid, new ClientHandleImpl(INSTANCE, player));
+		return CLIENTS.get(uuid);
 	}
 
 	public static void internalReset(Player player) {
-		PLAYERS.remove(player.getUniqueId());
+		CLIENTS.remove(player.getUniqueId());
 	}
 
 	// APIs

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.spigot.players;
+package dev.vmsa.tensai.spigot.clients;
 
 import java.lang.ref.WeakReference;
 
@@ -30,17 +30,17 @@ import org.bukkit.entity.Player;
 
 import com.google.common.base.Preconditions;
 
-import dev.vmsa.tensai.animations.AnimationProperty;
-import dev.vmsa.tensai.players.PlayerHandle;
+import dev.vmsa.tensai.clients.ClientHandle;
 import dev.vmsa.tensai.spigot.TensaiSpigot;
 import dev.vmsa.tensai.spigot.networking.AnimationPluginMessage;
 import dev.vmsa.tensai.spigot.networking.PluginMessage;
+import dev.vmsa.tensai.vfx.animations.AnimationProperty;
 
-public class PlayerHandleImpl implements PlayerHandle {
+public class ClientHandleImpl implements ClientHandle {
 	private TensaiSpigot plugin;
 	private WeakReference<Player> playerRef;
 
-	public PlayerHandleImpl(TensaiSpigot plugin, Player player) {
+	public ClientHandleImpl(TensaiSpigot plugin, Player player) {
 		Preconditions.checkNotNull(plugin);
 		Preconditions.checkNotNull(player);
 		this.plugin = plugin;

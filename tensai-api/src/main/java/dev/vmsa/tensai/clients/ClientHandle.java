@@ -22,16 +22,14 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.animations;
+package dev.vmsa.tensai.clients;
 
-public interface AnimationsPlayer {
-	void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties);
+import dev.vmsa.tensai.vfx.animations.AnimationsPlayer;
 
-	default void playAnimationOnce(String type, double startSec, AnimationProperty<?>... properties) {
-		playAnimationOnce(type, startSec, Double.POSITIVE_INFINITY);
-	}
-
-	default void playAnimationOnce(String type, AnimationProperty<?>... properties) {
-		playAnimationOnce(type, 0, Double.POSITIVE_INFINITY);
-	}
+/**
+ * <p>Represent the player. In Spigot, this handle wraps around {@code org.bukkit.Player}. In Fabric, this
+ * handle is a bridge for {@code ServerPlayerEntity}</p>
+ *
+ */
+public interface ClientHandle extends AnimationsPlayer {
 }

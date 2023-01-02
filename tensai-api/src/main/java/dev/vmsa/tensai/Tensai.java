@@ -24,8 +24,8 @@
 
 package dev.vmsa.tensai;
 
-import dev.vmsa.tensai.animations.AnimationProperty;
-import dev.vmsa.tensai.animations.AnimationsPlayer;
+import dev.vmsa.tensai.vfx.animations.AnimationProperty;
+import dev.vmsa.tensai.vfx.animations.AnimationsPlayer;
 
 /**
  * <p>An entry point to all Tensai APIs.</p>
