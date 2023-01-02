@@ -3,6 +3,7 @@
   "package": "dev.vmsa.tensai.fabric.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MinecraftServerMixin"
+    "MinecraftServerMixin",
+    "ServerPlayerEntityMixin"
   ]
 }

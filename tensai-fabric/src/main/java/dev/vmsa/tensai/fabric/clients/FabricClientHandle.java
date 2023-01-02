@@ -22,24 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.fabric.mixins;
+package dev.vmsa.tensai.fabric.clients;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-import net.minecraft.server.MinecraftServer;
+import dev.vmsa.tensai.clients.ClientHandle;
+import dev.vmsa.tensai.fabric.vfx.ClientVisualEffectsImpl;
+import dev.vmsa.tensai.networking.PluginMessage;
 
-import dev.vmsa.tensai.Tensai;
-import dev.vmsa.tensai.fabric.vfx.GlobalVisualEffectsImpl;
-import dev.vmsa.tensai.vfx.VisualEffects;
+public interface FabricClientHandle extends ClientHandle {
+	void sendPluginMessage(PluginMessage message);
+	void transferTo(ServerPlayerEntity newPlayer);
 
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements Tensai {
-	@Unique private GlobalVisualEffectsImpl globalVfx;
-
-	@Override
-	public VisualEffects getGlobalVfx() {
-		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
-		return globalVfx;
-	}
+	void setVfx(ClientVisualEffectsImpl vfx);
 }

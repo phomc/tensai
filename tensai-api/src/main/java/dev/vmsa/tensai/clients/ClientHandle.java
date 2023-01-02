@@ -29,6 +29,8 @@ import dev.vmsa.tensai.vfx.VisualEffects;
 /**
  * <p>Represent the connection of the player. In Spigot, this handle wraps around {@code org.bukkit.Player}.
  * In Fabric, this handle is a bridge for {@code ServerPlayerEntity}</p>
+ * <p><b>Getting {@link ClientHandle} in Fabric: </b>Simply cast {@code ServerPlayerEntity} to {@link ClientHandle}
+ * and you're done.</p>
  *
  */
 public interface ClientHandle {

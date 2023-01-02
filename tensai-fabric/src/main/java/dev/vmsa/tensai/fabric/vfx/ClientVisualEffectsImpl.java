@@ -22,24 +22,24 @@
  * SOFTWARE.
  */
 
-package dev.vmsa.tensai.fabric.mixins;
+package dev.vmsa.tensai.fabric.vfx;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-import net.minecraft.server.MinecraftServer;
-
-import dev.vmsa.tensai.Tensai;
-import dev.vmsa.tensai.fabric.vfx.GlobalVisualEffectsImpl;
+import dev.vmsa.tensai.fabric.clients.FabricClientHandle;
 import dev.vmsa.tensai.vfx.VisualEffects;
+import dev.vmsa.tensai.vfx.animations.AnimationPluginMessage;
+import dev.vmsa.tensai.vfx.animations.AnimationProperty;
 
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements Tensai {
-	@Unique private GlobalVisualEffectsImpl globalVfx;
+public class ClientVisualEffectsImpl implements VisualEffects {
+	private ServerPlayerEntity player;
+
+	public ClientVisualEffectsImpl(ServerPlayerEntity player) {
+		this.player = player;
+	}
 
 	@Override
-	public VisualEffects getGlobalVfx() {
-		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
-		return globalVfx;
+	public void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties) {
+		((FabricClientHandle) player).sendPluginMessage(new AnimationPluginMessage(type, AnimationPluginMessage.PLAY_ONCE, startSec, durationSec, properties));
 	}
 }
