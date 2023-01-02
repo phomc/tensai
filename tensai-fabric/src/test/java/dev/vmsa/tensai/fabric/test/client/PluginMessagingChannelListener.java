@@ -45,7 +45,7 @@ public class PluginMessagingChannelListener {
 	private static final String DISPLAYABLE_CHARS = "0123456789!@#$%^&*()-=_+`~[]{};':\"\\|,./<>?abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ";
 
 	public static void listen(Identifier channel) {
-		Text prefix = Text.literal("[Tensai] ").formatted(Formatting.GOLD)
+		Text prefix = Text.literal("[Client] ").formatted(Formatting.GOLD)
 				.append(Text.literal(channel.toString()).formatted(Formatting.YELLOW))
 				.append(Text.literal(" >> ").formatted(Formatting.DARK_GRAY));
 
@@ -61,7 +61,7 @@ public class PluginMessagingChannelListener {
 
 			client.inGameHud.getChatHud().addMessage(Text.empty()
 					.append(prefix)
-					.append(Text.literal(messageType).formatted(Formatting.WHITE)));
+					.append(Text.literal("Message type = " + messageType).formatted(Formatting.WHITE)));
 
 			TensaiFabricTestClient.LOGGER.info("Displaying bytes for message type {}:", messageType);
 			logBytes(buf.array());
