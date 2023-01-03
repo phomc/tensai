@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) $YEAR PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,16 @@
  * SOFTWARE.
  */
 
+package dev.phomc.tensai.clients;
+
+import dev.phomc.tensai.vfx.VisualEffects;
+
+/**
+ * <p>Represent the connection of the player. In Spigot, this handle wraps around {@code org.bukkit.Player}.
+ * In Fabric, this handle is a bridge for {@code ServerPlayerEntity}</p>
+ * <p><b>Getting {@link ClientHandle} in Fabric: </b>Simply cast {@code ServerPlayerEntity} to {@link ClientHandle}
+ * and you're done.</p>
+ */
+public interface ClientHandle {
+	VisualEffects getVfx();
+}

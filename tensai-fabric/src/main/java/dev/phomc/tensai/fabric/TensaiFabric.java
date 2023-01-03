@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) $YEAR PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,24 @@
  * SOFTWARE.
  */
 
+package dev.phomc.tensai.fabric;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+
+import dev.phomc.tensai.fabric.clients.FabricClientHandle;
+
+public class TensaiFabric implements ModInitializer {
+	public static final String MOD_ID = "tensai";
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+	@Override
+	public void onInitialize() {
+		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
+			((FabricClientHandle) oldPlayer).transferTo(newPlayer);
+		});
+	}
+}

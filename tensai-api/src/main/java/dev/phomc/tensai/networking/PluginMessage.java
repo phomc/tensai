@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) $YEAR PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,38 @@
  * SOFTWARE.
  */
 
+package dev.phomc.tensai.networking;
+
+import java.io.*;
+
+public abstract class PluginMessage {
+	public static final String CHANNEL_VFX = "tensai:vfx";
+
+	public final String channel;
+	public final String messageType;
+
+	public PluginMessage(String channel, String messageType) {
+		this.channel = channel;
+		this.messageType = messageType;
+	}
+
+	public void write(DataOutput stream) throws IOException {
+	}
+
+	public void read(DataInput stream) throws IOException {
+	}
+
+	public byte[] createBytes() {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		DataOutputStream wrapped = new DataOutputStream(stream);
+
+		try {
+			wrapped.writeUTF(messageType);
+			write(wrapped);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		return stream.toByteArray();
+	}
+}

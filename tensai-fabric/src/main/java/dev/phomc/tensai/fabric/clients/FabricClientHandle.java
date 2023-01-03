@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) $YEAR PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,18 @@
  * SOFTWARE.
  */
 
+package dev.phomc.tensai.fabric.clients;
+
+import net.minecraft.server.network.ServerPlayerEntity;
+
+import dev.phomc.tensai.clients.ClientHandle;
+import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
+import dev.phomc.tensai.networking.PluginMessage;
+
+public interface FabricClientHandle extends ClientHandle {
+	void sendPluginMessage(PluginMessage message);
+
+	void transferTo(ServerPlayerEntity newPlayer);
+
+	void setVfx(ClientVisualEffectsImpl vfx);
+}

@@ -6,17 +6,17 @@
   "environment": "*",
   "license": "MIT",
   "authors": [
-    "VMSA"
+    "PhoMC"
   ],
   "depends": {
     "tensai": "*"
   },
   "entrypoints": {
     "main": [
-      "dev.vmsa.tensai.fabric.test.TensaiFabricTestMod"
+      "dev.phomc.tensai.fabric.test.TensaiFabricTestMod"
     ],
     "client": [
-      "dev.vmsa.tensai.fabric.test.client.TensaiFabricTestClient"
+      "dev.phomc.tensai.fabric.test.client.TensaiFabricTestClient"
     ]
   },
   "mixins": [

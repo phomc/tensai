@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) $YEAR PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,27 @@
  * SOFTWARE.
  */
 
+package dev.phomc.tensai.tests.junit;
+
+import java.io.*;
+
+/**
+ * <p>Test utilities.</p>
+ */
+public class Utils {
+	public static byte[] createBytes(BinaryWriter writer) throws IOException {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		DataOutputStream wrapper = new DataOutputStream(stream);
+		writer.write(wrapper);
+		return stream.toByteArray();
+	}
+
+	public static DataInput createStream(byte[] bytes) {
+		return new DataInputStream(new ByteArrayInputStream(bytes));
+	}
+
+	@FunctionalInterface
+	public interface BinaryWriter {
+		void write(DataOutput stream) throws IOException;
+	}
+}

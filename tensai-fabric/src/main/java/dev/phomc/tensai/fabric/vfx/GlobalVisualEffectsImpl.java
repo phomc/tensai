@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) $YEAR PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,26 @@
  * SOFTWARE.
  */
 
+package dev.phomc.tensai.fabric.vfx;
+
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+
+import dev.phomc.tensai.fabric.clients.FabricClientHandle;
+import dev.phomc.tensai.vfx.VisualEffects;
+import dev.phomc.tensai.vfx.animations.AnimationProperty;
+
+public class GlobalVisualEffectsImpl implements VisualEffects {
+	private MinecraftServer server;
+
+	public GlobalVisualEffectsImpl(MinecraftServer server) {
+		this.server = server;
+	}
+
+	@Override
+	public void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties) {
+		for (ServerPlayerEntity e : server.getPlayerManager().getPlayerList()) {
+			((FabricClientHandle) e).getVfx().playAnimationOnce(type, startSec, durationSec, properties);
+		}
+	}
+}

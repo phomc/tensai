@@ -12,10 +12,10 @@ Tensai (天際 / てんさい) is a Japanese word (Romanji form) means 'horizon/
 
 ## Usage
 ### For players
-All information can be found at [tensai-client](https://github.com/vmsa/tensai-client).
+All information can be found at [tensai-client](https://github.com/phomc/tensai-client).
 
 ### For server owners
-Checkout [releases](https://github.com/vmsa-dev/tensai/releases) and select the version and the platform that suitable for your server. 
+Checkout [releases](https://github.com/phomc/tensai/releases) and select the version and the platform that suitable for your server. 
 - Fabric: mods/
 - Spigot: plugins/
 

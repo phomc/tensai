@@ -6,7 +6,7 @@
   "environment": "*",
   "license": "MIT",
   "authors": [
-    "VMSA"
+    "PhoMC"
   ],
   "depends": {
     "java": ">=17",
@@ -14,7 +14,7 @@
   },
   "entrypoints": {
     "main": [
-      "dev.vmsa.tensai.fabric.TensaiFabric"
+      "dev.phomc.tensai.fabric.TensaiFabric"
     ]
   },
   "mixins": [

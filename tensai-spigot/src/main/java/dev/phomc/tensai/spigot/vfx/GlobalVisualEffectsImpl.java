@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) $YEAR PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,23 @@
  * SOFTWARE.
  */
 
+package dev.phomc.tensai.spigot.vfx;
+
+import dev.phomc.tensai.spigot.TensaiSpigot;
+import dev.phomc.tensai.vfx.VisualEffects;
+import dev.phomc.tensai.vfx.animations.AnimationPluginMessage;
+import dev.phomc.tensai.vfx.animations.AnimationProperty;
+
+public class GlobalVisualEffectsImpl implements VisualEffects {
+	private TensaiSpigot plugin;
+
+	public GlobalVisualEffectsImpl(TensaiSpigot plugin) {
+		this.plugin = plugin;
+	}
+
+	@Override
+	public void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties) {
+		AnimationPluginMessage message = new AnimationPluginMessage(type, AnimationPluginMessage.PLAY_ONCE, startSec, durationSec, properties);
+		plugin.getServer().sendPluginMessage(plugin, message.channel, message.createBytes());
+	}
+}

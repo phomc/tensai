@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) $YEAR PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,25 @@
  * SOFTWARE.
  */
 
+package dev.phomc.tensai.fabric.mixins;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+
+import net.minecraft.server.MinecraftServer;
+
+import dev.phomc.tensai.Tensai;
+import dev.phomc.tensai.fabric.vfx.GlobalVisualEffectsImpl;
+import dev.phomc.tensai.vfx.VisualEffects;
+
+@Mixin(MinecraftServer.class)
+public abstract class MinecraftServerMixin implements Tensai {
+	@Unique
+	private GlobalVisualEffectsImpl globalVfx;
+
+	@Override
+	public VisualEffects getGlobalVfx() {
+		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
+		return globalVfx;
+	}
+}

@@ -1,5 +1,5 @@
 name: Tensai
-main: dev.vmsa.tensai.spigot.TensaiSpigot
+main: dev.phomc.tensai.spigot.TensaiSpigot
 version: ${version}
 api-version: 1.13
-author: VMSA
+author: PhoMC

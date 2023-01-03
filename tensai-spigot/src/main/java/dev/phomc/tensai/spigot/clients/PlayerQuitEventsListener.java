@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) $YEAR PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,17 @@
  * SOFTWARE.
  */
 
+package dev.phomc.tensai.spigot.clients;
+
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+
+import dev.phomc.tensai.spigot.TensaiSpigot;
+
+public class PlayerQuitEventsListener implements Listener {
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		TensaiSpigot.internalReset(event.getPlayer());
+	}
+}

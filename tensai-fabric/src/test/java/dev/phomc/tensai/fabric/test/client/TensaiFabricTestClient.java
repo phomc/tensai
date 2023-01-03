@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) $YEAR PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,27 @@
  * SOFTWARE.
  */
 
+package dev.phomc.tensai.fabric.test.client;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.minecraft.util.Identifier;
+
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
+import dev.phomc.tensai.fabric.test.TensaiFabricTestMod;
+import dev.phomc.tensai.networking.PluginMessage;
+
+@Environment(EnvType.CLIENT)
+public class TensaiFabricTestClient implements ClientModInitializer {
+	public static final Logger LOGGER = LoggerFactory.getLogger(TensaiFabricTestMod.MOD_ID + "-client");
+
+	@Override
+	public void onInitializeClient() {
+		LOGGER.info("Hello client!");
+		PluginMessagingChannelListener.listen(new Identifier(PluginMessage.CHANNEL_VFX));
+	}
+}
