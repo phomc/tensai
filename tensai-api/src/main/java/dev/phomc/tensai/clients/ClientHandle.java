@@ -31,7 +31,6 @@ import dev.phomc.tensai.vfx.VisualEffects;
  * In Fabric, this handle is a bridge for {@code ServerPlayerEntity}</p>
  * <p><b>Getting {@link ClientHandle} in Fabric: </b>Simply cast {@code ServerPlayerEntity} to {@link ClientHandle}
  * and you're done.</p>
- *
  */
 public interface ClientHandle {
 	VisualEffects getVfx();

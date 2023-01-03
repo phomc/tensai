@@ -24,7 +24,7 @@
 
 package dev.phomc.tensai.tests.junit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 

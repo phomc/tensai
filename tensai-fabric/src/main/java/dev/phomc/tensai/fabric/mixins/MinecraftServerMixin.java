@@ -24,18 +24,19 @@
 
 package dev.phomc.tensai.fabric.mixins;
 
-import dev.phomc.tensai.fabric.vfx.GlobalVisualEffectsImpl;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 import net.minecraft.server.MinecraftServer;
 
 import dev.phomc.tensai.Tensai;
+import dev.phomc.tensai.fabric.vfx.GlobalVisualEffectsImpl;
 import dev.phomc.tensai.vfx.VisualEffects;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin implements Tensai {
-	@Unique private GlobalVisualEffectsImpl globalVfx;
+	@Unique
+	private GlobalVisualEffectsImpl globalVfx;
 
 	@Override
 	public VisualEffects getGlobalVfx() {

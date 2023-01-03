@@ -89,17 +89,20 @@ public class PluginMessagingChannelListener {
 		for (int i = 0; i < bs.length; i++) {
 			if (i != 0 && (i % BYTES_PER_ROW) == 0) {
 				TensaiFabricTestClient.LOGGER.info(createHex((i - 1) >> 4, 3) + "x | " + left + "| " + right);
-				left = ""; right = "";
+				left = "";
+				right = "";
 			}
 
 			int uint = Byte.toUnsignedInt(bs[i]);
 			left += createHex(uint, 2) + " ";
-			
+
 			int chIdx = DISPLAYABLE_CHARS.indexOf(uint);
-			right += chIdx != -1? ((char) uint) : '.';
+			right += chIdx != -1 ? ((char) uint) : '.';
 		}
 
-		if (left.length() != 0) TensaiFabricTestClient.LOGGER.info(createHex((bs.length - 1) >> 4, 3) + "x | " + spaces(left, 48) + "| " + right);
+		if (left.length() != 0) {
+			TensaiFabricTestClient.LOGGER.info(createHex((bs.length - 1) >> 4, 3) + "x | " + spaces(left, 48) + "| " + right);
+		}
 	}
 
 	public static void main(String[] args) {

@@ -24,17 +24,10 @@
 
 package dev.phomc.tensai.tests.junit;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * <p>Test utilities.</p>
- *
  */
 public class Utils {
 	public static byte[] createBytes(BinaryWriter writer) throws IOException {

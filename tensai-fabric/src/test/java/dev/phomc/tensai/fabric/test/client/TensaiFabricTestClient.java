@@ -24,7 +24,6 @@
 
 package dev.phomc.tensai.fabric.test.client;
 
-import dev.phomc.tensai.fabric.test.TensaiFabricTestMod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +33,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+import dev.phomc.tensai.fabric.test.TensaiFabricTestMod;
 import dev.phomc.tensai.networking.PluginMessage;
 
 @Environment(EnvType.CLIENT)

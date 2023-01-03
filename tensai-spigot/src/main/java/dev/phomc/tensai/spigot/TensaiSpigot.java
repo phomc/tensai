@@ -29,27 +29,37 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import dev.phomc.tensai.spigot.clients.ClientHandleImpl;
-import dev.phomc.tensai.spigot.clients.PlayerQuitEventsListener;
-
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.phomc.tensai.Tensai;
 import dev.phomc.tensai.clients.ClientHandle;
 import dev.phomc.tensai.networking.PluginMessage;
+import dev.phomc.tensai.spigot.clients.ClientHandleImpl;
+import dev.phomc.tensai.spigot.clients.PlayerQuitEventsListener;
 import dev.phomc.tensai.spigot.vfx.GlobalVisualEffectsImpl;
 import dev.phomc.tensai.vfx.VisualEffects;
 
 public class TensaiSpigot extends JavaPlugin implements Tensai {
+	// Wrappers
+	private static final Map<UUID, ClientHandle> CLIENTS = new HashMap<>();
 	private static TensaiSpigot INSTANCE;
+	protected Logger logger;
+	private GlobalVisualEffectsImpl globalVfx;
 
 	public static TensaiSpigot getInstance() {
 		return INSTANCE;
 	}
 
-	protected Logger logger;
-	private GlobalVisualEffectsImpl globalVfx;
+	public static ClientHandle getClient(Player player) {
+		UUID uuid = player.getUniqueId();
+		if (!CLIENTS.containsKey(uuid)) CLIENTS.put(uuid, new ClientHandleImpl(INSTANCE, player));
+		return CLIENTS.get(uuid);
+	}
+
+	public static void internalReset(Player player) {
+		CLIENTS.remove(player.getUniqueId());
+	}
 
 	@Override
 	public void onEnable() {
@@ -67,19 +77,6 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 
 	@Override
 	public void onDisable() {
-	}
-
-	// Wrappers
-	private static final Map<UUID, ClientHandle> CLIENTS = new HashMap<>();
-
-	public static ClientHandle getClient(Player player) {
-		UUID uuid = player.getUniqueId();
-		if (!CLIENTS.containsKey(uuid)) CLIENTS.put(uuid, new ClientHandleImpl(INSTANCE, player));
-		return CLIENTS.get(uuid);
-	}
-
-	public static void internalReset(Player player) {
-		CLIENTS.remove(player.getUniqueId());
 	}
 
 	// APIs

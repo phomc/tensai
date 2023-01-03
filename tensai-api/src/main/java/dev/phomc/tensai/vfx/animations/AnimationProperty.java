@@ -32,26 +32,6 @@ import dev.phomc.tensai.networking.Serializer;
 import dev.phomc.tensai.utils.Vec4;
 
 public class AnimationProperty<T> {
-	private String name;
-	private T value;
-
-	public AnimationProperty(String name, T value) {
-		this.name = name;
-		this.value = value;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public T getValue() {
-		return value;
-	}
-
-	public void setValue(T value) {
-		this.value = value;
-	}
-
 	public static final Serializer<AnimationProperty<?>> SERIALIZER = new Serializer<AnimationProperty<?>>() {
 		// Primitives
 		private static final int TYPE_INT = 0x00; // byte + short + int + long -> int64
@@ -85,12 +65,36 @@ public class AnimationProperty<T> {
 			int type = stream.readByte();
 
 			switch (type) {
-				case TYPE_INT: return new AnimationProperty<>(name, stream.readLong());
-				case TYPE_FLOAT: return new AnimationProperty<>(name, stream.readDouble());
-				case TYPE_STRING: return new AnimationProperty<>(name, stream.readUTF());
-				case TYPE_VEC4: return new AnimationProperty<>(name, Vec4.SERIALIZER.deserialize(stream));
-				default: return null;
+				case TYPE_INT:
+					return new AnimationProperty<>(name, stream.readLong());
+				case TYPE_FLOAT:
+					return new AnimationProperty<>(name, stream.readDouble());
+				case TYPE_STRING:
+					return new AnimationProperty<>(name, stream.readUTF());
+				case TYPE_VEC4:
+					return new AnimationProperty<>(name, Vec4.SERIALIZER.deserialize(stream));
+				default:
+					return null;
 			}
 		}
 	};
+	private String name;
+	private T value;
+
+	public AnimationProperty(String name, T value) {
+		this.name = name;
+		this.value = value;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public T getValue() {
+		return value;
+	}
+
+	public void setValue(T value) {
+		this.value = value;
+	}
 }

@@ -36,9 +36,26 @@ import dev.phomc.tensai.vfx.animations.AnimationProperty;
  * <p>Simple implementation of 4-components vector. This class does not contains any calculation methods, such
  * as {@code add()} or {@code cross()}.</p>
  * <p>This class is mainly used for {@link AnimationProperty}.</p>
- *
  */
 public class Vec4 {
+	public static final Serializer<Vec4> SERIALIZER = new Serializer<Vec4>() {
+		@Override
+		public void serialize(Vec4 obj, DataOutput stream) throws IOException {
+			stream.writeDouble(obj.x);
+			stream.writeDouble(obj.y);
+			stream.writeDouble(obj.z);
+			stream.writeDouble(obj.w);
+		}
+
+		@Override
+		public Vec4 deserialize(DataInput stream) throws IOException {
+			double x = stream.readDouble();
+			double y = stream.readDouble();
+			double z = stream.readDouble();
+			double w = stream.readDouble();
+			return new Vec4(x, y, z, w);
+		}
+	};
 	private double x, y, z, w;
 
 	public Vec4(double x, double y, double z, double w) {
@@ -94,23 +111,4 @@ public class Vec4 {
 				&& Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y)
 				&& Double.doubleToLongBits(z) == Double.doubleToLongBits(other.z);
 	}
-
-	public static final Serializer<Vec4> SERIALIZER = new Serializer<Vec4>() {
-		@Override
-		public void serialize(Vec4 obj, DataOutput stream) throws IOException {
-			stream.writeDouble(obj.x);
-			stream.writeDouble(obj.y);
-			stream.writeDouble(obj.z);
-			stream.writeDouble(obj.w);
-		}
-
-		@Override
-		public Vec4 deserialize(DataInput stream) throws IOException {
-			double x = stream.readDouble();
-			double y = stream.readDouble();
-			double z = stream.readDouble();
-			double w = stream.readDouble();
-			return new Vec4(x, y, z, w);
-		}
-	};
 }

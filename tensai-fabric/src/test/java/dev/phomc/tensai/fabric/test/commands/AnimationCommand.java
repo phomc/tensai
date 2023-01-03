@@ -62,7 +62,7 @@ public class AnimationCommand {
 				.then(argument("start", DoubleArgumentType.doubleArg(0))
 						.then(argument("duration", DoubleArgumentType.doubleArg(0))
 								.executes(ctx -> playOnce(ctx, DoubleArgumentType.getDouble(ctx, "start"), DoubleArgumentType.getDouble(ctx, "duration"))))
-						.executes(ctx -> playOnce(ctx,  DoubleArgumentType.getDouble(ctx, "start"), Double.POSITIVE_INFINITY)))
+						.executes(ctx -> playOnce(ctx, DoubleArgumentType.getDouble(ctx, "start"), Double.POSITIVE_INFINITY)))
 				.executes(ctx -> playOnce(ctx, 0, Double.POSITIVE_INFINITY)));
 		return ret;
 	}

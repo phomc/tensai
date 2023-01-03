@@ -24,11 +24,7 @@
 
 package dev.phomc.tensai.networking;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 public abstract class PluginMessage {
 	public static final String CHANNEL_VFX = "tensai:vfx";
@@ -41,8 +37,11 @@ public abstract class PluginMessage {
 		this.messageType = messageType;
 	}
 
-	public void write(DataOutput stream) throws IOException { }
-	public void read(DataInput stream) throws IOException { }
+	public void write(DataOutput stream) throws IOException {
+	}
+
+	public void read(DataInput stream) throws IOException {
+	}
 
 	public byte[] createBytes() {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();

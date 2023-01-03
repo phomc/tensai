@@ -24,7 +24,6 @@
 
 package dev.phomc.tensai.fabric.mixins;
 
-import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
@@ -36,13 +35,14 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import dev.phomc.tensai.fabric.clients.FabricClientHandle;
-
+import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
 import dev.phomc.tensai.networking.PluginMessage;
 import dev.phomc.tensai.vfx.VisualEffects;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin implements FabricClientHandle {
-	@Unique private ClientVisualEffectsImpl vfx;
+	@Unique
+	private ClientVisualEffectsImpl vfx;
 
 	@Override
 	public void sendPluginMessage(PluginMessage message) {
@@ -54,7 +54,8 @@ public abstract class ServerPlayerEntityMixin implements FabricClientHandle {
 	@Override
 	public void transferTo(ServerPlayerEntity newPlayer) {
 		FabricClientHandle newClientHandle = (FabricClientHandle) newPlayer;
-		newClientHandle.setVfx(this.vfx); this.vfx = null;
+		newClientHandle.setVfx(this.vfx);
+		this.vfx = null;
 	}
 
 	@Override

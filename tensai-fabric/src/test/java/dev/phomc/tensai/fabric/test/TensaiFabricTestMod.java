@@ -24,12 +24,13 @@
 
 package dev.phomc.tensai.fabric.test;
 
-import dev.phomc.tensai.fabric.test.commands.TensaiTestCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+
+import dev.phomc.tensai.fabric.test.commands.TensaiTestCommand;
 
 public class TensaiFabricTestMod implements ModInitializer {
 	public static final String MOD_ID = "tensai-test";

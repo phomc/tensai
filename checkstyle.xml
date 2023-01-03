@@ -77,7 +77,7 @@
         <module name="UnusedImports"/>
 
         <module name="ImportOrder">
-            <property name="groups" value="java,javax,*,net.minecraft,net.fabricmc,org.bukkit,org.spigotmc,dev.vmsa.tensai"/>
+            <property name="groups" value="java,javax,*,net.minecraft,net.fabricmc,org.bukkit,org.spigotmc,dev.phomc"/>
             <property name="ordered"
                       value="false"/><!-- the plugin orders alphabetically without considering separators.. -->
             <property name="separated" value="true"/>

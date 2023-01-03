@@ -26,13 +26,13 @@ package dev.phomc.tensai.spigot.clients;
 
 import java.lang.ref.WeakReference;
 
-import org.bukkit.entity.Player;
-
 import com.google.common.base.Preconditions;
 
+import org.bukkit.entity.Player;
+
 import dev.phomc.tensai.clients.ClientHandle;
-import dev.phomc.tensai.spigot.TensaiSpigot;
 import dev.phomc.tensai.networking.PluginMessage;
+import dev.phomc.tensai.spigot.TensaiSpigot;
 import dev.phomc.tensai.spigot.vfx.ClientVisualEffectsImpl;
 import dev.phomc.tensai.vfx.VisualEffects;
 

@@ -30,5 +30,6 @@ import java.io.IOException;
 
 public interface Serializer<T> {
 	void serialize(T obj, DataOutput stream) throws IOException;
+
 	T deserialize(DataInput stream) throws IOException;
 }

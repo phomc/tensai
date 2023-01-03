@@ -25,7 +25,6 @@
 package dev.phomc.tensai.spigot.vfx;
 
 import dev.phomc.tensai.spigot.TensaiSpigot;
-
 import dev.phomc.tensai.vfx.VisualEffects;
 import dev.phomc.tensai.vfx.animations.AnimationPluginMessage;
 import dev.phomc.tensai.vfx.animations.AnimationProperty;

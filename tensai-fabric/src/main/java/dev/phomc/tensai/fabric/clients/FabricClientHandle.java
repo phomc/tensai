@@ -26,12 +26,13 @@ package dev.phomc.tensai.fabric.clients;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
 import dev.phomc.tensai.clients.ClientHandle;
+import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
 import dev.phomc.tensai.networking.PluginMessage;
 
 public interface FabricClientHandle extends ClientHandle {
 	void sendPluginMessage(PluginMessage message);
+
 	void transferTo(ServerPlayerEntity newPlayer);
 
 	void setVfx(ClientVisualEffectsImpl vfx);
