@@ -6,7 +6,7 @@
   "environment": "*",
   "license": "MIT",
   "authors": [
-    "VMSA"
+    "PhoMC"
   ],
   "depends": {
     "tensai": "*"
