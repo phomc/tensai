@@ -1,9 +1,9 @@
 {
   "required": true,
-  "package": "dev.vmsa.tensai.fabric.mixins",
+  "package": "dev.phomc.tensai.fabric.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "dev.phomc.tensai.fabric.mixins.MinecraftServerMixin",
-    "dev.phomc.tensai.fabric.mixins.ServerPlayerEntityMixin"
+    "MinecraftServerMixin",
+    "ServerPlayerEntityMixin"
   ]
 }
