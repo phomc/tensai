@@ -29,6 +29,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import dev.phomc.tensai.keybinding.KeyBindingPluginMessage;
+
+import dev.phomc.tensai.spigot.keybinding.KeyBindingPluginMessageListener;
+import dev.phomc.tensai.spigot.listener.player.PlayerJoinListener;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -71,8 +76,12 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 
 		// Plugin messaging channels
 		getServer().getMessenger().registerOutgoingPluginChannel(this, PluginMessage.CHANNEL_VFX);
+		getServer().getMessenger().registerOutgoingPluginChannel(this, KeyBindingPluginMessage.CHANNEL);
+
+		getServer().getMessenger().registerIncomingPluginChannel(this, KeyBindingPluginMessage.CHANNEL, new KeyBindingPluginMessageListener(this));
 
 		// Events
+		getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 		getServer().getPluginManager().registerEvents(new PlayerQuitEventsListener(), this);
 
 		globalVfx = new GlobalVisualEffectsImpl(this);

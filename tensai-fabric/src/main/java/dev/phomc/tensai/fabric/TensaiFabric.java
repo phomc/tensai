@@ -24,16 +24,21 @@
 
 package dev.phomc.tensai.fabric;
 
+import dev.phomc.tensai.fabric.event.KeyPressCallback;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import dev.phomc.tensai.Tensai;
 import dev.phomc.tensai.fabric.clients.FabricClientHandle;
 import dev.phomc.tensai.keybinding.KeyBindingPluginMessage;
+
+import net.minecraft.util.Identifier;
 
 public class TensaiFabric implements ModInitializer {
 	public static final String MOD_ID = "tensai";
@@ -47,6 +52,10 @@ public class TensaiFabric implements ModInitializer {
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			((FabricClientHandle) handler.player).sendPluginMessage(new KeyBindingPluginMessage((Tensai) server));
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(new Identifier(KeyBindingPluginMessage.CHANNEL), (server, player, handler, buf, responseSender) -> {
+			KeyPressCallback.EVENT.invoker().handle(player, ((Tensai) server).getKeyBindingManager().getKeyBindings().get(buf.readString()));
 		});
 	}
 }
