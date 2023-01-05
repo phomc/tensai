@@ -27,13 +27,12 @@ package dev.phomc.tensai.spigot.keybinding;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
-import dev.phomc.tensai.keybinding.KeyBindingPluginMessage;
-import dev.phomc.tensai.spigot.TensaiSpigot;
-
-import dev.phomc.tensai.spigot.event.KeyPressEvent;
-
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+
+import dev.phomc.tensai.keybinding.KeyBindingPluginMessage;
+import dev.phomc.tensai.spigot.TensaiSpigot;
+import dev.phomc.tensai.spigot.event.KeyPressEvent;
 
 public class KeyBindingPluginMessageListener implements PluginMessageListener {
 	private final TensaiSpigot tensai;

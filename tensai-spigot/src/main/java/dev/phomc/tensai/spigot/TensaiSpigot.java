@@ -29,21 +29,19 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import dev.phomc.tensai.keybinding.KeyBindingPluginMessage;
-
-import dev.phomc.tensai.spigot.keybinding.KeyBindingPluginMessageListener;
-import dev.phomc.tensai.spigot.listener.player.PlayerJoinListener;
-
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.phomc.tensai.Tensai;
 import dev.phomc.tensai.clients.ClientHandle;
 import dev.phomc.tensai.keybinding.KeyBindingManager;
+import dev.phomc.tensai.keybinding.KeyBindingPluginMessage;
 import dev.phomc.tensai.keybinding.SimpleKeyBindingManager;
 import dev.phomc.tensai.networking.PluginMessage;
 import dev.phomc.tensai.spigot.clients.ClientHandleImpl;
 import dev.phomc.tensai.spigot.clients.PlayerQuitEventsListener;
+import dev.phomc.tensai.spigot.keybinding.KeyBindingPluginMessageListener;
+import dev.phomc.tensai.spigot.listener.player.PlayerJoinListener;
 import dev.phomc.tensai.spigot.vfx.GlobalVisualEffectsImpl;
 import dev.phomc.tensai.vfx.VisualEffects;
 
