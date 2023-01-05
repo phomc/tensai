@@ -24,6 +24,7 @@
 
 package dev.phomc.tensai;
 
+import dev.phomc.tensai.keybinding.KeyBindingManager;
 import dev.phomc.tensai.vfx.VisualEffects;
 import dev.phomc.tensai.vfx.animations.AnimationProperty;
 
@@ -41,4 +42,6 @@ public interface Tensai {
 	 * @return Global visual effects API.
 	 */
 	VisualEffects getGlobalVfx();
+
+	KeyBindingManager getKeyBindingManager();
 }

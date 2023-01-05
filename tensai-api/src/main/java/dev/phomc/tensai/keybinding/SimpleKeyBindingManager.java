@@ -24,39 +24,24 @@
 
 package dev.phomc.tensai.keybinding;
 
-/**
- * Represents a key binding.
- */
-public class KeyBinding {
-	private final String id, category;
-	private final Type type;
-	private final int keyCode;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-	public KeyBinding(String id, Type type, int keyCode, String category) {
-		this.id = id;
-		this.type = type;
-		this.keyCode = keyCode;
-		this.category = category;
+public class SimpleKeyBindingManager implements KeyBindingManager {
+	private final Map<String, KeyBinding> keyBindings = new HashMap<>();
+
+	@Override
+	public void registerKeyBinding(KeyBinding keyBinding) {
+		if (keyBindings.containsKey(keyBinding.id())) {
+			throw new IllegalArgumentException("KeyBinding with id " + keyBinding.id() + " already exists!");
+		}
+
+		keyBindings.put(keyBinding.id(), keyBinding);
 	}
 
-	public String id() {
-		return id;
-	}
-
-	public Type type() {
-		return type;
-	}
-
-	public int keyCode() {
-		return keyCode;
-	}
-
-	public String category() {
-		return category;
-	}
-
-	public enum Type {
-		KEYBOARD,
-		MOUSE
+	@Override
+	public Map<String, KeyBinding> getKeyBindings() {
+		return Collections.unmodifiableMap(keyBindings);
 	}
 }

@@ -22,41 +22,27 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.keybinding;
+package dev.phomc.tensai.spigot.listener.player;
 
-/**
- * Represents a key binding.
- */
-public class KeyBinding {
-	private final String id, category;
-	private final Type type;
-	private final int keyCode;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-	public KeyBinding(String id, Type type, int keyCode, String category) {
-		this.id = id;
-		this.type = type;
-		this.keyCode = keyCode;
-		this.category = category;
+import dev.phomc.tensai.keybinding.KeyBindingPluginMessage;
+import dev.phomc.tensai.spigot.TensaiSpigot;
+
+public class PlayerJoinListener implements Listener {
+	private final TensaiSpigot tensai;
+
+	public PlayerJoinListener(TensaiSpigot tensai) {
+		this.tensai = tensai;
 	}
 
-	public String id() {
-		return id;
-	}
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
 
-	public Type type() {
-		return type;
-	}
-
-	public int keyCode() {
-		return keyCode;
-	}
-
-	public String category() {
-		return category;
-	}
-
-	public enum Type {
-		KEYBOARD,
-		MOUSE
+		tensai.sendPluginMessageToPlayer(player, new KeyBindingPluginMessage(tensai));
 	}
 }
