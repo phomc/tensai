@@ -24,7 +24,7 @@
 
 package dev.phomc.tensai.fabric.event;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -38,5 +38,5 @@ public interface KeyPressCallback {
 		}
 	});
 
-	void handle(PlayerEntity player, KeyBinding keyBinding);
+	void handle(ServerPlayerEntity player, KeyBinding keyBinding);
 }
