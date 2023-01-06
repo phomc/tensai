@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,41 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai;
-
-import dev.phomc.tensai.keybinding.KeyBindingManager;
-import dev.phomc.tensai.vfx.VisualEffects;
-import dev.phomc.tensai.vfx.animations.AnimationProperty;
+package dev.phomc.tensai.keybinding;
 
 /**
- * <p>An entry point to all Tensai APIs.</p>
- * <p><b>For Spigot: </b>Use {@code TensaiSpigot.getInstance()}.</p>
- * <p><b>For Fabric: </b>Use {@code (Tensai) (Object) minecraftServer}.</p>
+ * Represents a key binding.
  */
-public interface Tensai {
-	/**
-	 * <p>Get the global visual effects API. This global VFX will applies visual effects to all online players. Please
-	 * note that methods like {@link VisualEffects#playAnimationOnce(String, AnimationProperty...)} might not takes
-	 * player's position into account, which leads to wasted bandwidth.</p>
-	 *
-	 * @return Global visual effects API.
-	 */
-	VisualEffects getGlobalVfx();
+public class KeyBinding {
+	private final String id, category;
+	private final Type type;
+	private final int keyCode;
 
-	KeyBindingManager getKeyBindingManager();
+	public KeyBinding(String id, Type type, int keyCode, String category) {
+		this.id = id;
+		this.type = type;
+		this.keyCode = keyCode;
+		this.category = category;
+	}
+
+	public String id() {
+		return id;
+	}
+
+	public Type type() {
+		return type;
+	}
+
+	public int keyCode() {
+		return keyCode;
+	}
+
+	public String category() {
+		return category;
+	}
+
+	public enum Type {
+		KEYBOARD,
+		MOUSE
+	}
 }

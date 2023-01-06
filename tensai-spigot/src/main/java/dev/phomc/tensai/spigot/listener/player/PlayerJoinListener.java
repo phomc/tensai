@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,27 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai;
+package dev.phomc.tensai.spigot.listener.player;
 
-import dev.phomc.tensai.keybinding.KeyBindingManager;
-import dev.phomc.tensai.vfx.VisualEffects;
-import dev.phomc.tensai.vfx.animations.AnimationProperty;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-/**
- * <p>An entry point to all Tensai APIs.</p>
- * <p><b>For Spigot: </b>Use {@code TensaiSpigot.getInstance()}.</p>
- * <p><b>For Fabric: </b>Use {@code (Tensai) (Object) minecraftServer}.</p>
- */
-public interface Tensai {
-	/**
-	 * <p>Get the global visual effects API. This global VFX will applies visual effects to all online players. Please
-	 * note that methods like {@link VisualEffects#playAnimationOnce(String, AnimationProperty...)} might not takes
-	 * player's position into account, which leads to wasted bandwidth.</p>
-	 *
-	 * @return Global visual effects API.
-	 */
-	VisualEffects getGlobalVfx();
+import dev.phomc.tensai.keybinding.KeyBindingPluginMessage;
+import dev.phomc.tensai.spigot.TensaiSpigot;
 
-	KeyBindingManager getKeyBindingManager();
+public class PlayerJoinListener implements Listener {
+	private final TensaiSpigot tensai;
+
+	public PlayerJoinListener(TensaiSpigot tensai) {
+		this.tensai = tensai;
+	}
+
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+
+		tensai.sendPluginMessageToPlayer(player, new KeyBindingPluginMessage(tensai));
+	}
 }

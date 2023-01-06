@@ -34,9 +34,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.phomc.tensai.Tensai;
 import dev.phomc.tensai.clients.ClientHandle;
+import dev.phomc.tensai.keybinding.KeyBindingManager;
+import dev.phomc.tensai.keybinding.KeyBindingPluginMessage;
+import dev.phomc.tensai.keybinding.SimpleKeyBindingManager;
 import dev.phomc.tensai.networking.PluginMessage;
 import dev.phomc.tensai.spigot.clients.ClientHandleImpl;
 import dev.phomc.tensai.spigot.clients.PlayerQuitEventsListener;
+import dev.phomc.tensai.spigot.keybinding.KeyBindingPluginMessageListener;
+import dev.phomc.tensai.spigot.listener.player.PlayerJoinListener;
 import dev.phomc.tensai.spigot.vfx.GlobalVisualEffectsImpl;
 import dev.phomc.tensai.vfx.VisualEffects;
 
@@ -46,6 +51,7 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 	private static TensaiSpigot INSTANCE;
 	protected Logger logger;
 	private GlobalVisualEffectsImpl globalVfx;
+	private KeyBindingManager keyBindingManager;
 
 	public static TensaiSpigot getInstance() {
 		return INSTANCE;
@@ -68,20 +74,34 @@ public class TensaiSpigot extends JavaPlugin implements Tensai {
 
 		// Plugin messaging channels
 		getServer().getMessenger().registerOutgoingPluginChannel(this, PluginMessage.CHANNEL_VFX);
+		getServer().getMessenger().registerOutgoingPluginChannel(this, KeyBindingPluginMessage.CHANNEL);
+
+		getServer().getMessenger().registerIncomingPluginChannel(this, KeyBindingPluginMessage.CHANNEL, new KeyBindingPluginMessageListener(this));
 
 		// Events
+		getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 		getServer().getPluginManager().registerEvents(new PlayerQuitEventsListener(), this);
 
 		globalVfx = new GlobalVisualEffectsImpl(this);
+		keyBindingManager = new SimpleKeyBindingManager();
 	}
 
 	@Override
 	public void onDisable() {
 	}
 
+	public void sendPluginMessageToPlayer(Player player, PluginMessage message) {
+		player.sendPluginMessage(this, message.channel, message.createBytes());
+	}
+
 	// APIs
 	@Override
 	public VisualEffects getGlobalVfx() {
 		return globalVfx;
+	}
+
+	@Override
+	public KeyBindingManager getKeyBindingManager() {
+		return keyBindingManager;
 	}
 }

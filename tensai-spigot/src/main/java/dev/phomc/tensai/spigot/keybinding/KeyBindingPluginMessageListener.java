@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,36 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai;
+package dev.phomc.tensai.spigot.keybinding;
 
-import dev.phomc.tensai.keybinding.KeyBindingManager;
-import dev.phomc.tensai.vfx.VisualEffects;
-import dev.phomc.tensai.vfx.animations.AnimationProperty;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 
-/**
- * <p>An entry point to all Tensai APIs.</p>
- * <p><b>For Spigot: </b>Use {@code TensaiSpigot.getInstance()}.</p>
- * <p><b>For Fabric: </b>Use {@code (Tensai) (Object) minecraftServer}.</p>
- */
-public interface Tensai {
-	/**
-	 * <p>Get the global visual effects API. This global VFX will applies visual effects to all online players. Please
-	 * note that methods like {@link VisualEffects#playAnimationOnce(String, AnimationProperty...)} might not takes
-	 * player's position into account, which leads to wasted bandwidth.</p>
-	 *
-	 * @return Global visual effects API.
-	 */
-	VisualEffects getGlobalVfx();
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
-	KeyBindingManager getKeyBindingManager();
+import dev.phomc.tensai.keybinding.KeyBindingPluginMessage;
+import dev.phomc.tensai.spigot.TensaiSpigot;
+import dev.phomc.tensai.spigot.event.KeyPressEvent;
+
+public class KeyBindingPluginMessageListener implements PluginMessageListener {
+	private final TensaiSpigot tensai;
+
+	public KeyBindingPluginMessageListener(TensaiSpigot tensai) {
+		this.tensai = tensai;
+	}
+
+	@Override
+	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+		if (!channel.equals(KeyBindingPluginMessage.CHANNEL)) return;
+
+		try {
+			DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
+			String key = in.readUTF();
+
+			tensai.getServer().getPluginManager().callEvent(new KeyPressEvent(player, tensai.getKeyBindingManager().getKeyBindings().get(key)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

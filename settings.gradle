@@ -12,6 +12,8 @@ pluginManagement {
 
 rootProject.name = 'tensai'
 
+include("shared")
+
 [
 		"api",
 		"fabric",

@@ -31,6 +31,8 @@ import net.minecraft.server.MinecraftServer;
 
 import dev.phomc.tensai.Tensai;
 import dev.phomc.tensai.fabric.vfx.GlobalVisualEffectsImpl;
+import dev.phomc.tensai.keybinding.KeyBindingManager;
+import dev.phomc.tensai.keybinding.SimpleKeyBindingManager;
 import dev.phomc.tensai.vfx.VisualEffects;
 
 @Mixin(MinecraftServer.class)
@@ -38,9 +40,18 @@ public abstract class MinecraftServerMixin implements Tensai {
 	@Unique
 	private GlobalVisualEffectsImpl globalVfx;
 
+	@Unique
+	private KeyBindingManager keyBindingManager;
+
 	@Override
 	public VisualEffects getGlobalVfx() {
 		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
 		return globalVfx;
+	}
+
+	@Override
+	public KeyBindingManager getKeyBindingManager() {
+		if (keyBindingManager == null) keyBindingManager = new SimpleKeyBindingManager();
+		return keyBindingManager;
 	}
 }
