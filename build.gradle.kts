@@ -3,12 +3,14 @@ plugins {
     eclipse
     checkstyle
     `java-library`
+    `maven-publish`
     id("com.diffplug.spotless")
 }
 
 allprojects {
     apply(plugin = "checkstyle")
     apply(plugin = "java-library")
+    apply(plugin = "maven-publish")
     apply(plugin = "com.diffplug.spotless")
 
     java {
