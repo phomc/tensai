@@ -80,6 +80,7 @@ public class AnimationCommand {
 			((FabricClientHandle) e).getVfx().playAnimationOnce(type.toString(), startSec, durationSec);
 			ctx.getSource().sendFeedback(Text.literal("Sent animation play request (").append(clickableText).append(") to ").append(e.getDisplayName()), true);
 		}
+
 		return 1;
 	}
 }

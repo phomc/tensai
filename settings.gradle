@@ -29,8 +29,9 @@ includeBuild("tensai-shared") {
 
 [
 		"api",
+		"bukkit",
 		"fabric",
-		"spigot",
 ].forEach {
 	include("tensai-$it")
+	project(":tensai-$it").projectDir = file("$it")
 }

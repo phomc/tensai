@@ -33,11 +33,11 @@ public class SimpleKeyBindingManager implements KeyBindingManager {
 
 	@Override
 	public void registerKeyBinding(KeyBinding keyBinding) {
-		if (keyBindings.containsKey(keyBinding.id())) {
-			throw new IllegalArgumentException("KeyBinding with id " + keyBinding.id() + " already exists!");
+		if (keyBindings.containsKey(keyBinding.getName())) {
+			throw new IllegalArgumentException("KeyBinding with id " + keyBinding.getName() + " already exists!");
 		}
 
-		keyBindings.put(keyBinding.id(), keyBinding);
+		keyBindings.put(keyBinding.getName(), keyBinding);
 	}
 
 	@Override

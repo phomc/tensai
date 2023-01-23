@@ -45,10 +45,8 @@ public class KeyBindingPluginMessage extends PluginMessage {
 		stream.writeInt(tensai.getKeyBindingManager().getKeyBindings().size());
 
 		for (KeyBinding keyBinding : tensai.getKeyBindingManager().getKeyBindings().values()) {
-			stream.writeUTF(keyBinding.id());
-			stream.writeUTF(keyBinding.type().name());
-			stream.writeInt(keyBinding.keyCode());
-			stream.writeUTF(keyBinding.category());
+			stream.writeUTF(keyBinding.getName());
+			stream.writeInt(keyBinding.getKeyCode());
 		}
 	}
 }
