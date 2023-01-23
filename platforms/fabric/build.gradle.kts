@@ -3,9 +3,21 @@ plugins {
 }
 
 loom {
-    runtimeOnlyLog4j.set(true)
-
     splitEnvironmentSourceSets()
+}
+
+sourceSets {
+    test {
+        compileClasspath += main.get().compileClasspath
+        runtimeClasspath += main.get().runtimeClasspath
+
+        compileClasspath += sourceSets["client"].compileClasspath
+        runtimeClasspath += sourceSets["client"].runtimeClasspath
+    }
+}
+
+loom {
+    runtimeOnlyLog4j.set(true)
 
     runs {
 		create("testClient") {

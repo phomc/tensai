@@ -24,12 +24,12 @@
 
 package dev.phomc.tensai.fabric.event;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
-
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+
+import dev.phomc.tensai.keybinding.KeyBinding;
 
 public interface KeyPressCallback {
 	Event<KeyPressCallback> EVENT = EventFactory.createArrayBacked(KeyPressCallback.class, (listeners) -> (player, keyBinding) -> {
