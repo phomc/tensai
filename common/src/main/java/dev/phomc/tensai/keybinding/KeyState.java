@@ -33,21 +33,18 @@ import org.jetbrains.annotations.NotNull;
  * <b>The key state is used on server-side only. No key state update will be sent to client.</b>
  */
 public class KeyState {
-	private final Key key;
 	private int timesPressed;
 
-	public KeyState(@NotNull Key key, int timesPressed) {
-		this.key = key;
+	public KeyState(int timesPressed) {
 		this.timesPressed = timesPressed;
-	}
-
-	@NotNull
-	public Key getKey() {
-		return key;
 	}
 
 	public int getTimesPressed() {
 		return timesPressed;
+	}
+
+	public void setTimesPressed(int timesPressed) {
+		this.timesPressed = timesPressed;
 	}
 
 	/**
@@ -85,11 +82,11 @@ public class KeyState {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		KeyState keyState = (KeyState) o;
-		return timesPressed == keyState.timesPressed && key == keyState.key;
+		return timesPressed == keyState.timesPressed;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(key, timesPressed);
+		return Objects.hash(timesPressed);
 	}
 }

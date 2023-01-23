@@ -28,7 +28,10 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyState;
@@ -36,18 +39,18 @@ import dev.phomc.tensai.networking.message.Message;
 import dev.phomc.tensai.networking.message.MessageType;
 
 public class KeyBindingStateUpdate extends Message {
-	private final List<KeyState> states;
+	private final Map<Key, KeyState> states;
 
 	public KeyBindingStateUpdate() {
-		this(new ArrayList<>());
+		this(new HashMap<>());
 	}
 
-	public KeyBindingStateUpdate(List<KeyState> states) {
+	public KeyBindingStateUpdate(Map<Key, KeyState> states) {
 		super(MessageType.KEYBINDING_STATE_UPDATE);
 		this.states = states;
 	}
 
-	public List<KeyState> getStates() {
+	public Map<Key, KeyState> getStates() {
 		return states;
 	}
 
@@ -55,9 +58,9 @@ public class KeyBindingStateUpdate extends Message {
 	public void write(DataOutput stream) throws IOException {
 		stream.writeInt(states.size());
 
-		for (KeyState state : states) {
-			stream.writeInt(state.getKey().getCode());
-			stream.writeInt(state.getTimesPressed());
+		for (Map.Entry<Key, KeyState> entry : states.entrySet()) {
+			stream.writeInt(entry.getKey().getCode());
+			stream.writeInt(entry.getValue().getTimesPressed());
 		}
 	}
 
@@ -67,9 +70,11 @@ public class KeyBindingStateUpdate extends Message {
 
 		for (int i = 0; i < size; i++) {
 			Key key = Key.lookup(stream.readInt());
+			KeyState state = states.get(key);
+			int timesPressed = stream.readInt();
 
-			if (key != null) {
-				states.add(new KeyState(key, stream.readInt()));
+			if (key != null && state != null) {
+				state.setTimesPressed(timesPressed);
 			}
 		}
 	}

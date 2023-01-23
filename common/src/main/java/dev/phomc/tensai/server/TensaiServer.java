@@ -24,6 +24,7 @@
 
 package dev.phomc.tensai.server;
 
+import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
@@ -43,5 +44,15 @@ public interface TensaiServer {
 	 */
 	VisualEffects getGlobalVfx();
 
+	/**
+	 * Gets the key binding manager.
+	 * @return {@link KeyBindingManager}
+	 */
 	KeyBindingManager getKeyBindingManager();
+
+	/**
+	 * Gets Tensai's internal task scheduler.
+	 * @return {@link Scheduler}
+	 */
+	Scheduler getTaskScheduler();
 }

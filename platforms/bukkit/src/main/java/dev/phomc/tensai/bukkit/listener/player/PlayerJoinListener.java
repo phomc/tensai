@@ -24,13 +24,17 @@
 
 package dev.phomc.tensai.bukkit.listener.player;
 
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.server.keybinding.KeyBindingPluginMessage;
+
+import java.util.ArrayList;
 
 public class PlayerJoinListener implements Listener {
 	private final TensaiBukkit tensai;
@@ -43,6 +47,9 @@ public class PlayerJoinListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
-		tensai.sendPluginMessageToPlayer(player, new KeyBindingPluginMessage(tensai));
+		TensaiBukkit.getClient(player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
+				TensaiBukkit.getInstance().getKeyBindingManager().getInputDelay(),
+				new ArrayList<>(TensaiBukkit.getInstance().getKeyBindingManager().getKeyBindings().values())
+		).pack());
 	}
 }

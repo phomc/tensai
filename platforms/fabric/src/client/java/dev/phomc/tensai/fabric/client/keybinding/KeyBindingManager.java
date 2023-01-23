@@ -115,14 +115,14 @@ public class KeyBindingManager {
 		inputDelay = DEFAULT_INPUT_DELAY;
 	}
 
-	public List<KeyState> fetchStates() {
-		List<KeyState> states = new ArrayList<>();
+	public Map<Key, KeyState> fetchStates() {
+		Map<Key, KeyState> states = new HashMap<>();
 		for(net.minecraft.client.option.KeyBinding key : registeredKeys){
 			int n = ((KeyBindingMixin) key).getTimesPressed();
 			Key k = lookupKey(key.getDefaultKey());
 			Integer old = stateTable.put(k, n);
 			if (old == null || old != n){
-				states.add(new KeyState(k, n));
+				states.put(k, new KeyState(n));
 			}
 		}
 		return states;

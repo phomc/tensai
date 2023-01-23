@@ -26,6 +26,8 @@ package dev.phomc.tensai.networking.message;
 
 import dev.phomc.tensai.networking.Channel;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,11 +36,16 @@ import java.util.Map;
  * @param <T> Represents the sender. It is different per platforms.
  */
 public abstract class Subscriber<T> {
-	protected final Channel channel;
+	private final Channel channel;
 	protected final Map<Byte, Callback<T>> subscription = new HashMap<>();
 
 	public Subscriber(Channel channel) {
 		this.channel = channel;
+	}
+
+	@NotNull
+	public Channel getChannel() {
+		return channel;
 	}
 
 	/**
@@ -56,6 +63,13 @@ public abstract class Subscriber<T> {
 	}
 
 	public interface Callback<T> {
+		/**
+		 * This callback triggers when a message is received.<br>
+		 * <b>Note:</b> It may be called asynchronously. In some platforms such as Bukkit, it is unsafe to do
+		 * synchronous operations inside this method's implementation.
+		 * @param data
+		 * @param sender
+		 */
 		void call(byte[] data, T sender);
 	}
 }

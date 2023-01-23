@@ -22,32 +22,33 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server.keybinding;
+package dev.phomc.tensai.bukkit.networking.message;
 
-import java.io.DataOutput;
-import java.io.IOException;
+import dev.phomc.tensai.bukkit.TensaiBukkit;
+import dev.phomc.tensai.server.client.ClientHandle;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.server.TensaiServer;
-import dev.phomc.tensai.server.networking.PluginMessage;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.Subscriber;
 
-public class KeyBindingPluginMessage extends PluginMessage {
-	public static final String CHANNEL = "tensai:keybinding";
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
-	private final TensaiServer tensai;
+import org.jetbrains.annotations.NotNull;
 
-	public KeyBindingPluginMessage(TensaiServer tensai) {
-		super(CHANNEL, "keybinding");
-		this.tensai = tensai;
+public abstract class ServerSubscriber extends Subscriber<ClientHandle> implements PluginMessageListener {
+	public ServerSubscriber(Channel channel) {
+		super(channel);
 	}
 
-	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeInt(tensai.getKeyBindingManager().getKeyBindings().size());
+	public abstract void onInitialize();
 
-		for (KeyBinding keyBinding : tensai.getKeyBindingManager().getKeyBindings().values()) {
-			stream.writeUTF(keyBinding.getName());
-			stream.writeInt(keyBinding.getKey().getCode());
+	@Override
+	public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] message) {
+		if (!channel.equals(getChannel().getNamespace())) return;
+
+		Callback<ClientHandle> callback = subscription.get(message[0]);
+		if (callback != null) {
+			callback.call(message, TensaiBukkit.getClient(player));
 		}
 	}
 }

@@ -22,36 +22,49 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.keybinding;
+package dev.phomc.tensai.bukkit.event;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
+import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyState;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerEvent;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.bukkit.event.KeyPressEvent;
-import dev.phomc.tensai.server.keybinding.KeyBindingPluginMessage;
+import dev.phomc.tensai.keybinding.KeyBinding;
 
-public class KeyBindingPluginMessageListener implements PluginMessageListener {
-	private final TensaiBukkit tensai;
+import java.util.Map;
 
-	public KeyBindingPluginMessageListener(TensaiBukkit tensai) {
-		this.tensai = tensai;
+/**
+ * This event is triggered whenever one or more key states is updated.<br>
+ * <b>Note:</b>
+ * <ul>
+ *     <li>The timing may be different from client-side due to connection latency.</li>
+ *     <li>This event is called asynchronously.</li>
+ *     <li>No key state update will be sent back to the client.</li>
+ *     <li>The server-sided key state is shared across plugins.</li>
+ * </ul>
+ */
+public final class KeyStateUpdateEvent extends PlayerEvent {
+	public static final HandlerList handlers = new HandlerList();
+
+	private final Map<Key, KeyState> keyStates;
+
+	public KeyStateUpdateEvent(Player player, Map<Key, KeyState> keyStates) {
+		super(player);
+		this.keyStates = keyStates;
+	}
+
+	/**
+	 * Returns the current key states.
+	 * @return an <b>unmodifiable</b> map representing the key states
+	 */
+	public Map<Key, KeyState> getKeyStates() {
+		return this.keyStates;
 	}
 
 	@Override
-	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-		if (!channel.equals(KeyBindingPluginMessage.CHANNEL)) return;
-
-		try {
-			DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-			String key = in.readUTF();
-
-			tensai.getServer().getPluginManager().callEvent(new KeyPressEvent(player, tensai.getKeyBindingManager().getKeyBindings().get(key)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public HandlerList getHandlers() {
+		return new HandlerList();
 	}
 }

@@ -27,22 +27,26 @@ package dev.phomc.tensai.bukkit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.logging.Logger;
+
+import dev.phomc.tensai.bukkit.keybinding.KeyBindingMessageSubscriber;
+import dev.phomc.tensai.bukkit.networking.message.ServerSubscriber;
+import dev.phomc.tensai.bukkit.scheduler.ServerScheduler;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.scheduler.Scheduler;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
 import dev.phomc.tensai.bukkit.client.PlayerQuitEventsListener;
-import dev.phomc.tensai.bukkit.keybinding.KeyBindingPluginMessageListener;
 import dev.phomc.tensai.bukkit.listener.player.PlayerJoinListener;
 import dev.phomc.tensai.bukkit.vfx.GlobalVisualEffectsImpl;
 import dev.phomc.tensai.server.TensaiServer;
 import dev.phomc.tensai.server.client.ClientHandle;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
-import dev.phomc.tensai.server.keybinding.KeyBindingPluginMessage;
 import dev.phomc.tensai.server.keybinding.SimpleKeyBindingManager;
-import dev.phomc.tensai.server.networking.PluginMessage;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
 public class TensaiBukkit extends JavaPlugin implements TensaiServer {
@@ -52,15 +56,14 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 	protected Logger logger;
 	private GlobalVisualEffectsImpl globalVfx;
 	private KeyBindingManager keyBindingManager;
+	private Scheduler scheduler;
 
 	public static TensaiBukkit getInstance() {
 		return INSTANCE;
 	}
 
 	public static ClientHandle getClient(Player player) {
-		UUID uuid = player.getUniqueId();
-		if (!CLIENTS.containsKey(uuid)) CLIENTS.put(uuid, new ClientHandleImpl(INSTANCE, player));
-		return CLIENTS.get(uuid);
+		return CLIENTS.computeIfAbsent(player.getUniqueId(), u -> new ClientHandleImpl(INSTANCE, player));
 	}
 
 	public static void internalReset(Player player) {
@@ -73,10 +76,10 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 		INSTANCE = this;
 
 		// Plugin messaging channels
-		getServer().getMessenger().registerOutgoingPluginChannel(this, PluginMessage.CHANNEL_VFX);
-		getServer().getMessenger().registerOutgoingPluginChannel(this, KeyBindingPluginMessage.CHANNEL);
-
-		getServer().getMessenger().registerIncomingPluginChannel(this, KeyBindingPluginMessage.CHANNEL, new KeyBindingPluginMessageListener(this));
+		for(Channel channel : Channel.values()) {
+			getServer().getMessenger().registerOutgoingPluginChannel(this, channel.getNamespace());
+		}
+		registerIncomingMessenger(new KeyBindingMessageSubscriber(Channel.KEYBINDING));
 
 		// Events
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
@@ -84,14 +87,15 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 
 		globalVfx = new GlobalVisualEffectsImpl(this);
 		keyBindingManager = new SimpleKeyBindingManager();
+		scheduler = new ServerScheduler(this);
 	}
 
 	@Override
 	public void onDisable() {
 	}
 
-	public void sendPluginMessageToPlayer(Player player, PluginMessage message) {
-		player.sendPluginMessage(this, message.channel, message.createBytes());
+	private void registerIncomingMessenger(ServerSubscriber subscriber) {
+		getServer().getMessenger().registerIncomingPluginChannel(this, subscriber.getChannel().getNamespace(), subscriber);
 	}
 
 	// APIs
@@ -103,5 +107,10 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 	@Override
 	public KeyBindingManager getKeyBindingManager() {
 		return keyBindingManager;
+	}
+
+	@Override
+	public Scheduler getTaskScheduler() {
+		return scheduler;
 	}
 }

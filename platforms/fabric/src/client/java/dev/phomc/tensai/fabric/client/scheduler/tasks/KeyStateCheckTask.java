@@ -25,7 +25,7 @@
 package dev.phomc.tensai.fabric.client.scheduler.tasks;
 
 import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
-import dev.phomc.tensai.fabric.client.keybinding.KeyBindingSubscriber;
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingMessageSubscriber;
 import dev.phomc.tensai.scheduler.Task;
 
 public class KeyStateCheckTask implements Runnable {
@@ -39,6 +39,6 @@ public class KeyStateCheckTask implements Runnable {
 
 	@Override
 	public void run() {
-		KeyBindingSubscriber.getInstance().onStateCheck();
+		KeyBindingMessageSubscriber.getInstance().onStateCheck();
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +22,34 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server.networking;
+package dev.phomc.tensai.bukkit.event;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 
-public abstract class PluginMessage {
-	public static final String CHANNEL_VFX = "tensai:vfx";
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerEvent;
 
-	public final String channel;
-	public final String messageType;
+/**
+ * This event returns the keybinding registration result.
+ * <b>Note:</b> This event is called asynchronously.
+ */
+public final class KeyRegisterResultEvent extends PlayerEvent {
+	public static final HandlerList handlers = new HandlerList();
 
-	public PluginMessage(String channel, String messageType) {
-		this.channel = channel;
-		this.messageType = messageType;
+	private final KeyBindingRegisterResponse response;
+
+	public KeyRegisterResultEvent(Player player, KeyBindingRegisterResponse response) {
+		super(player);
+		this.response = response;
 	}
 
-	public void write(DataOutput stream) throws IOException {
+	public KeyBindingRegisterResponse getResponse() {
+		return this.response;
 	}
 
-	public void read(DataInput stream) throws IOException {
-	}
-
-	public byte[] createBytes() {
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		DataOutputStream wrapped = new DataOutputStream(stream);
-
-		try {
-			wrapped.writeUTF(messageType);
-			write(wrapped);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return stream.toByteArray();
+	@Override
+	public HandlerList getHandlers() {
+		return new HandlerList();
 	}
 }

@@ -22,28 +22,15 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.event;
+package dev.phomc.tensai.bukkit.scheduler;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
+import dev.phomc.tensai.scheduler.Scheduler;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
-public final class KeyPressEvent extends PlayerEvent {
-	private final KeyBinding keyBinding;
-
-	public KeyPressEvent(Player player, KeyBinding keyBinding) {
-		super(player);
-		this.keyBinding = keyBinding;
-	}
-
-	public KeyBinding getKeyBinding() {
-		return this.keyBinding;
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return new HandlerList();
+public class ServerScheduler extends Scheduler {
+	public ServerScheduler(Plugin plugin) {
+		Bukkit.getScheduler().runTaskTimer(plugin, this::onTick, 0, 1);
 	}
 }

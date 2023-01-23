@@ -26,10 +26,31 @@ package dev.phomc.tensai.server.keybinding;
 
 import java.util.Map;
 
+import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyBinding;
 
-public interface KeyBindingManager {
-	void registerKeyBinding(KeyBinding keyBinding);
+import dev.phomc.tensai.keybinding.KeyState;
 
-	Map<String, KeyBinding> getKeyBindings();
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Represents a keybinding manager.
+ */
+public interface KeyBindingManager {
+	void registerKeyBinding(@NotNull KeyBinding keyBinding);
+
+	@NotNull Map<Key, KeyBinding> getKeyBindings();
+
+	boolean hasKeyBinding(Key key);
+
+	@Nullable KeyBinding getKeyBinding(Key key);
+
+	@NotNull Map<Key, KeyState> getKeyStates();
+
+	@Nullable KeyState getKeyState(Key key);
+
+	int getInputDelay();
+
+	void setInputDelay(int inputDelay);
 }

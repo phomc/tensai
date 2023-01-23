@@ -24,7 +24,7 @@
 
 package dev.phomc.tensai.fabric.client;
 
-import dev.phomc.tensai.fabric.client.keybinding.KeyBindingSubscriber;
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingMessageSubscriber;
 
 import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
 
@@ -41,7 +41,7 @@ public class TensaiFabricClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		KeyBindingSubscriber.getInstance().onInitialize();
+		KeyBindingMessageSubscriber.getInstance().onInitialize();
 		ClientScheduler.getInstance().schedule(KeyStateCheckTask.build());
 	}
 }
