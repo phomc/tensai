@@ -28,4 +28,4 @@ UTF: 2 bytes + up to 65535 bytes
 
 ## Keybinding
 
-Read here: [Keybinding API.md](Keybinding API.md)
+Read here: [Keybinding API.md](Keybinding%20API.md)
