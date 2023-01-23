@@ -30,13 +30,13 @@ allprojects {
         implementation("org.jetbrains:annotations:23.0.0")
     }
 
-//	tasks.withType(ProcessResources).configureEach {
-//		inputs.property("version", project.version)
-//
-//		filesMatching(["fabric.mod.json", "plugin.yml"]) {
-//			expand("version" to project.version)
-//		}
-//	}
+	tasks.withType<ProcessResources>().configureEach {
+		inputs.property("version", project.version)
+
+		filesMatching(listOf("fabric.mod.json", "plugin.yml")) {
+			expand("version" to project.version)
+		}
+	}
 
     spotless {
         java {
