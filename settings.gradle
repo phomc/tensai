@@ -12,7 +12,20 @@ pluginManagement {
 
 rootProject.name = 'tensai'
 
-include("shared")
+if (!file("tensai-shared/gradle.properties").exists()) {
+	throw InvalidUserDataException("""
+        The tensai-shared submodule required to build does not appear to be set up.
+        To correct this, run
+            git submodule update --init --recursive
+        from the project's checkout directory.
+    """.trimIndent())
+}
+
+includeBuild("tensai-shared") {
+	dependencySubstitution {
+		substitute(module("dev.phomc:tensai-shared")).with(project(":"))
+	}
+}
 
 [
 		"api",

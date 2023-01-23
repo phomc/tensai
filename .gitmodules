@@ -1,0 +1,4 @@
+[submodule "tensai-shared"]
+	path = tensai-shared
+	url = https://github.com/phomc/tensai-shared.git
+	branch = main

@@ -1,5 +1,5 @@
 dependencies {
-	api(project(":shared"))
+	api("dev.phomc:tensai-shared")
 
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
 }
