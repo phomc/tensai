@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "tensai",
+  "name": "Tensai",
+  "version": "${version}",
+  "environment": "*",
+  "license": "MIT",
+  "authors": [
+    "PhoMC"
+  ],
+  "depends": {
+    "java": ">=17",
+    "minecraft": ">=1.16.5"
+  },
+  "entrypoints": {
+    "main": [
+      "dev.phomc.tensai.fabric.TensaiFabric"
+    ],
+    "client": [
+      "dev.phomc.tensai.fabric.client.TensaiFabricClientMod"
+    ]
+  },
+  "mixins": [
+    "tensai.mixins.json"
+  ]
+}

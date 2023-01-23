@@ -1,9 +1,0 @@
-dependencies {
-	api(project(":shared"))
-
-	testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
