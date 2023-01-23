@@ -1,0 +1,34 @@
+name: Build Paper
+on:
+  push:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        java: [17-jdk]
+    runs-on: ubuntu-20.04
+    container:
+      image: eclipse-temurin:${{ matrix.java }}
+      options: --user root
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: gradle/wrapper-validation-action@v1
+      - run: ./gradlew check build publishToMavenLocal --stacktrace --warning-mode=fail -Porg.gradle.parallel.threads=4
+      - uses: Juuxel/publish-checkstyle-report@v1
+        if: ${{ failure() }}
+        with:
+          reports: |
+            **/build/reports/checkstyle/*.xml
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Maven Local
+          path: /root/.m2/repository
