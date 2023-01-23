@@ -17,10 +17,11 @@
       "dev.phomc.tensai.fabric.TensaiFabric"
     ],
     "client": [
-      "dev.phomc.tensai.fabric.client.TensaiFabricClientMod"
+      "dev.phomc.tensai.fabric.client.TensaiFabricClient"
     ]
   },
   "mixins": [
-    "tensai.mixins.json"
+    "tensai.mixins.json",
+    "tensai.client.mixins.json"
   ]
 }

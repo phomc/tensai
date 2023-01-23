@@ -50,6 +50,19 @@ public class KeyState {
 		return timesPressed;
 	}
 
+	/**
+	 * Checks whether the key was pressed, and <b>decreases</b> the press counter by {@code 1}.<br>
+	 * To avoid the decrement, uses {@link #getTimesPressed()}.
+	 * <br>
+	 * For example:
+	 * <pre>{@code
+	 * 	while (keyState.wasPressed()) {
+	 * 		player.sendMessage("Key pressed");
+	 *  }
+	 * }</pre>
+	 *
+	 * @return {@code true} or {@code false}
+	 */
 	public boolean wasPressed() {
 		if (timesPressed == 0) {
 			return false;
@@ -59,6 +72,10 @@ public class KeyState {
 		return true;
 	}
 
+	/**
+	 * Resets the state.<br>
+	 * <b>Note:</b> No key state update will be sent to the client.
+	 */
 	public void reset() {
 		timesPressed = 0;
 	}

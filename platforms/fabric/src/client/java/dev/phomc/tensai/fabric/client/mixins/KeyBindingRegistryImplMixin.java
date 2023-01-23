@@ -22,51 +22,19 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking.message.c2s;
+package dev.phomc.tensai.fabric.client.mixins;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import net.minecraft.client.option.KeyBinding;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.networking.message.Message;
-import dev.phomc.tensai.networking.message.MessageType;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-public class KeyBindingRegisterResponse extends Message {
-	private byte result;
+import java.util.List;
 
-	public KeyBindingRegisterResponse() {
-		this(KeyBinding.RegisterStatus.UNKNOWN);
-	}
-
-	public KeyBindingRegisterResponse(byte result) {
-		super(MessageType.KEYBINDING_REGISTER_RESPONSE);
-		this.result = result;
-	}
-
-	public boolean isClientRejected() {
-		return result == KeyBinding.RegisterStatus.CLIENT_REJECTED;
-	}
-
-	public boolean isKeyDuplicated() {
-		return result == KeyBinding.RegisterStatus.KEY_DUPLICATED;
-	}
-
-	public boolean isSuccess() {
-		return result == KeyBinding.RegisterStatus.SUCCESS;
-	}
-
-	public byte getResult() {
-		return result;
-	}
-
-	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeByte(result);
-	}
-
-	@Override
-	public void read(DataInput stream) throws IOException {
-		result = stream.readByte();
+@Mixin(targets = "net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl")
+public interface KeyBindingRegistryImplMixin {
+	@Accessor("MODDED_KEY_BINDINGS")
+	static List<KeyBinding> getModdedKeyBindings() {
+		throw new UnsupportedOperationException();
 	}
 }

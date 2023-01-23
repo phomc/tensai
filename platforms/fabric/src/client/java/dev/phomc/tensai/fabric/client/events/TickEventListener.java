@@ -22,55 +22,28 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking.message.c2s;
+package dev.phomc.tensai.fabric.client.events;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
 
-import dev.phomc.tensai.keybinding.Key;
-import dev.phomc.tensai.keybinding.KeyState;
-import dev.phomc.tensai.networking.message.Message;
-import dev.phomc.tensai.networking.message.MessageType;
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingSubscriber;
 
-public class KeyBindingStateUpdate extends Message {
-	private final List<KeyState> states;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
-	public KeyBindingStateUpdate() {
-		this(new ArrayList<>());
-	}
-
-	public KeyBindingStateUpdate(List<KeyState> states) {
-		super(MessageType.KEYBINDING_STATE_UPDATE);
-		this.states = states;
-	}
-
-	public List<KeyState> getStates() {
-		return states;
-	}
+public class TickEventListener implements Listener {
+	private long counter;
 
 	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeInt(states.size());
-
-		for (KeyState state : states) {
-			stream.writeInt(state.getKey().getCode());
-			stream.writeInt(state.getTimesPressed());
-		}
-	}
-
-	@Override
-	public void read(DataInput stream) throws IOException {
-		int size = stream.readInt();
-
-		for (int i = 0; i < size; i++) {
-			Key key = Key.lookup(stream.readInt());
-
-			if (key != null) {
-				states.add(new KeyState(key, stream.readInt()));
+	public void onInitialize() {
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			if (counter == Long.MAX_VALUE) {
+				counter = 0;
+			} else {
+				counter++;
 			}
-		}
+
+			if (counter % KeyBindingManager.getInstance().getInputDelay() == 0) {
+			}
+		});
 	}
 }

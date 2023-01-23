@@ -22,14 +22,26 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking.message;
+package dev.phomc.tensai.fabric.scheduler;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import dev.phomc.tensai.scheduler.Scheduler;
 
-public interface Serializer<T> {
-	void serialize(T obj, DataOutput stream) throws IOException;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 
-	T deserialize(DataInput stream) throws IOException;
+@Environment(EnvType.SERVER)
+public class ServerScheduler extends Scheduler {
+	private static ServerScheduler INSTANCE;
+
+	public static ServerScheduler getInstance() {
+		if(INSTANCE == null) {
+			INSTANCE = new ServerScheduler();
+		}
+		return INSTANCE;
+	}
+
+	public ServerScheduler() {
+		ServerTickEvents.END_SERVER_TICK.register(server -> onTick());
+	}
 }

@@ -22,51 +22,40 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking.message.c2s;
+package dev.phomc.tensai.networking.message;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import dev.phomc.tensai.networking.Channel;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.networking.message.Message;
-import dev.phomc.tensai.networking.message.MessageType;
+import java.util.HashMap;
+import java.util.Map;
 
-public class KeyBindingRegisterResponse extends Message {
-	private byte result;
+/**
+ * A subscriber is one who listens to incoming messages.
+ * @param <T> Represents the sender. It is different per platforms.
+ */
+public abstract class Subscriber<T> {
+	protected final Channel channel;
+	protected final Map<Byte, Callback<T>> callbackMap = new HashMap<>();
 
-	public KeyBindingRegisterResponse() {
-		this(KeyBinding.RegisterStatus.UNKNOWN);
+	public Subscriber(Channel channel) {
+		this.channel = channel;
 	}
 
-	public KeyBindingRegisterResponse(byte result) {
-		super(MessageType.KEYBINDING_REGISTER_RESPONSE);
-		this.result = result;
+	/**
+	 * This method is called after this subscriber was initialized successfully.
+	 */
+	public abstract void onInitialize();
+
+	/**
+	 * Captures a specific type of message.
+	 * @param id message type
+	 * @param callback callback
+	 */
+	public void capture(byte id, Callback<T> callback) {
+		callbackMap.put(id, callback);
 	}
 
-	public boolean isClientRejected() {
-		return result == KeyBinding.RegisterStatus.CLIENT_REJECTED;
-	}
-
-	public boolean isKeyDuplicated() {
-		return result == KeyBinding.RegisterStatus.KEY_DUPLICATED;
-	}
-
-	public boolean isSuccess() {
-		return result == KeyBinding.RegisterStatus.SUCCESS;
-	}
-
-	public byte getResult() {
-		return result;
-	}
-
-	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeByte(result);
-	}
-
-	@Override
-	public void read(DataInput stream) throws IOException {
-		result = stream.readByte();
+	public interface Callback<T> {
+		void call(byte[] data, T sender);
 	}
 }

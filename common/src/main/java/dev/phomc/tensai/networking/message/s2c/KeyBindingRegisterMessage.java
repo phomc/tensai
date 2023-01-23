@@ -32,7 +32,6 @@ import java.util.List;
 
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.Message;
 import dev.phomc.tensai.networking.message.MessageType;
 
@@ -45,7 +44,7 @@ public class KeyBindingRegisterMessage extends Message {
 	}
 
 	public KeyBindingRegisterMessage(int inputDelay, List<KeyBinding> keymap) {
-		super(Channel.KEYBINDING, MessageType.KEYBINDING_REGISTER);
+		super(MessageType.KEYBINDING_REGISTER);
 		this.inputDelay = inputDelay;
 		this.keymap = keymap;
 	}

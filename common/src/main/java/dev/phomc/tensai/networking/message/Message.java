@@ -34,13 +34,19 @@ import java.io.IOException;
 
 import dev.phomc.tensai.networking.Channel;
 
+/**
+ * Represents a message.<br>
+ * A message is basically a packet which is delivered between client and server.
+ */
 public abstract class Message {
-	protected final Channel channel;
-	protected final byte pid;
+	protected final byte id;
 
-	public Message(Channel channel, byte pid) {
-		this.channel = channel;
-		this.pid = pid;
+	/**
+	 * Constructs a message.
+	 * @param id message id
+	 */
+	public Message(byte id) {
+		this.id = id;
 	}
 
 	public void write(DataOutput stream) throws IOException {
@@ -51,17 +57,17 @@ public abstract class Message {
 		throw new UnsupportedOperationException();
 	}
 
-	public boolean testPacketId(byte[] bytes) {
-		return bytes[0] == pid;
-	}
-
+	/**
+	 * Unpacks the given data and write out to this message.
+	 * @param bytes data
+	 */
 	public void unpack(byte[] bytes) {
 		ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
 		DataInputStream wrapped = new DataInputStream(stream);
 
 		try {
-			if (wrapped.readByte() != pid) {
-				throw new IllegalAccessException("unexpected packet id");
+			if (wrapped.readByte() != id) {
+				throw new IllegalAccessException("unexpected message id");
 			}
 
 			read(wrapped);
@@ -70,12 +76,16 @@ public abstract class Message {
 		}
 	}
 
+	/**
+	 * Packs the current message into a byte array.
+	 * @return data
+	 */
 	public byte[] pack() {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		DataOutputStream wrapped = new DataOutputStream(stream);
 
 		try {
-			wrapped.writeByte(pid);
+			wrapped.writeByte(id);
 			write(wrapped);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

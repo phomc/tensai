@@ -22,51 +22,29 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking.message.c2s;
+package dev.phomc.tensai.fabric.client.mixins;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import java.util.Map;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.networking.message.Message;
-import dev.phomc.tensai.networking.message.MessageType;
+import net.minecraft.client.option.KeyBinding;
 
-public class KeyBindingRegisterResponse extends Message {
-	private byte result;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-	public KeyBindingRegisterResponse() {
-		this(KeyBinding.RegisterStatus.UNKNOWN);
+import net.minecraft.client.util.InputUtil;
+
+@Mixin(targets = "net.minecraft.client.option.KeyBinding")
+public interface KeyBindingMixin {
+	@Accessor("KEYS_BY_ID")
+	static Map<String, KeyBinding> getId2KeyMapping() {
+		throw new UnsupportedOperationException();
 	}
 
-	public KeyBindingRegisterResponse(byte result) {
-		super(MessageType.KEYBINDING_REGISTER_RESPONSE);
-		this.result = result;
+	@Accessor("KEY_TO_BINDINGS")
+	static Map<InputUtil.Key, net.minecraft.client.option.KeyBinding> getKeyCodeMapping() {
+		throw new UnsupportedOperationException();
 	}
 
-	public boolean isClientRejected() {
-		return result == KeyBinding.RegisterStatus.CLIENT_REJECTED;
-	}
-
-	public boolean isKeyDuplicated() {
-		return result == KeyBinding.RegisterStatus.KEY_DUPLICATED;
-	}
-
-	public boolean isSuccess() {
-		return result == KeyBinding.RegisterStatus.SUCCESS;
-	}
-
-	public byte getResult() {
-		return result;
-	}
-
-	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeByte(result);
-	}
-
-	@Override
-	public void read(DataInput stream) throws IOException {
-		result = stream.readByte();
-	}
+	@Accessor("timesPressed")
+	int getTimesPressed();
 }

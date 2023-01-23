@@ -22,51 +22,36 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking.message.c2s;
+package dev.phomc.tensai.fabric.client.i18n;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.networking.message.Message;
-import dev.phomc.tensai.networking.message.MessageType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class KeyBindingRegisterResponse extends Message {
-	private byte result;
+public class CustomTranslationStorage {
+	private static final CustomTranslationStorage INSTANCE = new CustomTranslationStorage();
 
-	public KeyBindingRegisterResponse() {
-		this(KeyBinding.RegisterStatus.UNKNOWN);
+	@NotNull
+	public static CustomTranslationStorage getInstance() {
+		return INSTANCE;
 	}
 
-	public KeyBindingRegisterResponse(byte result) {
-		super(MessageType.KEYBINDING_REGISTER_RESPONSE);
-		this.result = result;
+	private final Map<String, String> translations = new HashMap<>();
+
+	@Nullable
+	public String put(String key, String value) {
+		return translations.put(key, value);
 	}
 
-	public boolean isClientRejected() {
-		return result == KeyBinding.RegisterStatus.CLIENT_REJECTED;
+	@Nullable
+	public String get(String key) {
+		return translations.get(key);
 	}
 
-	public boolean isKeyDuplicated() {
-		return result == KeyBinding.RegisterStatus.KEY_DUPLICATED;
-	}
-
-	public boolean isSuccess() {
-		return result == KeyBinding.RegisterStatus.SUCCESS;
-	}
-
-	public byte getResult() {
-		return result;
-	}
-
-	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeByte(result);
-	}
-
-	@Override
-	public void read(DataInput stream) throws IOException {
-		result = stream.readByte();
+	@Nullable
+	public String remove(String key) {
+		return translations.remove(key);
 	}
 }

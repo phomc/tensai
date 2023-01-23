@@ -26,6 +26,9 @@ package dev.phomc.tensai.networking;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents a message channel.
+ */
 public enum Channel {
 	KEYBINDING,
 	VFX;

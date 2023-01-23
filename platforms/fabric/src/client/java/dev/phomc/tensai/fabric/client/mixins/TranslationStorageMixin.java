@@ -22,51 +22,30 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking.message.c2s;
+package dev.phomc.tensai.fabric.client.mixins;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.networking.message.Message;
-import dev.phomc.tensai.networking.message.MessageType;
+import dev.phomc.tensai.fabric.client.i18n.CustomTranslationStorage;
 
-public class KeyBindingRegisterResponse extends Message {
-	private byte result;
-
-	public KeyBindingRegisterResponse() {
-		this(KeyBinding.RegisterStatus.UNKNOWN);
+@Mixin(targets = "net.minecraft.client.resource.language.TranslationStorage")
+public abstract class TranslationStorageMixin {
+	@Inject(method = "get(Ljava/lang/String;)Ljava/lang/String;", at = @At("RETURN"), cancellable = true)
+	private void getCustomTranslation(String key, CallbackInfoReturnable<String> cir) {
+		String s = CustomTranslationStorage.getInstance().get(key);
+		if(s != null) {
+			cir.setReturnValue(s);
+		}
 	}
 
-	public KeyBindingRegisterResponse(byte result) {
-		super(MessageType.KEYBINDING_REGISTER_RESPONSE);
-		this.result = result;
-	}
-
-	public boolean isClientRejected() {
-		return result == KeyBinding.RegisterStatus.CLIENT_REJECTED;
-	}
-
-	public boolean isKeyDuplicated() {
-		return result == KeyBinding.RegisterStatus.KEY_DUPLICATED;
-	}
-
-	public boolean isSuccess() {
-		return result == KeyBinding.RegisterStatus.SUCCESS;
-	}
-
-	public byte getResult() {
-		return result;
-	}
-
-	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeByte(result);
-	}
-
-	@Override
-	public void read(DataInput stream) throws IOException {
-		result = stream.readByte();
+	@Inject(method = "hasTranslation(Ljava/lang/String;)Z", at = @At("RETURN"), cancellable = true)
+	private void hasCustomTranslation(String key, CallbackInfoReturnable<Boolean> cir) {
+		String s = CustomTranslationStorage.getInstance().get(key);
+		if(s != null) {
+			cir.setReturnValue(true);
+		}
 	}
 }

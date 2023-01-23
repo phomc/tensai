@@ -24,11 +24,24 @@
 
 package dev.phomc.tensai.fabric.client;
 
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingSubscriber;
+
+import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
+
+import dev.phomc.tensai.fabric.client.scheduler.tasks.KeyStateCheckTask;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.fabricmc.api.ClientModInitializer;
 
-public class TensaiFabricClientMod implements ClientModInitializer {
+public class TensaiFabricClient implements ClientModInitializer {
+	public static final String MOD_ID = "tensai-client";
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
 	@Override
 	public void onInitializeClient() {
-		// TODO: Client-side initialization
+		KeyBindingSubscriber.getInstance().onInitialize();
+		ClientScheduler.getInstance().schedule(KeyStateCheckTask.build());
 	}
 }
