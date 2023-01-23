@@ -15,6 +15,9 @@
   "entrypoints": {
     "main": [
       "dev.phomc.tensai.fabric.TensaiFabric"
+    ],
+    "client": [
+      "dev.phomc.tensai.fabric.client.TensaiFabricClientMod"
     ]
   },
   "mixins": [
