@@ -37,6 +37,10 @@ loom {
 dependencies {
     implementation(project(":tensai-common"))
 
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.19.0") {
+        because("Mojang provides Log4J and somehow loom does not import it")
+    })
+
     minecraft("com.mojang:minecraft:${property("minecraftVersion")}")
     mappings("net.fabricmc:yarn:${property("minecraftVersion")}+${property("yarnMappings")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${property("loaderVersion")}")
