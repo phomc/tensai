@@ -1,32 +1,17 @@
-# Tensai Specification
+# Keybinding API Specification
 
-## Terminology
-- Server-bound: Packets sent from client to server
-- Client-bound: Packets sent from server to client
-- UTF: Unicode Transformation Format
+## Introduction
+The purpose of Keybinding API is to provide a stable, secure and convenient way for server-side mods to capture client's key-states.
 
-## Packet channel
-Tensai uses the official plugin channel support as specified here: https://wiki.vg/Plugin_channels <br>
+## Objectives
 
-*List of registered channels*
-- tensai:keybinding
-- tensai:vfx
+The keybinding API must meet the following requirements:
+- Allows the server to listen to key events from client
+- The server has no ability to modify client's key-states
+- Key capture must be under player control
+- Data transfer must be secure and reliable
 
-## Packet data types
-
-```
-byte/bool: 1 byte
-short/char: 2 bytes
-int: 4 bytes
-long: 8 bytes
-float: 4 bytes
-double: 8 bytes
-UTF: 2 bytes + up to 65535 bytes
-
-(numbers are signed)
-```
-
-## Keybinding
+## Networking
 
 ### Packet identifier (PID)
 - 1: Registration Request
