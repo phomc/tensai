@@ -6,7 +6,7 @@ plugins and mods.
 
 Tensai (天際 / てんさい) is a Japanese word (Romanji form) means 'horizon/the edge of the sky'.
 
-For further information, checkout [SPECIFICATION.md](SPECIFICATION.md) and [Tensai Documents](https://docs.phomc.dev/tensai/intro)
+For further information, checkout [Specification documents](specs/README.md) and [Tensai Documentation](https://docs.phomc.dev/tensai/intro)
 
 # Building and Running tensai
 To compile and build, simply run `./gradlew build` (`gradlew.bat build` on Windows) in the root directory. This will compile and build all projects into JARs which can be found in `platforms/<platform>/build/libs` and `common/libs
