@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.function.LongUnaryOperator;
 import java.util.function.Supplier;
 
 /**
@@ -43,12 +44,7 @@ public class Scheduler {
 	private final AtomicLong counter = new AtomicLong();
 
 	protected void onTick() {
-		long tick = 0;
-		if (counter.get() == Long.MAX_VALUE) {
-			counter.set(0);
-		} else {
-			tick = counter.incrementAndGet();
-		}
+		long tick = counter.getAndUpdate(operand -> safeAddition(operand, 1));
 
 		while (true) {
 			Task task = queue.peek();

@@ -52,7 +52,7 @@ public class KeyBindingSubscriber extends ClientSubscriber {
 
 	@Override
 	public void onInitialize() {
-		capture(MessageType.KEYBINDING_REGISTER, (data, sender) -> {
+		subscribe(MessageType.KEYBINDING_REGISTER, (data, sender) -> {
 			KeyBindingRegisterMessage msg = new KeyBindingRegisterMessage();
 			msg.unpack(data);
 

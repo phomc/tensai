@@ -51,7 +51,7 @@ public abstract class ServerSubscriber extends Subscriber<PacketSender> {
 
 		ServerPlayNetworking.registerGlobalReceiver(identifier, (server, player, handler, buf, responseSender) -> {
 			byte[] bytes = ByteBufUtil.getBytes(buf);
-			Callback<PacketSender> callback = callbackMap.get(bytes[0]);
+			Callback<PacketSender> callback = subscription.get(bytes[0]);
 			if (callback != null) {
 				callback.call(bytes, responseSender);
 			}

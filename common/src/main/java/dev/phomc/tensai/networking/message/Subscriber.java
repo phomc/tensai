@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public abstract class Subscriber<T> {
 	protected final Channel channel;
-	protected final Map<Byte, Callback<T>> callbackMap = new HashMap<>();
+	protected final Map<Byte, Callback<T>> subscription = new HashMap<>();
 
 	public Subscriber(Channel channel) {
 		this.channel = channel;
@@ -47,12 +47,12 @@ public abstract class Subscriber<T> {
 	public abstract void onInitialize();
 
 	/**
-	 * Captures a specific type of message.
+	 * Subscribe a specific type of message.
 	 * @param id message type
 	 * @param callback callback
 	 */
-	public void capture(byte id, Callback<T> callback) {
-		callbackMap.put(id, callback);
+	public void subscribe(byte id, Callback<T> callback) {
+		subscription.put(id, callback);
 	}
 
 	public interface Callback<T> {
