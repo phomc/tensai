@@ -85,11 +85,19 @@ public class Scheduler {
 		schedule(task, 0);
 	}
 
+	public void runAsync(Runnable executor, long delay) {
+		schedule(new Task.Builder().setExecutor(executor).async().build(), delay);
+	}
+
+	public void runSync(Runnable executor, long delay) {
+		schedule(new Task.Builder().setExecutor(executor).build(), delay);
+	}
+
 	public void runAsync(Runnable executor) {
-		schedule(new Task.Builder().setExecutor(executor).async().build(), 0);
+		runAsync(executor, 0);
 	}
 
 	public void runSync(Runnable executor) {
-		schedule(new Task.Builder().setExecutor(executor).build(), 0);
+		runSync(executor, 0);
 	}
 }

@@ -37,7 +37,7 @@ import dev.phomc.tensai.keybinding.KeyState;
  * Represents a keybinding manager.
  */
 public interface KeyBindingManager {
-	void registerKeyBinding(@NotNull KeyBinding keyBinding);
+	boolean registerKeyBinding(@NotNull KeyBinding keyBinding);
 
 	@NotNull Map<Key, KeyBinding> getKeyBindings();
 

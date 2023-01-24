@@ -40,13 +40,14 @@ public class SimpleKeyBindingManager implements KeyBindingManager {
 	private int inputDelay;
 
 	@Override
-	public void registerKeyBinding(@NotNull KeyBinding keyBinding) {
+	public boolean registerKeyBinding(@NotNull KeyBinding keyBinding) {
 		if (keyBindings.containsKey(keyBinding.getKey())) {
-			throw new IllegalArgumentException("KeyBinding with key " + keyBinding.getKey() + " already exists!");
+			return false;
 		}
 
 		keyBindings.put(keyBinding.getKey(), keyBinding);
 		keyStates.put(keyBinding.getKey(), new KeyState(0));
+		return true;
 	}
 
 	@Override

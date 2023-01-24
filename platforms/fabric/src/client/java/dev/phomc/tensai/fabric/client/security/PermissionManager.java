@@ -63,6 +63,14 @@ public class PermissionManager {
 		return data;
 	}
 
+	/**
+	 * Try to grant the given permission.<br>
+	 * <b>SYNCHRONOUS OPERATION</b>
+	 *
+	 * @param permission permission
+	 * @param serverAddr server address (for server-level permission)
+	 * @param callback callback
+	 */
 	public void tryGrant(@NotNull Permission permission, @Nullable String serverAddr, @NotNull BooleanConsumer callback) {
 		if (isGranted(permission, serverAddr)) {
 			callback.accept(true);
@@ -76,6 +84,7 @@ public class PermissionManager {
 					}
 
 					callback.accept(ok);
+					MinecraftClient.getInstance().setScreen(null);
 				},
 				Text.translatable("gui.permissionPrompt.title"),
 				Text.translatable(permission.getMessageTranslationKey()),

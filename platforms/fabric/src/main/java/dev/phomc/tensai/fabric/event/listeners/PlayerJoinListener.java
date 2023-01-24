@@ -41,9 +41,12 @@ public class PlayerJoinListener implements ServerPlayConnectionEvents.Join {
 	@Override
 	public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		Tensai tensai = (Tensai) server;
-		((FabricClientHandle) handler.player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
-				tensai.getKeyBindingManager().getInputDelay(),
-				new ArrayList<>(tensai.getKeyBindingManager().getKeyBindings().values())
-		).pack());
+
+		((Tensai) server).getTaskScheduler().runSync(() -> {
+			((FabricClientHandle) handler.player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
+					tensai.getKeyBindingManager().getInputDelay(),
+					new ArrayList<>(tensai.getKeyBindingManager().getKeyBindings().values())
+			).pack());
+		}, 40);
 	}
 }

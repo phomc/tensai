@@ -24,13 +24,14 @@
 
 package dev.phomc.tensai.fabric.client.mixins;
 
+import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import net.minecraft.client.MinecraftClient;
 
-import dev.phomc.tensai.fabric.scheduler.ServerScheduler;
 import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.Tensai;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
@@ -42,7 +43,7 @@ public abstract class MinecraftClientMixin implements Tensai {
 	private Thread thread;
 
 	@Unique
-	private ServerScheduler serverScheduler;
+	private ClientScheduler clientScheduler;
 
 	@Override
 	public VisualEffects getGlobalVfx() {
@@ -56,8 +57,8 @@ public abstract class MinecraftClientMixin implements Tensai {
 
 	@Override
 	public Scheduler getTaskScheduler() {
-		if (serverScheduler == null) serverScheduler = new ServerScheduler();
-		return serverScheduler;
+		if (clientScheduler == null) clientScheduler = new ClientScheduler();
+		return clientScheduler;
 	}
 
 	@Override

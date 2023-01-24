@@ -79,7 +79,7 @@ public class Task {
 	}
 
 	public boolean isCancelled() {
-		return cancelled || recurringCounter >= recurringTimes;
+		return cancelled || recurringCounter > recurringTimes;
 	}
 
 	public void cancel() {

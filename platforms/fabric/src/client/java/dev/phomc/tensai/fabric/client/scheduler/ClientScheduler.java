@@ -26,13 +26,13 @@ package dev.phomc.tensai.fabric.client.scheduler;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
 import dev.phomc.tensai.scheduler.Scheduler;
 
 @Environment(EnvType.CLIENT)
 public class ClientScheduler extends Scheduler {
 	public ClientScheduler() {
-		ServerTickEvents.END_SERVER_TICK.register(server -> onTick());
+		ClientTickEvents.END_CLIENT_TICK.register(server -> onTick());
 	}
 }

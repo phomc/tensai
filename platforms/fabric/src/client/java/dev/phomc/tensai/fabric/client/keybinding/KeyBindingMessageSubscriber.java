@@ -34,6 +34,9 @@ import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.MessageType;
 import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
+import dev.phomc.tensai.server.Tensai;
+
+import net.minecraft.client.MinecraftClient;
 
 public class KeyBindingMessageSubscriber extends ClientSubscriber {
 	public KeyBindingMessageSubscriber(Channel channel) {
@@ -48,21 +51,24 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 
 			// TODO Show registering-keys explicitly
 			String server = Objects.requireNonNull(((ClientPlayNetworkAddonMixin) sender).getHandler().getServerInfo()).address;
-			TensaiFabricClient.getInstance().getPermissionManager().tryGrant(KeyBindingManager.KEY_RECORD_PERMISSION, server, ok -> {
-				byte result = ok ? KeyBinding.RegisterStatus.UNKNOWN : KeyBinding.RegisterStatus.CLIENT_REJECTED;
 
-				if (ok) {
-					if (KeyBindingManager.getInstance().testBulkAvailability(msg.getKeymap())) {
-						KeyBindingManager.getInstance().registerBulk(msg.getKeymap());
-						KeyBindingManager.getInstance().setInputDelay(msg.getInputDelay());
-						result = KeyBinding.RegisterStatus.SUCCESS;
-					} else {
-						result = KeyBinding.RegisterStatus.KEY_DUPLICATED;
+			((Tensai) MinecraftClient.getInstance()).getTaskScheduler().runSync(() ->
+				TensaiFabricClient.getInstance().getPermissionManager().tryGrant(KeyBindingManager.KEY_RECORD_PERMISSION, server, ok -> {
+					byte result = ok ? KeyBinding.RegisterStatus.UNKNOWN : KeyBinding.RegisterStatus.CLIENT_REJECTED;
+
+					if (ok) {
+						if (KeyBindingManager.getInstance().testBulkAvailability(msg.getKeymap())) {
+							KeyBindingManager.getInstance().registerBulk(msg.getKeymap());
+							KeyBindingManager.getInstance().setInputDelay(msg.getInputDelay());
+							result = KeyBinding.RegisterStatus.SUCCESS;
+						} else {
+							result = KeyBinding.RegisterStatus.KEY_DUPLICATED;
+						}
 					}
-				}
 
-				publish(new KeyBindingRegisterResponse(result), sender);
-			});
+					publish(new KeyBindingRegisterResponse(result), sender);
+				})
+			);
 		});
 	}
 }
