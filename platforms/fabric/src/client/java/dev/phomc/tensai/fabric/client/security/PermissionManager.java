@@ -78,7 +78,6 @@ public class PermissionManager {
 					callback.accept(ok);
 				},
 				Text.translatable("gui.permissionPrompt.title"),
-				// TODO Show keys explicitly
 				Text.translatable(permission.getMessageTranslationKey()),
 				Text.translatable("gui.permissionPrompt.accept"),
 				Text.translatable("gui.permissionPrompt.decline")

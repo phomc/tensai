@@ -46,6 +46,7 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 			KeyBindingRegisterMessage msg = new KeyBindingRegisterMessage();
 			msg.unpack(data);
 
+			// TODO Show registering-keys explicitly
 			String server = Objects.requireNonNull(((ClientPlayNetworkAddonMixin) sender).getHandler().getServerInfo()).address;
 			TensaiFabricClient.getInstance().getPermissionManager().tryGrant(KeyBindingManager.KEY_RECORD_PERMISSION, server, ok -> {
 				byte result = ok ? KeyBinding.RegisterStatus.UNKNOWN : KeyBinding.RegisterStatus.CLIENT_REJECTED;
