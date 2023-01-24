@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.client.networking.message;
+package dev.phomc.tensai.fabric.client.networking;
 
 import dev.phomc.tensai.networking.message.Message;
 
@@ -40,7 +40,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.Subscriber;
+import dev.phomc.tensai.networking.Subscriber;
 
 @Environment(EnvType.CLIENT)
 public abstract class ClientSubscriber extends Subscriber<PacketSender> {
@@ -66,10 +66,10 @@ public abstract class ClientSubscriber extends Subscriber<PacketSender> {
 	}
 
 	public void publish(Message message, PacketSender consumer) {
-		consumer.sendPacket(identifier, new PacketByteBuf(Unpooled.wrappedBuffer(message.pack())));
+		ClientPublisher.publish(identifier, message, consumer);
 	}
 
 	public void publish(Message message) {
-		publish(message, ClientPlayNetworking.getSender());
+		ClientPublisher.publish(identifier, message);
 	}
 }

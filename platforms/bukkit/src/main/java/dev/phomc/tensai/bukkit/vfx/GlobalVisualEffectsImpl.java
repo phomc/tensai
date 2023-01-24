@@ -25,9 +25,12 @@
 package dev.phomc.tensai.bukkit.vfx;
 
 import dev.phomc.tensai.bukkit.TensaiBukkit;
+import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.server.vfx.VisualEffects;
-import dev.phomc.tensai.server.vfx.animations.AnimationPluginMessage;
 import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
+import dev.phomc.tensai.networking.message.s2c.AnimationPlayMessage;
+
+import org.bukkit.Bukkit;
 
 public class GlobalVisualEffectsImpl implements VisualEffects {
 	private TensaiBukkit plugin;
@@ -38,7 +41,9 @@ public class GlobalVisualEffectsImpl implements VisualEffects {
 
 	@Override
 	public void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties) {
-		AnimationPluginMessage message = new AnimationPluginMessage(type, AnimationPluginMessage.PLAY_ONCE, startSec, durationSec, properties);
-		plugin.getServer().sendPluginMessage(plugin, message.channel, message.createBytes());
+		byte[] message = new AnimationPlayMessage(type, AnimationPlayMessage.PLAY_ONCE, startSec, durationSec, properties).pack();
+		Bukkit.getOnlinePlayers().forEach(p -> {
+			TensaiBukkit.getClient(p).sendPluginMessage(Channel.VFX, message);
+		});
 	}
 }

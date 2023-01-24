@@ -24,6 +24,9 @@
 
 package dev.phomc.tensai.fabric.mixins;
 
+import dev.phomc.tensai.networking.Channel;
+
+import io.netty.buffer.Unpooled;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
@@ -31,12 +34,10 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import dev.phomc.tensai.fabric.clients.FabricClientHandle;
 import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
-import dev.phomc.tensai.server.networking.PluginMessage;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
 @Mixin(ServerPlayerEntity.class)
@@ -45,10 +46,9 @@ public abstract class ServerPlayerEntityMixin implements FabricClientHandle {
 	private ClientVisualEffectsImpl vfx;
 
 	@Override
-	public void sendPluginMessage(PluginMessage message) {
-		PacketByteBuf buf = PacketByteBufs.create();
-		buf.writeBytes(message.createBytes());
-		ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, new Identifier(message.channel), buf);
+	public void sendPluginMessage(Channel channel, byte[] bytes) {
+		PacketByteBuf buf = new PacketByteBuf(Unpooled.wrappedBuffer(bytes));
+		ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, new Identifier(channel.getNamespace()), buf);
 	}
 
 	@Override

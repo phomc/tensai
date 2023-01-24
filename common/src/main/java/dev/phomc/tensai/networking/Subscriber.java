@@ -22,33 +22,54 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.networking.message;
-
-import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.server.client.ClientHandle;
+package dev.phomc.tensai.networking;
 
 import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.Subscriber;
-
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ServerSubscriber extends Subscriber<ClientHandle> implements PluginMessageListener {
-	public ServerSubscriber(Channel channel) {
-		super(channel);
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * A subscriber is one who listens to incoming messages.
+ * @param <T> Represents the sender. It is different per platforms.
+ */
+public abstract class Subscriber<T> {
+	private final Channel channel;
+	protected final Map<Byte, Callback<T>> subscription = new HashMap<>();
+
+	public Subscriber(Channel channel) {
+		this.channel = channel;
 	}
 
+	@NotNull
+	public Channel getChannel() {
+		return channel;
+	}
+
+	/**
+	 * This method is called after this subscriber was initialized successfully.
+	 */
 	public abstract void onInitialize();
 
-	@Override
-	public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] message) {
-		if (!channel.equals(getChannel().getNamespace())) return;
+	/**
+	 * Subscribe a specific type of message.
+	 * @param id message type
+	 * @param callback callback
+	 */
+	public void subscribe(byte id, Callback<T> callback) {
+		subscription.put(id, callback);
+	}
 
-		Callback<ClientHandle> callback = subscription.get(message[0]);
-		if (callback != null) {
-			callback.call(message, TensaiBukkit.getClient(player));
-		}
+	public interface Callback<T> {
+		/**
+		 * This callback triggers when a message is received.<br>
+		 * <b>Note:</b> It may be called asynchronously. In some platforms such as Bukkit, it is unsafe to do
+		 * synchronous operations inside this method's implementation.
+		 * @param data
+		 * @param sender
+		 */
+		void call(byte[] data, T sender);
 	}
 }

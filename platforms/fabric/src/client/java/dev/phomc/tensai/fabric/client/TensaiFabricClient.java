@@ -30,18 +30,21 @@ import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
 
 import dev.phomc.tensai.fabric.client.scheduler.tasks.KeyStateCheckTask;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import dev.phomc.tensai.networking.Channel;
 
 import net.fabricmc.api.ClientModInitializer;
 
 public class TensaiFabricClient implements ClientModInitializer {
-	public static final String MOD_ID = "tensai-client";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	private static TensaiFabricClient INSTANCE;
+	public static TensaiFabricClient getInstance() {
+		return INSTANCE;
+	}
 
 	@Override
 	public void onInitializeClient() {
-		KeyBindingMessageSubscriber.getInstance().onInitialize();
+		INSTANCE = this;
+
+		new KeyBindingMessageSubscriber(Channel.KEYBINDING).onInitialize();
 		ClientScheduler.getInstance().schedule(KeyStateCheckTask.build());
 	}
 }

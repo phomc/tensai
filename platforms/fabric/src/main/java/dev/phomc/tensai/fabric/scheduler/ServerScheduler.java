@@ -32,15 +32,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 
 @Environment(EnvType.SERVER)
 public class ServerScheduler extends Scheduler {
-	private static ServerScheduler INSTANCE;
-
-	public static ServerScheduler getInstance() {
-		if(INSTANCE == null) {
-			INSTANCE = new ServerScheduler();
-		}
-		return INSTANCE;
-	}
-
 	public ServerScheduler() {
 		ServerTickEvents.END_SERVER_TICK.register(server -> onTick());
 	}

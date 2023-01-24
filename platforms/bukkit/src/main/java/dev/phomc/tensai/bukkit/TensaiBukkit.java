@@ -27,11 +27,10 @@ package dev.phomc.tensai.bukkit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.logging.Logger;
 
 import dev.phomc.tensai.bukkit.keybinding.KeyBindingMessageSubscriber;
-import dev.phomc.tensai.bukkit.networking.message.ServerSubscriber;
+import dev.phomc.tensai.bukkit.networking.ServerSubscriber;
 import dev.phomc.tensai.bukkit.scheduler.ServerScheduler;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.scheduler.Scheduler;
@@ -41,15 +40,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
 import dev.phomc.tensai.bukkit.client.PlayerQuitEventsListener;
-import dev.phomc.tensai.bukkit.listener.player.PlayerJoinListener;
+import dev.phomc.tensai.bukkit.event.listeners.PlayerJoinListener;
 import dev.phomc.tensai.bukkit.vfx.GlobalVisualEffectsImpl;
-import dev.phomc.tensai.server.TensaiServer;
+import dev.phomc.tensai.server.Tensai;
 import dev.phomc.tensai.server.client.ClientHandle;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
 import dev.phomc.tensai.server.keybinding.SimpleKeyBindingManager;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
-public class TensaiBukkit extends JavaPlugin implements TensaiServer {
+public class TensaiBukkit extends JavaPlugin implements Tensai {
 	// Wrappers
 	private static final Map<UUID, ClientHandle> CLIENTS = new HashMap<>();
 	private static TensaiBukkit INSTANCE;

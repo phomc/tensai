@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,42 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.vfx;
+package dev.phomc.tensai.networking.message.s2c;
 
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.s2c.AnimationPlayMessage;
+import java.io.DataOutput;
+import java.io.IOException;
 
-import net.minecraft.server.network.ServerPlayerEntity;
-
-import dev.phomc.tensai.fabric.clients.FabricClientHandle;
-import dev.phomc.tensai.server.vfx.VisualEffects;
+import dev.phomc.tensai.networking.message.Message;
+import dev.phomc.tensai.networking.message.MessageType;
 import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
 
-public class ClientVisualEffectsImpl implements VisualEffects {
-	private ServerPlayerEntity player;
+public class AnimationPlayMessage extends Message {
+	public static final int PLAY_ONCE = 0x00;
 
-	public ClientVisualEffectsImpl(ServerPlayerEntity player) {
-		this.player = player;
+	public final String animationType;
+	public final int playMode;
+	public final double startSec;
+	public final double durationSec;
+	public final AnimationProperty<?>[] properties;
+
+	public AnimationPlayMessage(String animationType, int playMode, double startSec, double durationSec, AnimationProperty<?>... properties) {
+		super(MessageType.VFX_ANIMATION_PLAY);
+
+		this.animationType = animationType;
+		this.playMode = playMode;
+		this.startSec = startSec;
+		this.durationSec = durationSec;
+		this.properties = properties;
 	}
 
 	@Override
-	public void playAnimationOnce(String type, double startSec, double durationSec, AnimationProperty<?>... properties) {
-		((FabricClientHandle) player).sendPluginMessage(Channel.VFX, new AnimationPlayMessage(type, AnimationPlayMessage.PLAY_ONCE, startSec, durationSec, properties).pack());
+	public void write(DataOutput stream) throws IOException {
+		stream.writeUTF(animationType);
+		stream.writeByte(playMode);
+		stream.writeDouble(startSec);
+		stream.writeDouble(durationSec);
+
+		stream.writeInt(properties.length);
+		for (AnimationProperty<?> prop : properties) AnimationProperty.SERIALIZER.serialize(prop, stream);
 	}
 }

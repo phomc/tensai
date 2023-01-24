@@ -22,22 +22,23 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.keybinding;
+package dev.phomc.tensai.fabric.keybinding;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
-import dev.phomc.tensai.bukkit.event.KeyStateUpdateEvent;
-import dev.phomc.tensai.bukkit.event.KeyRegisterResultEvent;
-import dev.phomc.tensai.bukkit.networking.ServerSubscriber;
+import dev.phomc.tensai.fabric.event.ServerKeybindingEvents;
+import dev.phomc.tensai.fabric.mixins.ServerPlayNetworkAddonMixin;
+import dev.phomc.tensai.fabric.mixins.ServerPlayNetworkHandlerMixin;
+import dev.phomc.tensai.fabric.networking.ServerSubscriber;
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.MessageType;
 import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
-
 import dev.phomc.tensai.networking.message.c2s.KeyBindingStateUpdate;
 
-import org.bukkit.Bukkit;
+import dev.phomc.tensai.server.Tensai;
+
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 
 import java.util.Map;
 
@@ -51,16 +52,18 @@ public class KeyBindingMessageSubscriber extends ServerSubscriber {
 		subscribe(MessageType.KEYBINDING_REGISTER_RESPONSE, (data, sender) -> {
 			KeyBindingRegisterResponse msg = new KeyBindingRegisterResponse();
 			msg.unpack(data);
-			Bukkit.getPluginManager().callEvent(new KeyRegisterResultEvent(((ClientHandleImpl) sender).getPlayer(), msg));
+			ServerKeybindingEvents.REGISTER_RESULT.invoker().respond(((ServerPlayNetworkAddonMixin) sender).getHandler().player, msg);
 		});
 
 		subscribe(MessageType.KEYBINDING_STATE_UPDATE, (data, sender) -> {
-			Map<Key, KeyState> states = TensaiBukkit.getInstance().getKeyBindingManager().getKeyStates();
+			ServerPlayNetworkHandler handler = ((ServerPlayNetworkAddonMixin) sender).getHandler();
+			MinecraftServer server = ((ServerPlayNetworkHandlerMixin) handler).getServer();
+			Map<Key, KeyState> states = ((Tensai) server).getKeyBindingManager().getKeyStates();
 			// we want to pass key state references rather than cloning them
 			// So key state is only updated if its corresponding key is registered
 			KeyBindingStateUpdate msg = new KeyBindingStateUpdate(states);
 			msg.unpack(data);
-			Bukkit.getPluginManager().callEvent(new KeyStateUpdateEvent(((ClientHandleImpl) sender).getPlayer(), states));
+			ServerKeybindingEvents.STATE_UPDATE.invoker().updateKeyState(handler.player, states);
 		});
 	}
 }

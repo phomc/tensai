@@ -28,11 +28,11 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import dev.phomc.tensai.server.networking.Serializer;
-import dev.phomc.tensai.server.util.Vec4;
+import dev.phomc.tensai.util.Serializer;
+import dev.phomc.tensai.util.Vec4;
 
 public class AnimationProperty<T> {
-	public static final Serializer<AnimationProperty<?>> SERIALIZER = new Serializer<AnimationProperty<?>>() {
+	public static final Serializer<AnimationProperty<?>> SERIALIZER = new Serializer<>() {
 		// Primitives
 		private static final int TYPE_INT = 0x00; // byte + short + int + long -> int64
 		private static final int TYPE_FLOAT = 0x01; // float + double -> float64

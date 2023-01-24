@@ -24,30 +24,20 @@
 
 package dev.phomc.tensai.fabric.client.keybinding;
 
-import java.util.List;
 import java.util.Map;
 
-import dev.phomc.tensai.fabric.client.networking.message.ClientSubscriber;
+import dev.phomc.tensai.fabric.client.networking.ClientSubscriber;
 
 import dev.phomc.tensai.fabric.client.security.PermissionManager;
 
-import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.networking.Channel;
 
 import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.message.MessageType;
 import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
-import dev.phomc.tensai.networking.message.c2s.KeyBindingStateUpdate;
 import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
 
 public class KeyBindingMessageSubscriber extends ClientSubscriber {
-	private static final KeyBindingMessageSubscriber INSTANCE = new KeyBindingMessageSubscriber(Channel.KEYBINDING);
-
-	public static KeyBindingMessageSubscriber getInstance() {
-		return INSTANCE;
-	}
-
 	public KeyBindingMessageSubscriber(Channel channel) {
 		super(channel);
 	}
@@ -74,12 +64,5 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 				publish(new KeyBindingRegisterResponse(result), sender);
 			});
 		});
-	}
-
-	public void onStateCheck() {
-		Map<Key, KeyState> states = KeyBindingManager.getInstance().fetchStates();
-		if(!states.isEmpty()) {
-			publish(new KeyBindingStateUpdate(states));
-		}
 	}
 }

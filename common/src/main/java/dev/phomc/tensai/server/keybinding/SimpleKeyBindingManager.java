@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SimpleKeyBindingManager implements KeyBindingManager {
 	private final Map<Key, KeyBinding> keyBindings = new HashMap<>();
-	private Map<Key, KeyState> keyStates = new HashMap<>();
+	private final Map<Key, KeyState> keyStates = new HashMap<>();
 	private int inputDelay;
 
 	@Override

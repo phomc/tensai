@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric;
+package dev.phomc.tensai.fabric.mixins;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon;
 
-import net.fabricmc.api.ModInitializer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 
-public class TensaiFabric implements ModInitializer {
-	public static final String MOD_ID = "tensai";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-	@Override
-	public void onInitialize() {
-
-	}
+@Mixin(ServerPlayNetworkAddon.class)
+public interface ServerPlayNetworkAddonMixin {
+	@Accessor("handler")
+	ServerPlayNetworkHandler getHandler();
 }

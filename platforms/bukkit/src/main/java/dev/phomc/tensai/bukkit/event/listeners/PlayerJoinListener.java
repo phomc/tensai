@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,37 +22,34 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server;
+package dev.phomc.tensai.bukkit.event.listeners;
 
-import dev.phomc.tensai.scheduler.Scheduler;
-import dev.phomc.tensai.server.keybinding.KeyBindingManager;
-import dev.phomc.tensai.server.vfx.VisualEffects;
-import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
 
-/**
- * <p>An entry point to all Tensai APIs.</p>
- * <p><b>For Spigot: </b>Use {@code TensaiSpigot.getInstance()}.</p>
- * <p><b>For Fabric: </b>Use {@code (Tensai) (Object) minecraftServer}.</p>
- */
-public interface TensaiServer {
-	/**
-	 * <p>Get the global visual effects API. This global VFX will applies visual effects to all online players. Please
-	 * note that methods like {@link VisualEffects#playAnimationOnce(String, AnimationProperty...)} might not takes
-	 * player's position into account, which leads to wasted bandwidth.</p>
-	 *
-	 * @return Global visual effects API.
-	 */
-	VisualEffects getGlobalVfx();
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-	/**
-	 * Gets the key binding manager.
-	 * @return {@link KeyBindingManager}
-	 */
-	KeyBindingManager getKeyBindingManager();
+import dev.phomc.tensai.bukkit.TensaiBukkit;
 
-	/**
-	 * Gets Tensai's internal task scheduler.
-	 * @return {@link Scheduler}
-	 */
-	Scheduler getTaskScheduler();
+import java.util.ArrayList;
+
+public class PlayerJoinListener implements Listener {
+	private final TensaiBukkit tensai;
+
+	public PlayerJoinListener(TensaiBukkit tensai) {
+		this.tensai = tensai;
+	}
+
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+
+		TensaiBukkit.getClient(player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
+				TensaiBukkit.getInstance().getKeyBindingManager().getInputDelay(),
+				new ArrayList<>(TensaiBukkit.getInstance().getKeyBindingManager().getKeyBindings().values())
+		).pack());
+	}
 }

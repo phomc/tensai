@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2023 PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,34 +22,28 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.listener.player;
+package dev.phomc.tensai.fabric;
 
+import dev.phomc.tensai.fabric.event.listeners.PlayerJoinListener;
+import dev.phomc.tensai.fabric.keybinding.KeyBindingMessageSubscriber;
 import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import net.fabricmc.api.DedicatedServerModInitializer;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
-import java.util.ArrayList;
+import dev.phomc.tensai.fabric.clients.FabricClientHandle;
 
-public class PlayerJoinListener implements Listener {
-	private final TensaiBukkit tensai;
+public class TensaiFabricServer implements DedicatedServerModInitializer {
+	@Override
+	public void onInitializeServer() {
+		new KeyBindingMessageSubscriber(Channel.KEYBINDING).onInitialize();
 
-	public PlayerJoinListener(TensaiBukkit tensai) {
-		this.tensai = tensai;
-	}
+		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
+			((FabricClientHandle) oldPlayer).transferTo(newPlayer);
+		});
 
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-
-		TensaiBukkit.getClient(player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
-				TensaiBukkit.getInstance().getKeyBindingManager().getInputDelay(),
-				new ArrayList<>(TensaiBukkit.getInstance().getKeyBindingManager().getKeyBindings().values())
-		).pack());
+		ServerPlayConnectionEvents.JOIN.register(new PlayerJoinListener());
 	}
 }

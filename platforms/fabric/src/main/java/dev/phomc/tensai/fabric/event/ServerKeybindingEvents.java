@@ -22,33 +22,40 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.client.scheduler.tasks;
+package dev.phomc.tensai.fabric.event;
 
-import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
-import dev.phomc.tensai.fabric.client.keybinding.KeyBindingMessageSubscriber;
-import dev.phomc.tensai.fabric.client.networking.ClientPublisher;
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyState;
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.c2s.KeyBindingStateUpdate;
-import dev.phomc.tensai.scheduler.Task;
+
+import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
+
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
+
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Map;
 
-public class KeyStateCheckTask implements Runnable {
-	public static Task build() {
-		return new Task.Builder()
-				.setInterval(KeyBindingManager.getInstance().getInputDelay())
-				.setPriority(100)
-				.setInfiniteRecurrence()
-				.setExecutor(new KeyStateCheckTask()).build();
+public class ServerKeybindingEvents {
+	public static final Event<ServerKeybindingEvents.KeyRegisterResultEvent> REGISTER_RESULT = EventFactory.createArrayBacked(ServerKeybindingEvents.KeyRegisterResultEvent.class, (listeners) -> (player, result) -> {
+		for (KeyRegisterResultEvent event : listeners) {
+			event.respond(player, result);
+		}
+	});
+
+	public static final Event<ServerKeybindingEvents.KeyStateUpdateEvent> STATE_UPDATE = EventFactory.createArrayBacked(ServerKeybindingEvents.KeyStateUpdateEvent.class, (listeners) -> (player, states) -> {
+		for (KeyStateUpdateEvent event : listeners) {
+			event.updateKeyState(player, states);
+		}
+	});
+
+	@FunctionalInterface
+	public interface KeyRegisterResultEvent {
+		void respond(ServerPlayerEntity player, KeyBindingRegisterResponse response);
 	}
 
-	@Override
-	public void run() {
-		Map<Key, KeyState> states = KeyBindingManager.getInstance().fetchStates();
-		if(!states.isEmpty()) {
-			ClientPublisher.publish(Channel.KEYBINDING, new KeyBindingStateUpdate(states));
-		}
+	@FunctionalInterface
+	public interface KeyStateUpdateEvent {
+		void updateKeyState(ServerPlayerEntity player, Map<Key, KeyState> keyStates);
 	}
 }

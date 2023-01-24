@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,16 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server.networking;
+package dev.phomc.tensai.fabric.mixins;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 
-public interface Serializer<T> {
-	void serialize(T obj, DataOutput stream) throws IOException;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-	T deserialize(DataInput stream) throws IOException;
+@Mixin(ServerPlayNetworkHandler.class)
+public interface ServerPlayNetworkHandlerMixin {
+	@Accessor("server")
+	MinecraftServer getServer();
 }

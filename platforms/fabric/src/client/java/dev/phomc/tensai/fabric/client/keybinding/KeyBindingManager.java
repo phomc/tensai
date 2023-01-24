@@ -24,6 +24,7 @@
 
 package dev.phomc.tensai.fabric.client.keybinding;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +32,9 @@ import java.util.Map;
 
 import dev.phomc.tensai.fabric.client.i18n.CustomTranslationStorage;
 import dev.phomc.tensai.fabric.client.mixins.KeyBindingMixin;
-import dev.phomc.tensai.fabric.client.mixins.KeyBindingRegistryImplMixin;
 import dev.phomc.tensai.fabric.client.security.Permission;
+
+import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -109,7 +111,13 @@ public class KeyBindingManager {
 			KeyBindingMixin.getId2KeyMapping().remove(keyBinding.getTranslationKey());
 			KeyBindingMixin.getKeyCodeMapping().remove(keyBinding.getDefaultKey());
 		}
-		KeyBindingRegistryImplMixin.getModdedKeyBindings().removeAll(registeredKeys);
+		try {
+			Field field = KeyBindingRegistryImpl.class.getDeclaredField("MODDED_KEY_BINDINGS");
+			field.setAccessible(true);
+			((List<net.minecraft.client.option.KeyBinding>) field.get(null)).removeAll(registeredKeys);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 		stateTable = new HashMap<>();
 		registeredKeys = new ArrayList<>();
 		inputDelay = DEFAULT_INPUT_DELAY;

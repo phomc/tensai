@@ -22,21 +22,33 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.event;
+package dev.phomc.tensai.bukkit.networking;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import dev.phomc.tensai.bukkit.TensaiBukkit;
+import dev.phomc.tensai.server.client.ClientHandle;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.Subscriber;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
-public interface KeyPressCallback {
-	Event<KeyPressCallback> EVENT = EventFactory.createArrayBacked(KeyPressCallback.class, (listeners) -> (player, keyBinding) -> {
-		for (KeyPressCallback event : listeners) {
-			event.handle(player, keyBinding);
+import org.jetbrains.annotations.NotNull;
+
+public abstract class ServerSubscriber extends Subscriber<ClientHandle> implements PluginMessageListener {
+	public ServerSubscriber(Channel channel) {
+		super(channel);
+	}
+
+	public abstract void onInitialize();
+
+	@Override
+	public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] message) {
+		if (!channel.equals(getChannel().getNamespace())) return;
+
+		Callback<ClientHandle> callback = subscription.get(message[0]);
+		if (callback != null) {
+			callback.call(message, TensaiBukkit.getClient(player));
 		}
-	});
-
-	void handle(ServerPlayerEntity player, KeyBinding keyBinding);
+	}
 }

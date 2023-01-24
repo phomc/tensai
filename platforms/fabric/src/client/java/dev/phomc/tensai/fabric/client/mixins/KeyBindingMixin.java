@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import net.minecraft.client.util.InputUtil;
 
-@Mixin(targets = "net.minecraft.client.option.KeyBinding")
+@Mixin(net.minecraft.client.option.KeyBinding.class)
 public interface KeyBindingMixin {
 	@Accessor("KEYS_BY_ID")
 	static Map<String, KeyBinding> getId2KeyMapping() {

@@ -22,54 +22,29 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking.message;
+package dev.phomc.tensai.fabric.event.listeners;
 
+import dev.phomc.tensai.fabric.clients.FabricClientHandle;
 import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
 
-import org.jetbrains.annotations.NotNull;
+import dev.phomc.tensai.server.Tensai;
 
-import java.util.HashMap;
-import java.util.Map;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
-/**
- * A subscriber is one who listens to incoming messages.
- * @param <T> Represents the sender. It is different per platforms.
- */
-public abstract class Subscriber<T> {
-	private final Channel channel;
-	protected final Map<Byte, Callback<T>> subscription = new HashMap<>();
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 
-	public Subscriber(Channel channel) {
-		this.channel = channel;
-	}
+import java.util.ArrayList;
 
-	@NotNull
-	public Channel getChannel() {
-		return channel;
-	}
-
-	/**
-	 * This method is called after this subscriber was initialized successfully.
-	 */
-	public abstract void onInitialize();
-
-	/**
-	 * Subscribe a specific type of message.
-	 * @param id message type
-	 * @param callback callback
-	 */
-	public void subscribe(byte id, Callback<T> callback) {
-		subscription.put(id, callback);
-	}
-
-	public interface Callback<T> {
-		/**
-		 * This callback triggers when a message is received.<br>
-		 * <b>Note:</b> It may be called asynchronously. In some platforms such as Bukkit, it is unsafe to do
-		 * synchronous operations inside this method's implementation.
-		 * @param data
-		 * @param sender
-		 */
-		void call(byte[] data, T sender);
+public class PlayerJoinListener implements ServerPlayConnectionEvents.Join {
+	@Override
+	public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+		Tensai tensai = (Tensai) server;
+		((FabricClientHandle) handler.player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
+				tensai.getKeyBindingManager().getInputDelay(),
+				new ArrayList<>(tensai.getKeyBindingManager().getKeyBindings().values())
+		).pack());
 	}
 }

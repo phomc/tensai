@@ -34,6 +34,8 @@ import org.bukkit.event.player.PlayerEvent;
  * This event returns the keybinding registration result.
  * <b>Note:</b> This event is called asynchronously.
  */
+
+
 public final class KeyRegisterResultEvent extends PlayerEvent {
 	public static final HandlerList handlers = new HandlerList();
 

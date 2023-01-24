@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,14 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric;
+package dev.phomc.tensai.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-import net.fabricmc.api.ModInitializer;
+public interface Serializer<T> {
+	void serialize(T obj, DataOutput stream) throws IOException;
 
-public class TensaiFabric implements ModInitializer {
-	public static final String MOD_ID = "tensai";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-
-	@Override
-	public void onInitialize() {
-
-	}
+	T deserialize(DataInput stream) throws IOException;
 }

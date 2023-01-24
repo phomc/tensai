@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2023 PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,37 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.client.mixins;
+package dev.phomc.tensai.server;
 
-import net.minecraft.client.option.KeyBinding;
+import dev.phomc.tensai.scheduler.Scheduler;
+import dev.phomc.tensai.server.keybinding.KeyBindingManager;
+import dev.phomc.tensai.server.vfx.VisualEffects;
+import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+/**
+ * <p>An entry point to all Tensai APIs.</p>
+ * <p><b>For Spigot: </b>Use {@code TensaiSpigot.getInstance()}.</p>
+ * <p><b>For Fabric: </b>Use {@code (Tensai) (Object) minecraftServer}.</p>
+ */
+public interface Tensai {
+	/**
+	 * <p>Get the global visual effects API. This global VFX will applies visual effects to all online players. Please
+	 * note that methods like {@link VisualEffects#playAnimationOnce(String, AnimationProperty...)} might not takes
+	 * player's position into account, which leads to wasted bandwidth.</p>
+	 *
+	 * @return Global visual effects API.
+	 */
+	VisualEffects getGlobalVfx();
 
-import java.util.List;
+	/**
+	 * Gets the key binding manager.
+	 * @return {@link KeyBindingManager}
+	 */
+	KeyBindingManager getKeyBindingManager();
 
-@Mixin(targets = "net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl")
-public interface KeyBindingRegistryImplMixin {
-	@Accessor("MODDED_KEY_BINDINGS")
-	static List<KeyBinding> getModdedKeyBindings() {
-		throw new UnsupportedOperationException();
-	}
+	/**
+	 * Gets Tensai's internal task scheduler.
+	 * @return {@link Scheduler}
+	 */
+	Scheduler getTaskScheduler();
 }

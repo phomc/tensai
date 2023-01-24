@@ -24,6 +24,8 @@
 
 package dev.phomc.tensai.fabric.test.client;
 
+import dev.phomc.tensai.networking.Channel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +36,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 import dev.phomc.tensai.fabric.test.TensaiFabricTestMod;
-import dev.phomc.tensai.server.networking.PluginMessage;
 
 @Environment(EnvType.CLIENT)
 public class TensaiFabricTestClient implements ClientModInitializer {
@@ -43,6 +44,6 @@ public class TensaiFabricTestClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		LOGGER.info("Hello client!");
-		PluginMessagingChannelListener.listen(new Identifier(PluginMessage.CHANNEL_VFX));
+		PluginMessagingChannelListener.listen(new Identifier(Channel.VFX.getNamespace()));
 	}
 }

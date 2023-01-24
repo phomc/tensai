@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.networking.message;
+package dev.phomc.tensai.fabric.networking;
 
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -39,7 +39,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.Message;
-import dev.phomc.tensai.networking.message.Subscriber;
+import dev.phomc.tensai.networking.Subscriber;
 
 @Environment(EnvType.SERVER)
 public abstract class ServerSubscriber extends Subscriber<PacketSender> {

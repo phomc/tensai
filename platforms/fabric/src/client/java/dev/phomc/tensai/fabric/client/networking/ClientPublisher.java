@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,39 +22,29 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server.vfx.animations;
+package dev.phomc.tensai.fabric.client.networking;
 
-import java.io.DataOutput;
-import java.io.IOException;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.Message;
 
-import dev.phomc.tensai.server.networking.PluginMessage;
+import io.netty.buffer.Unpooled;
 
-public class AnimationPluginMessage extends PluginMessage {
-	public static final int PLAY_ONCE = 0x00;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 
-	public final String animationType;
-	public final int playMode;
-	public final double startSec;
-	public final double durationSec;
-	public final AnimationProperty<?>[] properties;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
-	public AnimationPluginMessage(String animationType, int playMode, double startSec, double durationSec, AnimationProperty<?>... properties) {
-		super(PluginMessage.CHANNEL_VFX, "animation");
-		this.animationType = animationType;
-		this.playMode = playMode;
-		this.startSec = startSec;
-		this.durationSec = durationSec;
-		this.properties = properties;
+public class ClientPublisher {
+	public static void publish(Identifier identifier, Message message, PacketSender consumer) {
+		consumer.sendPacket(identifier, new PacketByteBuf(Unpooled.wrappedBuffer(message.pack())));
 	}
 
-	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeUTF(animationType);
-		stream.writeByte(playMode);
-		stream.writeDouble(startSec);
-		stream.writeDouble(durationSec);
+	public static void publish(Identifier identifier, Message message) {
+		publish(identifier, message, ClientPlayNetworking.getSender());
+	}
 
-		stream.writeInt(properties.length);
-		for (AnimationProperty<?> prop : properties) AnimationProperty.SERIALIZER.serialize(prop, stream);
+	public static void publish(Channel channel, Message message) {
+		publish(new Identifier(channel.getNamespace()), message);
 	}
 }
