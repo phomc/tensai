@@ -24,20 +24,64 @@
 
 package dev.phomc.tensai.fabric.client.security;
 
-import java.util.function.Consumer;
-
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.text.Text;
 
 public class PermissionManager {
-	private static final PermissionManager INSTANCE = new PermissionManager();
+	private final PermissionStorage persist = new PermissionStorage();
+	private final PermissionStorage tempo = new PermissionStorage();
 
-	public static PermissionManager getInstance() {
-		return INSTANCE;
+	public PermissionStorage getPersistentStorage() {
+		return persist;
 	}
 
-	public void tryGrant(@NotNull Permission permission, @NotNull Consumer<Boolean> callback) {
-		// TODO Pop up a prompt here and return the player's decision
-		// Also, save permission data
-		callback.accept(true);
+	public boolean isGranted(@NotNull Permission permission, @Nullable String serverAddr) {
+		if (tempo.isGranted(permission, serverAddr)) {
+			return true;
+		}
+
+		return persist.isGranted(permission, serverAddr);
+	}
+
+	public PermissionData forceGrant(@NotNull Permission permission, @Nullable String serverAddr) {
+		if (permission.getContext() == Permission.Context.SERVER && serverAddr == null) {
+			throw new IllegalArgumentException("no server address specified for a server-level permission");
+		}
+
+		PermissionData data = (permission.isPersistent() ? persist : tempo).getPermits()
+				.computeIfAbsent(permission.toString(), p -> new PermissionData());
+
+		if (permission.getContext() == Permission.Context.SERVER) {
+			data.getPermittedServers().add(serverAddr);
+		}
+
+		return data;
+	}
+
+	public void tryGrant(@NotNull Permission permission, @Nullable String serverAddr, @NotNull BooleanConsumer callback) {
+		if (isGranted(permission, serverAddr)) {
+			callback.accept(true);
+			return;
+		}
+
+		MinecraftClient.getInstance().setScreen(new ConfirmScreen(
+				ok -> {
+					if (ok) {
+						forceGrant(permission, serverAddr);
+					}
+
+					callback.accept(ok);
+				},
+				Text.translatable("gui.permissionPrompt.title"),
+				// TODO Show keys explicitly
+				Text.translatable(permission.getMessageTranslationKey()),
+				Text.translatable("gui.permissionPrompt.accept"),
+				Text.translatable("gui.permissionPrompt.decline")
+		));
 	}
 }

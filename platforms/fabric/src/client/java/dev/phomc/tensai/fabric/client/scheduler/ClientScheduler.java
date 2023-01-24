@@ -32,17 +32,7 @@ import dev.phomc.tensai.scheduler.Scheduler;
 
 @Environment(EnvType.CLIENT)
 public class ClientScheduler extends Scheduler {
-	private static ClientScheduler INSTANCE;
-
 	public ClientScheduler() {
 		ServerTickEvents.END_SERVER_TICK.register(server -> onTick());
-	}
-
-	public static ClientScheduler getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new ClientScheduler();
-		}
-
-		return INSTANCE;
 	}
 }

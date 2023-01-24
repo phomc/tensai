@@ -48,7 +48,11 @@ import dev.phomc.tensai.networking.Channel;
 
 public class KeyBindingManager {
 	public static final Identifier KEYBINDING_NAMESPACE = new Identifier(Channel.KEYBINDING.getNamespace());
-	public static final Permission KEY_RECORD_PERMISSION = new Permission(KEYBINDING_NAMESPACE, "record", Permission.Context.SESSION);
+	public static final Permission KEY_RECORD_PERMISSION = new Permission(
+			KEYBINDING_NAMESPACE, "record",
+			"gui.permissionPrompt.message.keybinding",
+			Permission.Context.SERVER, true
+	);
 	private static final int DEFAULT_INPUT_DELAY = 5;
 	private static final KeyBindingManager INSTANCE = new KeyBindingManager();
 	private List<net.minecraft.client.option.KeyBinding> registeredKeys = new ArrayList<>();

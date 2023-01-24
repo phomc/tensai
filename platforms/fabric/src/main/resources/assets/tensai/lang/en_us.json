@@ -1,3 +1,7 @@
 {
-  "key.categories.tensai": "Tensai Extra Keys"
+  "key.categories.tensai": "Tensai Extra Keys",
+  "gui.permissionPrompt.title": "Privacy Protector",
+  "gui.permissionPrompt.accept": "Accept",
+  "gui.permissionPrompt.decline": "Decline",
+  "gui.permissionPrompt.message.keybinding": "Allow the current server to record your key activities?"
 }

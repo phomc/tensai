@@ -5,6 +5,7 @@
   "server": [
     "MinecraftServerMixin",
     "ServerPlayerEntityMixin",
-    "ServerPlayNetworkAddonMixin"
+    "ServerPlayNetworkAddonMixin",
+    "ServerPlayNetworkHandlerMixin"
   ]
 }

@@ -24,31 +24,34 @@
 
 package dev.phomc.tensai.fabric.client.scheduler.tasks;
 
-import java.util.Map;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
 
-import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
-import dev.phomc.tensai.fabric.client.networking.ClientPublisher;
-import dev.phomc.tensai.keybinding.Key;
-import dev.phomc.tensai.keybinding.KeyState;
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.c2s.KeyBindingStateUpdate;
+import org.apache.commons.io.FileUtils;
+
+import dev.phomc.tensai.fabric.client.TensaiFabricClient;
+import dev.phomc.tensai.fabric.client.security.PermissionStorage;
 import dev.phomc.tensai.scheduler.Task;
 
-public class KeyStateCheckTask implements Runnable {
+public class PermissionLoadTask implements Runnable {
 	public static Task build() {
-		return new Task.Builder()
-				.setInterval(KeyBindingManager.getInstance().getInputDelay())
-				.setPriority(10)
-				.setInfiniteRecurrence()
-				.setExecutor(new KeyStateCheckTask()).build();
+		return new Task.Builder().async().setExecutor(new PermissionLoadTask()).build();
 	}
 
 	@Override
 	public void run() {
-		Map<Key, KeyState> states = KeyBindingManager.getInstance().fetchStates();
+		File file = new File(TensaiFabricClient.getInstance().getTensaiDirectory(), "permit.bin");
+		if (!file.exists()) return;
 
-		if (!states.isEmpty()) {
-			ClientPublisher.publish(Channel.KEYBINDING, new KeyBindingStateUpdate(states));
+		try {
+			byte[] data = FileUtils.readFileToByteArray(file);
+			ByteArrayInputStream stream = new ByteArrayInputStream(data);
+			PermissionStorage st = PermissionStorage.SERIALIZER.deserialize(new DataInputStream(stream));
+			TensaiFabricClient.getInstance().getPermissionManager().getPersistentStorage().getPermits().putAll(st.getPermits());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

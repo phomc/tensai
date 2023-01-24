@@ -57,4 +57,14 @@ public interface Tensai {
 	 * @return {@link Scheduler}
 	 */
 	Scheduler getTaskScheduler();
+
+	/**
+	 * Checks whether the current thread is the primary one.<br>
+	 * The primary thread is used to execute most activities on such as: ticking, event handling, etc. Besides, there
+	 * are asynchronous operations which are executed on auxiliary threads, e.g: networking, I/O, etc.<br>
+	 * It is <b>important</b> to distinct and utilize them in safe manners.
+	 *
+	 * @return {@code true} or {@code false}
+	 */
+	boolean isPrimaryThread();
 }

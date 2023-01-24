@@ -25,6 +25,7 @@
 package dev.phomc.tensai.scheduler;
 
 import java.util.Comparator;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -48,7 +49,14 @@ public class Scheduler {
 			if (task == null || task.getNextTickTime() > tick) break;
 			queue.poll();
 			if (task.isCancelled()) continue;
-			task.getExecutor().run();
+
+			if (task.isAsync()) {
+				CompletableFuture.runAsync(() -> {
+					task.getExecutor().run();
+				});
+			} else {
+				task.getExecutor().run();
+			}
 
 			if (task.getRecurringCounter() < task.getRecurringTimes()) {
 				task.increaseRecurringCounter();
@@ -75,5 +83,13 @@ public class Scheduler {
 
 	public void schedule(Task task) {
 		schedule(task, 0);
+	}
+
+	public void runAsync(Runnable executor) {
+		schedule(new Task.Builder().setExecutor(executor).async().build(), 0);
+	}
+
+	public void runSync(Runnable executor) {
+		schedule(new Task.Builder().setExecutor(executor).build(), 0);
 	}
 }

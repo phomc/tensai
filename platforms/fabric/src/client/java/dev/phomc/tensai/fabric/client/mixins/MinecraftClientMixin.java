@@ -22,48 +22,36 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.mixins;
+package dev.phomc.tensai.fabric.client.mixins;
 
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.client.MinecraftClient;
 
 import dev.phomc.tensai.fabric.scheduler.ServerScheduler;
-import dev.phomc.tensai.fabric.vfx.GlobalVisualEffectsImpl;
 import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.Tensai;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
-import dev.phomc.tensai.server.keybinding.SimpleKeyBindingManager;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements Tensai {
+@Mixin(MinecraftClient.class)
+public abstract class MinecraftClientMixin implements Tensai {
 	@Shadow
-	@Final
-	private Thread serverThread;
-
-	@Unique
-	private GlobalVisualEffectsImpl globalVfx;
-
-	@Unique
-	private KeyBindingManager keyBindingManager;
+	private Thread thread;
 
 	@Unique
 	private ServerScheduler serverScheduler;
 
 	@Override
 	public VisualEffects getGlobalVfx() {
-		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
-		return globalVfx;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public KeyBindingManager getKeyBindingManager() {
-		if (keyBindingManager == null) keyBindingManager = new SimpleKeyBindingManager();
-		return keyBindingManager;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -74,6 +62,6 @@ public abstract class MinecraftServerMixin implements Tensai {
 
 	@Override
 	public boolean isPrimaryThread() {
-		return Thread.currentThread().equals(serverThread);
+		return Thread.currentThread().equals(thread);
 	}
 }

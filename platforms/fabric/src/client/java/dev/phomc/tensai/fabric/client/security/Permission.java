@@ -33,20 +33,24 @@ import net.minecraft.util.Identifier;
 public class Permission {
 	private final Identifier namespace;
 	private final String key;
+	private final String messageTranslationKey;
 	private final Context context;
+	private final boolean persistent;
 
-	public Permission(@NotNull Identifier namespace, @NotNull String key, @NotNull Context context) {
+	public Permission(@NotNull Identifier namespace, @NotNull String key, @NotNull String messageTranslationKey, @NotNull Context context, boolean persistent) {
 		if (!key.matches("[0-9A-Za-z-_]+")) {
 			throw new IllegalArgumentException("invalid permission key");
 		}
 
 		this.namespace = namespace;
 		this.key = key;
+		this.messageTranslationKey = messageTranslationKey;
 		this.context = context;
+		this.persistent = persistent;
 	}
 
-	public Permission(String namespace, String key, Context context) {
-		this(new Identifier(namespace), key, context);
+	public Permission(String namespace, String key, String messageTranslationKey, Context context, boolean persistent) {
+		this(new Identifier(namespace), key, messageTranslationKey, context, persistent);
 	}
 
 	@NotNull
@@ -60,8 +64,17 @@ public class Permission {
 	}
 
 	@NotNull
+	public String getMessageTranslationKey() {
+		return messageTranslationKey;
+	}
+
+	@NotNull
 	public Context getContext() {
 		return context;
+	}
+
+	public boolean isPersistent() {
+		return persistent;
 	}
 
 	@Override
@@ -69,12 +82,13 @@ public class Permission {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Permission that = (Permission) o;
-		return namespace.equals(that.namespace) && key.equals(that.key) && context == that.context;
+		return namespace.equals(that.namespace) && key.equals(that.key) && messageTranslationKey.equals(that.messageTranslationKey) && context == that.context && persistent == that.persistent;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(namespace, key, context);
+		// context & persistent are metadata, should not be allowed in hashcode generation
+		return Objects.hash(namespace, key);
 	}
 
 	@Override
@@ -84,21 +98,14 @@ public class Permission {
 
 	public enum Context {
 		/**
-		 * The permission has a global effect.<br>
-		 * Once the permission is granted, it remains permanently.
+		 * The permission has a global effect (for all servers).
 		 */
 		GLOBAL,
 
 		/**
-		 * The permission takes effect only on a specific server.<br>
-		 * Once the permission is granted, it remains permanently (for that server only).
+		 * The permission takes effect only on whitelisted server.<br>
+		 * The server-level permission can override global-level permission if a collision occurs.
 		 */
-		SERVER,
-
-		/**
-		 * The permission takes effect only on a server.<br>
-		 * Once the permission is granted, it remains until the player quits the server.
-		 */
-		SESSION
+		SERVER
 	}
 }

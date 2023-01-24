@@ -37,7 +37,7 @@ import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
  * <p>This class is mainly used for {@link AnimationProperty}.</p>
  */
 public class Vec4 {
-	public static final Serializer<Vec4> SERIALIZER = new Serializer<Vec4>() {
+	public static final Serializer<Vec4> SERIALIZER = new Serializer<>() {
 		@Override
 		public void serialize(Vec4 obj, DataOutput stream) throws IOException {
 			stream.writeDouble(obj.x);

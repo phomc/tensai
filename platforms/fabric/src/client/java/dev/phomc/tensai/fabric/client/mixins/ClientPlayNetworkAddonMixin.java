@@ -22,33 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.client.scheduler.tasks;
+package dev.phomc.tensai.fabric.client.mixins;
 
-import java.util.Map;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
-import dev.phomc.tensai.fabric.client.networking.ClientPublisher;
-import dev.phomc.tensai.keybinding.Key;
-import dev.phomc.tensai.keybinding.KeyState;
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.c2s.KeyBindingStateUpdate;
-import dev.phomc.tensai.scheduler.Task;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 
-public class KeyStateCheckTask implements Runnable {
-	public static Task build() {
-		return new Task.Builder()
-				.setInterval(KeyBindingManager.getInstance().getInputDelay())
-				.setPriority(10)
-				.setInfiniteRecurrence()
-				.setExecutor(new KeyStateCheckTask()).build();
-	}
+import net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon;
 
-	@Override
-	public void run() {
-		Map<Key, KeyState> states = KeyBindingManager.getInstance().fetchStates();
-
-		if (!states.isEmpty()) {
-			ClientPublisher.publish(Channel.KEYBINDING, new KeyBindingStateUpdate(states));
-		}
-	}
+@Mixin(ClientPlayNetworkAddon.class)
+public interface ClientPlayNetworkAddonMixin {
+	@Accessor("handler")
+	ClientPlayNetworkHandler getHandler();
 }

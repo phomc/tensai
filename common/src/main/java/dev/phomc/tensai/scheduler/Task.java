@@ -27,6 +27,7 @@ package dev.phomc.tensai.scheduler;
 import org.jetbrains.annotations.NotNull;
 
 public class Task {
+	private boolean async;
 	private float priority;
 	private int recurringTimes;
 	private int recurringCounter;
@@ -37,6 +38,10 @@ public class Task {
 
 	Task() {
 		//
+	}
+
+	public boolean isAsync() {
+		return async;
 	}
 
 	public float getPriority() {
@@ -82,10 +87,16 @@ public class Task {
 	}
 
 	public static class Builder {
+		private boolean async;
 		private float priority;
 		private int recurringTimes;
 		private long interval;
 		private Runnable executor;
+
+		public Builder async() {
+			this.async = true;
+			return this;
+		}
 
 		public Builder setPriority(float priority) {
 			this.priority = priority;
@@ -119,6 +130,7 @@ public class Task {
 			}
 
 			Task task = new Task();
+			task.async = async;
 			task.priority = Math.max(0, priority);
 			task.recurringTimes = Math.max(0, recurringTimes);
 			task.interval = Math.max(1, interval);

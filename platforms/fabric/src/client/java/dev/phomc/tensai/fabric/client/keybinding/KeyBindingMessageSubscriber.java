@@ -24,8 +24,11 @@
 
 package dev.phomc.tensai.fabric.client.keybinding;
 
+import java.util.Objects;
+
+import dev.phomc.tensai.fabric.client.TensaiFabricClient;
+import dev.phomc.tensai.fabric.client.mixins.ClientPlayNetworkAddonMixin;
 import dev.phomc.tensai.fabric.client.networking.ClientSubscriber;
-import dev.phomc.tensai.fabric.client.security.PermissionManager;
 import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.MessageType;
@@ -43,7 +46,8 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 			KeyBindingRegisterMessage msg = new KeyBindingRegisterMessage();
 			msg.unpack(data);
 
-			PermissionManager.getInstance().tryGrant(KeyBindingManager.KEY_RECORD_PERMISSION, ok -> {
+			String server = Objects.requireNonNull(((ClientPlayNetworkAddonMixin) sender).getHandler().getServerInfo()).address;
+			TensaiFabricClient.getInstance().getPermissionManager().tryGrant(KeyBindingManager.KEY_RECORD_PERMISSION, server, ok -> {
 				byte result = ok ? KeyBinding.RegisterStatus.UNKNOWN : KeyBinding.RegisterStatus.CLIENT_REJECTED;
 
 				if (ok) {

@@ -24,12 +24,20 @@
 
 package dev.phomc.tensai.fabric.client;
 
+import java.io.File;
+
+import net.minecraft.client.MinecraftClient;
+
 import net.fabricmc.api.ClientModInitializer;
 
 import dev.phomc.tensai.fabric.client.keybinding.KeyBindingMessageSubscriber;
-import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
 import dev.phomc.tensai.fabric.client.scheduler.tasks.KeyStateCheckTask;
+import dev.phomc.tensai.fabric.client.scheduler.tasks.PermissionLoadTask;
+import dev.phomc.tensai.fabric.client.scheduler.tasks.PermissionSaveTask;
+import dev.phomc.tensai.fabric.client.security.PermissionManager;
 import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.scheduler.Scheduler;
+import dev.phomc.tensai.server.Tensai;
 
 public class TensaiFabricClient implements ClientModInitializer {
 	private static TensaiFabricClient INSTANCE;
@@ -38,11 +46,29 @@ public class TensaiFabricClient implements ClientModInitializer {
 		return INSTANCE;
 	}
 
+	private File tensaiDir;
+	private PermissionManager permissionManager;
+
+	public File getTensaiDirectory() {
+		return tensaiDir;
+	}
+
+	public PermissionManager getPermissionManager() {
+		return permissionManager;
+	}
+
 	@Override
 	public void onInitializeClient() {
 		INSTANCE = this;
+		tensaiDir = new File(MinecraftClient.getInstance().runDirectory, ".tensai");
+		tensaiDir.mkdir();
+		permissionManager = new PermissionManager();
 
 		new KeyBindingMessageSubscriber(Channel.KEYBINDING).onInitialize();
-		ClientScheduler.getInstance().schedule(KeyStateCheckTask.build());
+
+		Scheduler taskScheduler = ((Tensai) MinecraftClient.getInstance()).getTaskScheduler();
+		taskScheduler.schedule(PermissionLoadTask.build());
+		taskScheduler.schedule(PermissionSaveTask.build(), 1200);
+		taskScheduler.schedule(KeyStateCheckTask.build(), 2400);
 	}
 }

@@ -22,55 +22,54 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking;
+package dev.phomc.tensai.fabric.client.security;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-/**
- * A subscriber is one who listens to incoming messages.
- *
- * @param <T> Represents the sender. It is different per platforms.
- */
-public abstract class Subscriber<T> {
-	protected final Map<Byte, Callback<T>> subscription = new HashMap<>();
-	private final Channel channel;
+import dev.phomc.tensai.util.Serializer;
 
-	public Subscriber(Channel channel) {
-		this.channel = channel;
+public class PermissionData {
+	public static final Serializer<PermissionData> SERIALIZER = new Serializer<>() {
+		@Override
+		public void serialize(PermissionData obj, DataOutput stream) throws IOException {
+			stream.writeInt(obj.permittedServers.size());
+
+			for (String str : obj.permittedServers) {
+				stream.writeUTF(str);
+			}
+		}
+
+		@Override
+		public PermissionData deserialize(DataInput stream) throws IOException {
+			int size = stream.readInt();
+			Set<String> permittedServers = new HashSet<>(size);
+
+			for (int i = 0; i < size; i++) {
+				permittedServers.add(stream.readUTF());
+			}
+
+			return new PermissionData(permittedServers);
+		}
+	};
+
+	private final Set<String> permittedServers;
+
+	public PermissionData(@NotNull Set<String> permittedServers) {
+		this.permittedServers = permittedServers;
+	}
+
+	public PermissionData() {
+		this(new HashSet<>());
 	}
 
 	@NotNull
-	public Channel getChannel() {
-		return channel;
-	}
-
-	/**
-	 * This method is called after this subscriber was initialized successfully.
-	 */
-	public abstract void onInitialize();
-
-	/**
-	 * Subscribe a specific type of message.
-	 *
-	 * @param id       message type
-	 * @param callback callback
-	 */
-	public void subscribe(byte id, Callback<T> callback) {
-		subscription.put(id, callback);
-	}
-
-	public interface Callback<T> {
-		/**
-		 * This callback triggers when a message is received.<br>
-		 * <b>Note:</b> It may be called asynchronously. In some platforms such as Bukkit, it is unsafe to do
-		 * synchronous operations inside this method's implementation.
-		 *
-		 * @param data message data
-		 * @param sender message sender
-		 */
-		void call(byte[] data, T sender);
+	public Set<String> getPermittedServers() {
+		return permittedServers;
 	}
 }

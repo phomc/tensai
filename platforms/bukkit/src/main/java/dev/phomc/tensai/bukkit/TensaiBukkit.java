@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -111,5 +112,10 @@ public class TensaiBukkit extends JavaPlugin implements Tensai {
 	@Override
 	public Scheduler getTaskScheduler() {
 		return scheduler;
+	}
+
+	@Override
+	public boolean isPrimaryThread() {
+		return Bukkit.isPrimaryThread();
 	}
 }
