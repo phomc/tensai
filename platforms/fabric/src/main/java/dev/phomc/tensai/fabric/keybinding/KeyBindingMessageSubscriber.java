@@ -24,6 +24,11 @@
 
 package dev.phomc.tensai.fabric.keybinding;
 
+import java.util.Map;
+
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+
 import dev.phomc.tensai.fabric.event.ServerKeybindingEvents;
 import dev.phomc.tensai.fabric.mixins.ServerPlayNetworkAddonMixin;
 import dev.phomc.tensai.fabric.mixins.ServerPlayNetworkHandlerMixin;
@@ -34,13 +39,7 @@ import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.MessageType;
 import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 import dev.phomc.tensai.networking.message.c2s.KeyBindingStateUpdate;
-
 import dev.phomc.tensai.server.Tensai;
-
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-
-import java.util.Map;
 
 public class KeyBindingMessageSubscriber extends ServerSubscriber {
 	public KeyBindingMessageSubscriber(Channel channel) {

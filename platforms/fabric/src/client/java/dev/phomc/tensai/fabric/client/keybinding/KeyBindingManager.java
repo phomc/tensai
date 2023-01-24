@@ -30,34 +30,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dev.phomc.tensai.fabric.client.i18n.CustomTranslationStorage;
-import dev.phomc.tensai.fabric.client.mixins.KeyBindingMixin;
-import dev.phomc.tensai.fabric.client.security.Permission;
-
-import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
-
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 
+import dev.phomc.tensai.fabric.client.i18n.CustomTranslationStorage;
+import dev.phomc.tensai.fabric.client.mixins.KeyBindingMixin;
+import dev.phomc.tensai.fabric.client.security.Permission;
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.Channel;
 
 public class KeyBindingManager {
+	public static final Identifier KEYBINDING_NAMESPACE = new Identifier(Channel.KEYBINDING.getNamespace());
+	public static final Permission KEY_RECORD_PERMISSION = new Permission(KEYBINDING_NAMESPACE, "record", Permission.Context.SESSION);
 	private static final int DEFAULT_INPUT_DELAY = 5;
 	private static final KeyBindingManager INSTANCE = new KeyBindingManager();
+	private List<net.minecraft.client.option.KeyBinding> registeredKeys = new ArrayList<>();
+	private Map<Key, Integer> stateTable = new HashMap<>();
+	private int inputDelay = DEFAULT_INPUT_DELAY;
 
 	public static KeyBindingManager getInstance() {
 		return INSTANCE;
 	}
-
-	public static final Identifier KEYBINDING_NAMESPACE = new Identifier(Channel.KEYBINDING.getNamespace());
-	public static final Permission KEY_RECORD_PERMISSION = new Permission(KEYBINDING_NAMESPACE, "record", Permission.Context.SESSION);
 
 	public static InputUtil.Key getInputKey(@NotNull Key key) {
 		return key.isMouse() ? InputUtil.Type.MOUSE.createFromCode(key.getGLFWCode()) : InputUtil.Type.KEYSYM.createFromCode(key.getGLFWCode());
@@ -66,10 +66,6 @@ public class KeyBindingManager {
 	public static Key lookupKey(@NotNull InputUtil.Key key) {
 		return Key.lookupGLFW(key.getCode(), key.getCategory() == InputUtil.Type.MOUSE);
 	}
-
-	private List<net.minecraft.client.option.KeyBinding> registeredKeys = new ArrayList<>();
-	private Map<Key, Integer> stateTable = new HashMap<>();
-	private int inputDelay = DEFAULT_INPUT_DELAY;
 
 	public int getInputDelay() {
 		return inputDelay;
@@ -80,19 +76,21 @@ public class KeyBindingManager {
 	}
 
 	public boolean testBulkAvailability(@NotNull List<KeyBinding> keymap) {
-		for(KeyBinding keyBinding : keymap){
+		for (KeyBinding keyBinding : keymap) {
 			InputUtil.Key key = getInputKey(keyBinding.getKey());
-			if(KeyBindingMixin.getKeyCodeMapping().containsKey(key)) {
+
+			if (KeyBindingMixin.getKeyCodeMapping().containsKey(key)) {
 				return false;
 			}
 		}
+
 		return true;
 	}
 
 	public void registerBulk(@NotNull List<KeyBinding> keymap) {
 		unregisterAll();
 
-		for(KeyBinding keyBinding : keymap){
+		for (KeyBinding keyBinding : keymap) {
 			net.minecraft.client.option.KeyBinding v = new net.minecraft.client.option.KeyBinding(
 					"key.tensai." + keyBinding.getKey(),
 					keyBinding.getKey().isMouse() ? InputUtil.Type.MOUSE : InputUtil.Type.KEYSYM,
@@ -106,18 +104,21 @@ public class KeyBindingManager {
 	}
 
 	public void unregisterAll() {
-		for(net.minecraft.client.option.KeyBinding keyBinding : registeredKeys){
+		for (net.minecraft.client.option.KeyBinding keyBinding : registeredKeys) {
 			CustomTranslationStorage.getInstance().remove(keyBinding.getTranslationKey());
 			KeyBindingMixin.getId2KeyMapping().remove(keyBinding.getTranslationKey());
 			KeyBindingMixin.getKeyCodeMapping().remove(keyBinding.getDefaultKey());
 		}
+
 		try {
 			Field field = KeyBindingRegistryImpl.class.getDeclaredField("MODDED_KEY_BINDINGS");
 			field.setAccessible(true);
+			//noinspection unchecked
 			((List<net.minecraft.client.option.KeyBinding>) field.get(null)).removeAll(registeredKeys);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+
 		stateTable = new HashMap<>();
 		registeredKeys = new ArrayList<>();
 		inputDelay = DEFAULT_INPUT_DELAY;
@@ -125,14 +126,17 @@ public class KeyBindingManager {
 
 	public Map<Key, KeyState> fetchStates() {
 		Map<Key, KeyState> states = new HashMap<>();
-		for(net.minecraft.client.option.KeyBinding key : registeredKeys){
+
+		for (net.minecraft.client.option.KeyBinding key : registeredKeys) {
 			int n = ((KeyBindingMixin) key).getTimesPressed();
 			Key k = lookupKey(key.getDefaultKey());
 			Integer old = stateTable.put(k, n);
-			if (old == null || old != n){
+
+			if (old == null || old != n) {
 				states.put(k, new KeyState(n));
 			}
 		}
+
 		return states;
 	}
 }

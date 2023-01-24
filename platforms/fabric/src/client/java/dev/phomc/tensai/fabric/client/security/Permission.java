@@ -24,11 +24,11 @@
 
 package dev.phomc.tensai.fabric.client.security;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.util.Identifier;
-
-import java.util.Objects;
 
 public class Permission {
 	private final Identifier namespace;
@@ -36,9 +36,10 @@ public class Permission {
 	private final Context context;
 
 	public Permission(@NotNull Identifier namespace, @NotNull String key, @NotNull Context context) {
-		if(!key.matches("[0-9A-Za-z-_]+")){
+		if (!key.matches("[0-9A-Za-z-_]+")) {
 			throw new IllegalArgumentException("invalid permission key");
 		}
+
 		this.namespace = namespace;
 		this.key = key;
 		this.context = context;

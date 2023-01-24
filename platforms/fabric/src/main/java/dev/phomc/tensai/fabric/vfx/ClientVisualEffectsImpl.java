@@ -24,12 +24,11 @@
 
 package dev.phomc.tensai.fabric.vfx;
 
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.s2c.AnimationPlayMessage;
-
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import dev.phomc.tensai.fabric.clients.FabricClientHandle;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.s2c.AnimationPlayMessage;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
 

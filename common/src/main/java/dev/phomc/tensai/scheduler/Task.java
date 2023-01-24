@@ -52,7 +52,7 @@ public class Task {
 	}
 
 	void increaseRecurringCounter() {
-		if(recurringTimes == Integer.MAX_VALUE) return;
+		if (recurringTimes == Integer.MAX_VALUE) return;
 		recurringCounter++;
 	}
 
@@ -69,7 +69,7 @@ public class Task {
 		return nextTickTime;
 	}
 
-	void setNextTickTime(long nextTickTime){
+	void setNextTickTime(long nextTickTime) {
 		this.nextTickTime = nextTickTime;
 	}
 
@@ -117,6 +117,7 @@ public class Task {
 			if (executor == null) {
 				throw new RuntimeException();
 			}
+
 			Task task = new Task();
 			task.priority = Math.max(0, priority);
 			task.recurringTimes = Math.max(0, recurringTimes);

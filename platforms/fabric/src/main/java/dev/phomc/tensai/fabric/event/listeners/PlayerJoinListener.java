@@ -24,19 +24,18 @@
 
 package dev.phomc.tensai.fabric.event.listeners;
 
-import dev.phomc.tensai.fabric.clients.FabricClientHandle;
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
-
-import dev.phomc.tensai.server.Tensai;
-
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import java.util.ArrayList;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 
-import java.util.ArrayList;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+
+import dev.phomc.tensai.fabric.clients.FabricClientHandle;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
+import dev.phomc.tensai.server.Tensai;
 
 public class PlayerJoinListener implements ServerPlayConnectionEvents.Join {
 	@Override

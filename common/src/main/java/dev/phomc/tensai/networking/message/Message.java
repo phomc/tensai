@@ -32,8 +32,6 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import dev.phomc.tensai.networking.Channel;
-
 /**
  * Represents a message.<br>
  * A message is basically a packet which is delivered between client and server.
@@ -43,6 +41,7 @@ public abstract class Message {
 
 	/**
 	 * Constructs a message.
+	 *
 	 * @param id message id
 	 */
 	public Message(byte id) {
@@ -59,6 +58,7 @@ public abstract class Message {
 
 	/**
 	 * Unpacks the given data and write out to this message.
+	 *
 	 * @param bytes data
 	 */
 	public void unpack(byte[] bytes) {
@@ -78,6 +78,7 @@ public abstract class Message {
 
 	/**
 	 * Packs the current message into a byte array.
+	 *
 	 * @return data
 	 */
 	public byte[] pack() {

@@ -24,8 +24,7 @@
 
 package dev.phomc.tensai.bukkit.event.listeners;
 
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
+import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,8 +32,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import dev.phomc.tensai.bukkit.TensaiBukkit;
-
-import java.util.ArrayList;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
 
 public class PlayerJoinListener implements Listener {
 	private final TensaiBukkit tensai;

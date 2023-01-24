@@ -34,14 +34,15 @@ import dev.phomc.tensai.scheduler.Scheduler;
 public class ClientScheduler extends Scheduler {
 	private static ClientScheduler INSTANCE;
 
-	public static ClientScheduler getInstance() {
-		if(INSTANCE == null) {
-			INSTANCE = new ClientScheduler();
-		}
-		return INSTANCE;
-	}
-
 	public ClientScheduler() {
 		ServerTickEvents.END_SERVER_TICK.register(server -> onTick());
+	}
+
+	public static ClientScheduler getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new ClientScheduler();
+		}
+
+		return INSTANCE;
 	}
 }

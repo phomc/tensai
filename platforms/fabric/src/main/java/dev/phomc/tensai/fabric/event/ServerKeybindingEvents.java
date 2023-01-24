@@ -24,17 +24,16 @@
 
 package dev.phomc.tensai.fabric.event;
 
-import dev.phomc.tensai.keybinding.Key;
-import dev.phomc.tensai.keybinding.KeyState;
+import java.util.Map;
 
-import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
-import net.minecraft.server.network.ServerPlayerEntity;
-
-import java.util.Map;
+import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyState;
+import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 
 public class ServerKeybindingEvents {
 	public static final Event<ServerKeybindingEvents.KeyRegisterResultEvent> REGISTER_RESULT = EventFactory.createArrayBacked(ServerKeybindingEvents.KeyRegisterResultEvent.class, (listeners) -> (player, result) -> {

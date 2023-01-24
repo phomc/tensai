@@ -24,23 +24,18 @@
 
 package dev.phomc.tensai.fabric.client.networking;
 
-import dev.phomc.tensai.networking.message.Message;
-
 import io.netty.buffer.ByteBufUtil;
 
-import io.netty.buffer.Unpooled;
-
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.Subscriber;
+import dev.phomc.tensai.networking.message.Message;
 
 @Environment(EnvType.CLIENT)
 public abstract class ClientSubscriber extends Subscriber<PacketSender> {
@@ -53,6 +48,7 @@ public abstract class ClientSubscriber extends Subscriber<PacketSender> {
 		ClientPlayNetworking.registerGlobalReceiver(identifier, (client, handler, buf, responseSender) -> {
 			byte[] bytes = ByteBufUtil.getBytes(buf);
 			Callback<PacketSender> callback = subscription.get(bytes[0]);
+
 			if (callback != null) {
 				callback.call(bytes, responseSender);
 			}

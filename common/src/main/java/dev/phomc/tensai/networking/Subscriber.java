@@ -24,20 +24,19 @@
 
 package dev.phomc.tensai.networking;
 
-import dev.phomc.tensai.networking.Channel;
-
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * A subscriber is one who listens to incoming messages.
+ *
  * @param <T> Represents the sender. It is different per platforms.
  */
 public abstract class Subscriber<T> {
-	private final Channel channel;
 	protected final Map<Byte, Callback<T>> subscription = new HashMap<>();
+	private final Channel channel;
 
 	public Subscriber(Channel channel) {
 		this.channel = channel;
@@ -55,7 +54,8 @@ public abstract class Subscriber<T> {
 
 	/**
 	 * Subscribe a specific type of message.
-	 * @param id message type
+	 *
+	 * @param id       message type
 	 * @param callback callback
 	 */
 	public void subscribe(byte id, Callback<T> callback) {
@@ -67,6 +67,7 @@ public abstract class Subscriber<T> {
 		 * This callback triggers when a message is received.<br>
 		 * <b>Note:</b> It may be called asynchronously. In some platforms such as Bukkit, it is unsafe to do
 		 * synchronous operations inside this method's implementation.
+		 *
 		 * @param data
 		 * @param sender
 		 */

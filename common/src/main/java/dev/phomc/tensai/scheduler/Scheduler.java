@@ -27,9 +27,6 @@ package dev.phomc.tensai.scheduler;
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
-import java.util.function.LongUnaryOperator;
-import java.util.function.Supplier;
 
 /**
  * Represents a task scheduler.
@@ -48,10 +45,11 @@ public class Scheduler {
 
 		while (true) {
 			Task task = queue.peek();
-			if(task == null || task.getNextTickTime() > tick) break;
+			if (task == null || task.getNextTickTime() > tick) break;
 			queue.poll();
 			if (task.isCancelled()) continue;
 			task.getExecutor().run();
+
 			if (task.getRecurringCounter() < task.getRecurringTimes()) {
 				task.increaseRecurringCounter();
 				task.setNextTickTime(safeAddition(tick, task.getInterval()));
@@ -62,9 +60,11 @@ public class Scheduler {
 	private long safeAddition(long x, long delta) {
 		// Copy from Math#addExact
 		long y = x + delta;
+
 		if (((x ^ y) & (delta ^ y)) < 0) {
 			y = delta;
 		}
+
 		return y;
 	}
 

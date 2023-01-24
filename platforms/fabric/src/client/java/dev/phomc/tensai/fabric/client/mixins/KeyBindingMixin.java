@@ -26,11 +26,10 @@ package dev.phomc.tensai.fabric.client.mixins;
 
 import java.util.Map;
 
-import net.minecraft.client.option.KeyBinding;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 
 @Mixin(net.minecraft.client.option.KeyBinding.class)

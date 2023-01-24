@@ -46,12 +46,14 @@ public interface Tensai {
 
 	/**
 	 * Gets the key binding manager.
+	 *
 	 * @return {@link KeyBindingManager}
 	 */
 	KeyBindingManager getKeyBindingManager();
 
 	/**
 	 * Gets Tensai's internal task scheduler.
+	 *
 	 * @return {@link Scheduler}
 	 */
 	Scheduler getTaskScheduler();

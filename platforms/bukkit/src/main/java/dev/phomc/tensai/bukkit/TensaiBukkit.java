@@ -29,19 +29,18 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import dev.phomc.tensai.bukkit.keybinding.KeyBindingMessageSubscriber;
-import dev.phomc.tensai.bukkit.networking.ServerSubscriber;
-import dev.phomc.tensai.bukkit.scheduler.ServerScheduler;
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.scheduler.Scheduler;
-
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
 import dev.phomc.tensai.bukkit.client.PlayerQuitEventsListener;
 import dev.phomc.tensai.bukkit.event.listeners.PlayerJoinListener;
+import dev.phomc.tensai.bukkit.keybinding.KeyBindingMessageSubscriber;
+import dev.phomc.tensai.bukkit.networking.ServerSubscriber;
+import dev.phomc.tensai.bukkit.scheduler.ServerScheduler;
 import dev.phomc.tensai.bukkit.vfx.GlobalVisualEffectsImpl;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.Tensai;
 import dev.phomc.tensai.server.client.ClientHandle;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
@@ -75,9 +74,10 @@ public class TensaiBukkit extends JavaPlugin implements Tensai {
 		INSTANCE = this;
 
 		// Plugin messaging channels
-		for(Channel channel : Channel.values()) {
+		for (Channel channel : Channel.values()) {
 			getServer().getMessenger().registerOutgoingPluginChannel(this, channel.getNamespace());
 		}
+
 		registerIncomingMessenger(new KeyBindingMessageSubscriber(Channel.KEYBINDING));
 
 		// Events

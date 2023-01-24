@@ -24,16 +24,15 @@
 
 package dev.phomc.tensai.fabric.client.scheduler.tasks;
 
+import java.util.Map;
+
 import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
-import dev.phomc.tensai.fabric.client.keybinding.KeyBindingMessageSubscriber;
 import dev.phomc.tensai.fabric.client.networking.ClientPublisher;
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.c2s.KeyBindingStateUpdate;
 import dev.phomc.tensai.scheduler.Task;
-
-import java.util.Map;
 
 public class KeyStateCheckTask implements Runnable {
 	public static Task build() {
@@ -47,7 +46,8 @@ public class KeyStateCheckTask implements Runnable {
 	@Override
 	public void run() {
 		Map<Key, KeyState> states = KeyBindingManager.getInstance().fetchStates();
-		if(!states.isEmpty()) {
+
+		if (!states.isEmpty()) {
 			ClientPublisher.publish(Channel.KEYBINDING, new KeyBindingStateUpdate(states));
 		}
 	}

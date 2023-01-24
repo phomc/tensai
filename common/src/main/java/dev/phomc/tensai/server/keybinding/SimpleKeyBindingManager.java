@@ -28,12 +28,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyBinding;
-
 import dev.phomc.tensai.keybinding.KeyState;
-
-import org.jetbrains.annotations.NotNull;
 
 public class SimpleKeyBindingManager implements KeyBindingManager {
 	private final Map<Key, KeyBinding> keyBindings = new HashMap<>();

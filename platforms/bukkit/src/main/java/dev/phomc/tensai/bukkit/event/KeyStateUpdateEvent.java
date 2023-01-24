@@ -24,16 +24,14 @@
 
 package dev.phomc.tensai.bukkit.event;
 
-import dev.phomc.tensai.keybinding.Key;
-import dev.phomc.tensai.keybinding.KeyState;
+import java.util.Map;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
-
-import java.util.Map;
+import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyState;
 
 /**
  * This event is triggered whenever one or more key states is updated.<br>
@@ -57,6 +55,7 @@ public final class KeyStateUpdateEvent extends PlayerEvent {
 
 	/**
 	 * Returns the current key states.
+	 *
 	 * @return an <b>unmodifiable</b> map representing the key states
 	 */
 	public Map<Key, KeyState> getKeyStates() {

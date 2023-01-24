@@ -26,13 +26,12 @@ package dev.phomc.tensai.server.keybinding;
 
 import java.util.Map;
 
-import dev.phomc.tensai.keybinding.Key;
-import dev.phomc.tensai.keybinding.KeyBinding;
-
-import dev.phomc.tensai.keybinding.KeyState;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyBinding;
+import dev.phomc.tensai.keybinding.KeyState;
 
 /**
  * Represents a keybinding manager.

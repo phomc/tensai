@@ -24,12 +24,12 @@
 
 package dev.phomc.tensai.fabric.mixins;
 
-import net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon;
 
 @Mixin(ServerPlayNetworkAddon.class)
 public interface ServerPlayNetworkAddonMixin {

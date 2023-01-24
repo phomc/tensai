@@ -24,11 +24,11 @@
 
 package dev.phomc.tensai.fabric.scheduler;
 
-import dev.phomc.tensai.scheduler.Scheduler;
-
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+
+import dev.phomc.tensai.scheduler.Scheduler;
 
 @Environment(EnvType.SERVER)
 public class ServerScheduler extends Scheduler {

@@ -24,16 +24,14 @@
 
 package dev.phomc.tensai.fabric;
 
-import dev.phomc.tensai.fabric.event.listeners.PlayerJoinListener;
-import dev.phomc.tensai.fabric.keybinding.KeyBindingMessageSubscriber;
-import dev.phomc.tensai.networking.Channel;
-
 import net.fabricmc.api.DedicatedServerModInitializer;
-
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 import dev.phomc.tensai.fabric.clients.FabricClientHandle;
+import dev.phomc.tensai.fabric.event.listeners.PlayerJoinListener;
+import dev.phomc.tensai.fabric.keybinding.KeyBindingMessageSubscriber;
+import dev.phomc.tensai.networking.Channel;
 
 public class TensaiFabricServer implements DedicatedServerModInitializer {
 	@Override

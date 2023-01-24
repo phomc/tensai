@@ -32,13 +32,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class CustomTranslationStorage {
 	private static final CustomTranslationStorage INSTANCE = new CustomTranslationStorage();
+	private final Map<String, String> translations = new HashMap<>();
 
 	@NotNull
 	public static CustomTranslationStorage getInstance() {
 		return INSTANCE;
 	}
-
-	private final Map<String, String> translations = new HashMap<>();
 
 	@Nullable
 	public String put(String key, String value) {

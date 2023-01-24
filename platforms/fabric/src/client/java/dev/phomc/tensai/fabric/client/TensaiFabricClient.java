@@ -24,18 +24,16 @@
 
 package dev.phomc.tensai.fabric.client;
 
-import dev.phomc.tensai.fabric.client.keybinding.KeyBindingMessageSubscriber;
-
-import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
-
-import dev.phomc.tensai.fabric.client.scheduler.tasks.KeyStateCheckTask;
-
-import dev.phomc.tensai.networking.Channel;
-
 import net.fabricmc.api.ClientModInitializer;
+
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingMessageSubscriber;
+import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
+import dev.phomc.tensai.fabric.client.scheduler.tasks.KeyStateCheckTask;
+import dev.phomc.tensai.networking.Channel;
 
 public class TensaiFabricClient implements ClientModInitializer {
 	private static TensaiFabricClient INSTANCE;
+
 	public static TensaiFabricClient getInstance() {
 		return INSTANCE;
 	}

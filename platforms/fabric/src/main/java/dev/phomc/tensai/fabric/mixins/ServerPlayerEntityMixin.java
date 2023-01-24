@@ -24,8 +24,6 @@
 
 package dev.phomc.tensai.fabric.mixins;
 
-import dev.phomc.tensai.networking.Channel;
-
 import io.netty.buffer.Unpooled;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,6 +36,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import dev.phomc.tensai.fabric.clients.FabricClientHandle;
 import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
+import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
 @Mixin(ServerPlayerEntity.class)

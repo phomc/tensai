@@ -24,10 +24,10 @@
 
 package dev.phomc.tensai.bukkit.scheduler;
 
-import dev.phomc.tensai.scheduler.Scheduler;
-
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+
+import dev.phomc.tensai.scheduler.Scheduler;
 
 public class ServerScheduler extends Scheduler {
 	public ServerScheduler(Plugin plugin) {

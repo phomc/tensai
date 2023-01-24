@@ -24,16 +24,16 @@
 
 package dev.phomc.tensai.fabric.client.networking;
 
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.Message;
-
 import io.netty.buffer.Unpooled;
+
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.Message;
 
 public class ClientPublisher {
 	public static void publish(Identifier identifier, Message message, PacketSender consumer) {

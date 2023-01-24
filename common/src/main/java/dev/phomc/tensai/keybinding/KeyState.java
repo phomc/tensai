@@ -26,8 +26,6 @@ package dev.phomc.tensai.keybinding;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Represents a key state.<br>
  * <b>The key state is used on server-side only. No key state update will be sent to client.</b>

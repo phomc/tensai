@@ -24,22 +24,21 @@
 
 package dev.phomc.tensai.bukkit.keybinding;
 
+import java.util.Map;
+
+import org.bukkit.Bukkit;
+
 import dev.phomc.tensai.bukkit.TensaiBukkit;
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
-import dev.phomc.tensai.bukkit.event.KeyStateUpdateEvent;
 import dev.phomc.tensai.bukkit.event.KeyRegisterResultEvent;
+import dev.phomc.tensai.bukkit.event.KeyStateUpdateEvent;
 import dev.phomc.tensai.bukkit.networking.ServerSubscriber;
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.MessageType;
 import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
-
 import dev.phomc.tensai.networking.message.c2s.KeyBindingStateUpdate;
-
-import org.bukkit.Bukkit;
-
-import java.util.Map;
 
 public class KeyBindingMessageSubscriber extends ServerSubscriber {
 	public KeyBindingMessageSubscriber(Channel channel) {

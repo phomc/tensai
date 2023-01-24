@@ -24,15 +24,10 @@
 
 package dev.phomc.tensai.fabric.client.keybinding;
 
-import java.util.Map;
-
 import dev.phomc.tensai.fabric.client.networking.ClientSubscriber;
-
 import dev.phomc.tensai.fabric.client.security.PermissionManager;
-
-import dev.phomc.tensai.networking.Channel;
-
 import dev.phomc.tensai.keybinding.KeyBinding;
+import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.MessageType;
 import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
@@ -51,8 +46,8 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 			PermissionManager.getInstance().tryGrant(KeyBindingManager.KEY_RECORD_PERMISSION, ok -> {
 				byte result = ok ? KeyBinding.RegisterStatus.UNKNOWN : KeyBinding.RegisterStatus.CLIENT_REJECTED;
 
-				if(ok) {
-					if(KeyBindingManager.getInstance().testBulkAvailability(msg.getKeymap())) {
+				if (ok) {
+					if (KeyBindingManager.getInstance().testBulkAvailability(msg.getKeymap())) {
 						KeyBindingManager.getInstance().registerBulk(msg.getKeymap());
 						KeyBindingManager.getInstance().setInputDelay(msg.getInputDelay());
 						result = KeyBinding.RegisterStatus.SUCCESS;

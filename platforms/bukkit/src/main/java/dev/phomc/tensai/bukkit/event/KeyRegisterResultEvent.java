@@ -24,21 +24,18 @@
 
 package dev.phomc.tensai.bukkit.event;
 
-import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+
+import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 
 /**
  * This event returns the keybinding registration result.
  * <b>Note:</b> This event is called asynchronously.
  */
-
-
 public final class KeyRegisterResultEvent extends PlayerEvent {
 	public static final HandlerList handlers = new HandlerList();
-
 	private final KeyBindingRegisterResponse response;
 
 	public KeyRegisterResultEvent(Player player, KeyBindingRegisterResponse response) {

@@ -24,16 +24,15 @@
 
 package dev.phomc.tensai.bukkit.networking;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.server.client.ClientHandle;
-
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.Subscriber;
+import org.jetbrains.annotations.NotNull;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import org.jetbrains.annotations.NotNull;
+import dev.phomc.tensai.bukkit.TensaiBukkit;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.Subscriber;
+import dev.phomc.tensai.server.client.ClientHandle;
 
 public abstract class ServerSubscriber extends Subscriber<ClientHandle> implements PluginMessageListener {
 	public ServerSubscriber(Channel channel) {
@@ -45,8 +44,8 @@ public abstract class ServerSubscriber extends Subscriber<ClientHandle> implemen
 	@Override
 	public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] message) {
 		if (!channel.equals(getChannel().getNamespace())) return;
-
 		Callback<ClientHandle> callback = subscription.get(message[0]);
+
 		if (callback != null) {
 			callback.call(message, TensaiBukkit.getClient(player));
 		}

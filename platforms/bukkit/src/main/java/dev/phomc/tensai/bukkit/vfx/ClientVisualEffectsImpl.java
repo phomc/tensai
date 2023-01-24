@@ -26,9 +26,9 @@ package dev.phomc.tensai.bukkit.vfx;
 
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
 import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.s2c.AnimationPlayMessage;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
-import dev.phomc.tensai.networking.message.s2c.AnimationPlayMessage;
 
 public class ClientVisualEffectsImpl implements VisualEffects {
 	private ClientHandleImpl handle;

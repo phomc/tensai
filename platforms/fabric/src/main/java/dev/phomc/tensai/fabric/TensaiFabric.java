@@ -35,6 +35,5 @@ public class TensaiFabric implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-
 	}
 }

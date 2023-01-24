@@ -28,12 +28,11 @@ import java.lang.ref.WeakReference;
 
 import com.google.common.base.Preconditions;
 
-import dev.phomc.tensai.networking.Channel;
-
 import org.bukkit.entity.Player;
 
 import dev.phomc.tensai.bukkit.TensaiBukkit;
 import dev.phomc.tensai.bukkit.vfx.ClientVisualEffectsImpl;
+import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.server.client.ClientHandle;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
