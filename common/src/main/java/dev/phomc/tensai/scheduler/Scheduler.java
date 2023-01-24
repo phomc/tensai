@@ -60,7 +60,7 @@ public class Scheduler {
 
 			if (task.getRecurringCounter() < task.getRecurringTimes()) {
 				task.increaseRecurringCounter();
-				task.setNextTickTime(safeAddition(tick, task.getInterval()));
+				schedule(task, task.getInterval());
 			}
 		}
 	}

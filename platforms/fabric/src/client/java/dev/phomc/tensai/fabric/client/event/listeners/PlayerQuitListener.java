@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,46 +22,18 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.client.mixins;
-
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+package dev.phomc.tensai.fabric.client.event.listeners;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 
-import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
-import dev.phomc.tensai.scheduler.Scheduler;
-import dev.phomc.tensai.server.Tensai;
-import dev.phomc.tensai.server.keybinding.KeyBindingManager;
-import dev.phomc.tensai.server.vfx.VisualEffects;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
-@Mixin(MinecraftClient.class)
-public abstract class MinecraftClientMixin implements Tensai {
-	@Shadow
-	private Thread thread;
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
 
-	@Unique
-	private ClientScheduler clientScheduler;
-
+public class PlayerQuitListener implements ClientPlayConnectionEvents.Disconnect {
 	@Override
-	public VisualEffects getGlobalVfx() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public KeyBindingManager getKeyBindingManager() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Scheduler getTaskScheduler() {
-		if (clientScheduler == null) clientScheduler = new ClientScheduler();
-		return clientScheduler;
-	}
-
-	@Override
-	public boolean isPrimaryThread() {
-		return Thread.currentThread().equals(thread);
+	public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+		KeyBindingManager.getInstance().unregisterAll();
 	}
 }

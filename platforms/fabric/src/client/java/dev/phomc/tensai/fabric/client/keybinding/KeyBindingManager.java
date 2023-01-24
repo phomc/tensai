@@ -24,14 +24,16 @@
 
 package dev.phomc.tensai.fabric.client.keybinding;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 
@@ -45,6 +47,7 @@ import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.util.ReflectionUtil;
 
 public class KeyBindingManager {
 	public static final Identifier KEYBINDING_NAMESPACE = new Identifier(Channel.KEYBINDING.getNamespace());
@@ -76,7 +79,7 @@ public class KeyBindingManager {
 	}
 
 	public void setInputDelay(int inputDelay) {
-		this.inputDelay = Math.max(inputDelay, 1);
+		this.inputDelay = Math.max(inputDelay, DEFAULT_INPUT_DELAY);
 	}
 
 	public boolean testBulkAvailability(@NotNull List<KeyBinding> keymap) {
@@ -105,6 +108,9 @@ public class KeyBindingManager {
 			KeyBindingHelper.registerKeyBinding(v);
 			registeredKeys.add(v);
 		}
+
+		GameOptions gameOptions = MinecraftClient.getInstance().options;
+		ReflectionUtil.setDeclaredField(GameOptions.class, gameOptions, "allKeys", KeyBindingRegistryImpl.process(gameOptions.allKeys));
 	}
 
 	public void unregisterAll() {
@@ -114,14 +120,8 @@ public class KeyBindingManager {
 			KeyBindingMixin.getKeyCodeMapping().remove(keyBinding.getDefaultKey());
 		}
 
-		try {
-			Field field = KeyBindingRegistryImpl.class.getDeclaredField("MODDED_KEY_BINDINGS");
-			field.setAccessible(true);
-			//noinspection unchecked
-			((List<net.minecraft.client.option.KeyBinding>) field.get(null)).removeAll(registeredKeys);
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
+		//noinspection unchecked
+		((List<net.minecraft.client.option.KeyBinding>) Objects.requireNonNull(ReflectionUtil.getDeclaredFieldValue(KeyBindingRegistryImpl.class, null, "MODDED_KEY_BINDINGS"))).removeAll(registeredKeys);
 
 		stateTable = new HashMap<>();
 		registeredKeys = new ArrayList<>();

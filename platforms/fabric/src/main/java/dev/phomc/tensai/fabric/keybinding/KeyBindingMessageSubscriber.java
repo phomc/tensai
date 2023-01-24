@@ -29,6 +29,7 @@ import java.util.Map;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 
+import dev.phomc.tensai.fabric.TensaiFabric;
 import dev.phomc.tensai.fabric.event.ServerKeybindingEvents;
 import dev.phomc.tensai.fabric.mixins.ServerPlayNetworkAddonMixin;
 import dev.phomc.tensai.fabric.mixins.ServerPlayNetworkHandlerMixin;
@@ -51,6 +52,7 @@ public class KeyBindingMessageSubscriber extends ServerSubscriber {
 		subscribe(MessageType.KEYBINDING_REGISTER_RESPONSE, (data, sender) -> {
 			KeyBindingRegisterResponse msg = new KeyBindingRegisterResponse();
 			msg.unpack(data);
+			TensaiFabric.LOGGER.info("Keybinding registration status: {}", msg.getResult());
 			ServerKeybindingEvents.REGISTER_RESULT.invoker().respond(((ServerPlayNetworkAddonMixin) sender).getHandler().player, msg);
 		});
 
@@ -58,6 +60,7 @@ public class KeyBindingMessageSubscriber extends ServerSubscriber {
 			ServerPlayNetworkHandler handler = ((ServerPlayNetworkAddonMixin) sender).getHandler();
 			MinecraftServer server = ((ServerPlayNetworkHandlerMixin) handler).getServer();
 			Map<Key, KeyState> states = ((Tensai) server).getKeyBindingManager().getKeyStates();
+			TensaiFabric.LOGGER.info("Keybinding state updated for {} keys", states.size());
 			// we want to pass key state references rather than cloning them
 			// So key state is only updated if its corresponding key is registered
 			KeyBindingStateUpdate msg = new KeyBindingStateUpdate(states);

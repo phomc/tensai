@@ -33,6 +33,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 
+import dev.phomc.tensai.fabric.TensaiFabric;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.Subscriber;
 import dev.phomc.tensai.networking.message.Message;
@@ -47,6 +48,7 @@ public abstract class ClientSubscriber extends Subscriber<PacketSender> {
 
 		ClientPlayNetworking.registerGlobalReceiver(identifier, (client, handler, buf, responseSender) -> {
 			byte[] bytes = ByteBufUtil.getBytes(buf);
+			TensaiFabric.LOGGER.debug("Received message id {} at channel {}", bytes[0], getChannel());
 			Callback<PacketSender> callback = subscription.get(bytes[0]);
 
 			if (callback != null) {

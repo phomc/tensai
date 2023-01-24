@@ -44,6 +44,7 @@ public abstract class ServerSubscriber extends Subscriber<ClientHandle> implemen
 	@Override
 	public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] message) {
 		if (!channel.equals(getChannel().getNamespace())) return;
+		TensaiBukkit.LOGGER.debug("Received message id {} at channel {}", message[0], channel);
 		Callback<ClientHandle> callback = subscription.get(message[0]);
 
 		if (callback != null) {

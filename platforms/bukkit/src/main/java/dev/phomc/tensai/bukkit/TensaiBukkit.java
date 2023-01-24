@@ -27,14 +27,16 @@ package dev.phomc.tensai.bukkit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
-import dev.phomc.tensai.bukkit.client.PlayerQuitEventsListener;
+import dev.phomc.tensai.bukkit.event.listeners.PlayerQuitListener;
 import dev.phomc.tensai.bukkit.event.listeners.PlayerJoinListener;
 import dev.phomc.tensai.bukkit.keybinding.KeyBindingMessageSubscriber;
 import dev.phomc.tensai.bukkit.networking.ServerSubscriber;
@@ -52,7 +54,7 @@ public class TensaiBukkit extends JavaPlugin implements Tensai {
 	// Wrappers
 	private static final Map<UUID, ClientHandle> CLIENTS = new HashMap<>();
 	private static TensaiBukkit INSTANCE;
-	protected Logger logger;
+	public static final Logger LOGGER = LoggerFactory.getLogger("tensai");
 	private GlobalVisualEffectsImpl globalVfx;
 	private KeyBindingManager keyBindingManager;
 	private Scheduler scheduler;
@@ -71,7 +73,6 @@ public class TensaiBukkit extends JavaPlugin implements Tensai {
 
 	@Override
 	public void onEnable() {
-		logger = getLogger();
 		INSTANCE = this;
 
 		// Plugin messaging channels
@@ -83,7 +84,7 @@ public class TensaiBukkit extends JavaPlugin implements Tensai {
 
 		// Events
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-		getServer().getPluginManager().registerEvents(new PlayerQuitEventsListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
 
 		globalVfx = new GlobalVisualEffectsImpl(this);
 		keyBindingManager = new SimpleKeyBindingManager();

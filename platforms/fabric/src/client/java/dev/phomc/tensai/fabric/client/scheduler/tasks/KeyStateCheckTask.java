@@ -26,6 +26,8 @@ package dev.phomc.tensai.fabric.client.scheduler.tasks;
 
 import java.util.Map;
 
+import net.minecraft.client.MinecraftClient;
+
 import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
 import dev.phomc.tensai.fabric.client.networking.ClientPublisher;
 import dev.phomc.tensai.keybinding.Key;
@@ -45,6 +47,7 @@ public class KeyStateCheckTask implements Runnable {
 
 	@Override
 	public void run() {
+		if (MinecraftClient.getInstance().getNetworkHandler() == null) return;
 		Map<Key, KeyState> states = KeyBindingManager.getInstance().fetchStates();
 
 		if (!states.isEmpty()) {

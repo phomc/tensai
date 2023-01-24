@@ -29,7 +29,9 @@ import java.io.File;
 import net.minecraft.client.MinecraftClient;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
+import dev.phomc.tensai.fabric.client.event.listeners.PlayerQuitListener;
 import dev.phomc.tensai.fabric.client.keybinding.KeyBindingMessageSubscriber;
 import dev.phomc.tensai.fabric.client.scheduler.tasks.KeyStateCheckTask;
 import dev.phomc.tensai.fabric.client.scheduler.tasks.PermissionLoadTask;
@@ -66,9 +68,11 @@ public class TensaiFabricClient implements ClientModInitializer {
 
 		new KeyBindingMessageSubscriber(Channel.KEYBINDING).onInitialize();
 
+		ClientPlayConnectionEvents.DISCONNECT.register(new PlayerQuitListener());
+
 		Scheduler taskScheduler = ((Tensai) MinecraftClient.getInstance()).getTaskScheduler();
 		taskScheduler.schedule(PermissionLoadTask.build());
-		taskScheduler.schedule(PermissionSaveTask.build(), 1200);
-		taskScheduler.schedule(KeyStateCheckTask.build(), 2400);
+		taskScheduler.schedule(PermissionSaveTask.build(), 100);
+		taskScheduler.schedule(KeyStateCheckTask.build(), 100);
 	}
 }

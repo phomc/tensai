@@ -26,6 +26,9 @@ package dev.phomc.tensai.fabric.client.keybinding;
 
 import java.util.Objects;
 
+import net.minecraft.client.MinecraftClient;
+
+import dev.phomc.tensai.fabric.TensaiFabric;
 import dev.phomc.tensai.fabric.client.TensaiFabricClient;
 import dev.phomc.tensai.fabric.client.mixins.ClientPlayNetworkAddonMixin;
 import dev.phomc.tensai.fabric.client.networking.ClientSubscriber;
@@ -36,8 +39,6 @@ import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
 import dev.phomc.tensai.server.Tensai;
 
-import net.minecraft.client.MinecraftClient;
-
 public class KeyBindingMessageSubscriber extends ClientSubscriber {
 	public KeyBindingMessageSubscriber(Channel channel) {
 		super(channel);
@@ -46,6 +47,7 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 	@Override
 	public void onInitialize() {
 		subscribe(MessageType.KEYBINDING_REGISTER, (data, sender) -> {
+			TensaiFabric.LOGGER.info("Registering keybinding...");
 			KeyBindingRegisterMessage msg = new KeyBindingRegisterMessage();
 			msg.unpack(data);
 
@@ -53,21 +55,27 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 			String server = Objects.requireNonNull(((ClientPlayNetworkAddonMixin) sender).getHandler().getServerInfo()).address;
 
 			((Tensai) MinecraftClient.getInstance()).getTaskScheduler().runSync(() ->
-				TensaiFabricClient.getInstance().getPermissionManager().tryGrant(KeyBindingManager.KEY_RECORD_PERMISSION, server, ok -> {
-					byte result = ok ? KeyBinding.RegisterStatus.UNKNOWN : KeyBinding.RegisterStatus.CLIENT_REJECTED;
+					TensaiFabricClient.getInstance().getPermissionManager().tryGrant(KeyBindingManager.KEY_RECORD_PERMISSION, server, ok -> {
+						byte result = ok ? KeyBinding.RegisterStatus.UNKNOWN : KeyBinding.RegisterStatus.CLIENT_REJECTED;
 
-					if (ok) {
-						if (KeyBindingManager.getInstance().testBulkAvailability(msg.getKeymap())) {
-							KeyBindingManager.getInstance().registerBulk(msg.getKeymap());
-							KeyBindingManager.getInstance().setInputDelay(msg.getInputDelay());
-							result = KeyBinding.RegisterStatus.SUCCESS;
+						if (ok) {
+							TensaiFabric.LOGGER.info("Keybinding registration allowed");
+
+							if (KeyBindingManager.getInstance().testBulkAvailability(msg.getKeymap())) {
+								KeyBindingManager.getInstance().registerBulk(msg.getKeymap());
+								KeyBindingManager.getInstance().setInputDelay(msg.getInputDelay());
+								result = KeyBinding.RegisterStatus.SUCCESS;
+								TensaiFabric.LOGGER.info("Keybinding registered ({} keys)", msg.getKeymap().size());
+							} else {
+								result = KeyBinding.RegisterStatus.KEY_DUPLICATED;
+								TensaiFabric.LOGGER.info("Keybinding collision detected");
+							}
 						} else {
-							result = KeyBinding.RegisterStatus.KEY_DUPLICATED;
+							TensaiFabric.LOGGER.info("Keybinding registration declined");
 						}
-					}
 
-					publish(new KeyBindingRegisterResponse(result), sender);
-				})
+						publish(new KeyBindingRegisterResponse(result), sender);
+					})
 			);
 		});
 	}
