@@ -6,7 +6,8 @@ dependencies {
 
 tasks {
     register("bukkitFatJar", Jar::class.java) {
-        dependsOn(jar.get())
+        mustRunAfter(build)
+        dependsOn(jar)
         archiveClassifier.set("fat")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         from(configurations.compileClasspath.get()

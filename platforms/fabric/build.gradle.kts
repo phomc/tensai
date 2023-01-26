@@ -51,12 +51,13 @@ dependencies {
 
 tasks {
     register("fabricFatJar", Jar::class.java) {
-        dependsOn(remapJar.get())
+        mustRunAfter(build)
+        dependsOn(remapJar)
         archiveClassifier.set("fat")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         delete(File("$buildDir/remapped"))
         remapJar.get().outputs.files
-            .filter { it.name.endsWith("jar") }
+            .filter { it.name.endsWith("jar") && it.isFile && it.exists() }
             .map {
                 unzipTo(File("$buildDir/remapped"), it)
             }
