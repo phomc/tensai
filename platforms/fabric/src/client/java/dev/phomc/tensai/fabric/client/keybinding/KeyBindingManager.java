@@ -124,7 +124,7 @@ public class KeyBindingManager {
 
 		//noinspection unchecked
 		((List<net.minecraft.client.option.KeyBinding>) Objects.requireNonNull(ReflectionUtil.getDeclaredFieldValue(KeyBindingRegistryImpl.class, null, "MODDED_KEY_BINDINGS"))).removeAll(registeredKeys);
-		((GameOptionProcessor) MinecraftClient.getInstance().options).reprocessKeys();
+		((GameOptionProcessor) MinecraftClient.getInstance().options).resetKeys(registeredKeys);
 
 		stateTable = new HashMap<>();
 		registeredKeys = new ArrayList<>();

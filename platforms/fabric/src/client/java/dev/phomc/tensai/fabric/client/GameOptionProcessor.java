@@ -24,6 +24,12 @@
 
 package dev.phomc.tensai.fabric.client;
 
+import java.util.List;
+
+import net.minecraft.client.option.KeyBinding;
+
 public interface GameOptionProcessor {
 	void reprocessKeys();
+
+	void resetKeys(List<KeyBinding> keys);
 }
