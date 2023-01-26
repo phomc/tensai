@@ -44,7 +44,7 @@ import dev.phomc.tensai.keybinding.KeyState;
  * </ul>
  */
 public final class KeyStateUpdateEvent extends PlayerEvent {
-	public static final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 
 	private final Map<Key, KeyState> keyStates;
 
@@ -65,5 +65,9 @@ public final class KeyStateUpdateEvent extends PlayerEvent {
 	@Override
 	public HandlerList getHandlers() {
 		return new HandlerList();
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

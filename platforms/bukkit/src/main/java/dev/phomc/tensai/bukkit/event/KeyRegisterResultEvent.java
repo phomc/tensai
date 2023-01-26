@@ -35,7 +35,7 @@ import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
  * <b>Note:</b> This event is called asynchronously.
  */
 public final class KeyRegisterResultEvent extends PlayerEvent {
-	public static final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 	private final KeyBindingRegisterResponse response;
 
 	public KeyRegisterResultEvent(Player player, KeyBindingRegisterResponse response) {
@@ -50,5 +50,9 @@ public final class KeyRegisterResultEvent extends PlayerEvent {
 	@Override
 	public HandlerList getHandlers() {
 		return new HandlerList();
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }
