@@ -51,3 +51,10 @@ allprojects {
         configFile = rootProject.file("checkstyle.xml")
     }
 }
+
+tasks {
+    register("fatJar", Jar::class.java) {
+        dependsOn(":tensai-bukkit:bukkitFatJar")
+        dependsOn(":tensai-fabric:fabricFatJar")
+    }
+}

@@ -25,6 +25,9 @@
 package dev.phomc.tensai.fabric.event.listeners;
 
 import java.util.ArrayList;
+import java.util.Collection;
+
+import dev.phomc.tensai.keybinding.KeyBinding;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -41,12 +44,15 @@ public class PlayerJoinListener implements ServerPlayConnectionEvents.Join {
 	@Override
 	public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
 		Tensai tensai = (Tensai) server;
+		Collection<KeyBinding> keyBindings = tensai.getKeyBindingManager().getKeyBindings().values();
 
-		((Tensai) server).getTaskScheduler().runSync(() -> {
-			((FabricClientHandle) handler.player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
-					tensai.getKeyBindingManager().getInputDelay(),
-					new ArrayList<>(tensai.getKeyBindingManager().getKeyBindings().values())
-			).pack());
-		}, 40);
+		if (!keyBindings.isEmpty()) {
+			((Tensai) server).getTaskScheduler().runSync(() -> {
+				((FabricClientHandle) handler.player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
+						tensai.getKeyBindingManager().getInputDelay(),
+						new ArrayList<>(keyBindings)
+				).pack());
+			}, 40);
+		}
 	}
 }

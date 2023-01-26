@@ -22,39 +22,29 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.event.listeners;
+package dev.phomc.tensai.fabric.client.mixins;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.KeyBinding;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
+import dev.phomc.tensai.fabric.client.GameOptionProcessor;
 
-public class PlayerJoinListener implements Listener {
-	private final TensaiBukkit tensai;
+@Mixin(GameOptions.class)
+public class GameOptionsMixin implements GameOptionProcessor {
+	@Mutable
+	@Shadow
+	@Final
+	public KeyBinding[] allKeys;
 
-	public PlayerJoinListener(TensaiBukkit tensai) {
-		this.tensai = tensai;
-	}
-
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		Collection<KeyBinding> keyBindings = tensai.getKeyBindingManager().getKeyBindings().values();
-
-		if (!keyBindings.isEmpty()) {
-			TensaiBukkit.getClient(player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
-					TensaiBukkit.getInstance().getKeyBindingManager().getInputDelay(),
-					new ArrayList<>(keyBindings)
-			).pack());
-		}
+	@Override
+	public void reprocessKeys() {
+		allKeys = KeyBindingRegistryImpl.process(allKeys);
 	}
 }

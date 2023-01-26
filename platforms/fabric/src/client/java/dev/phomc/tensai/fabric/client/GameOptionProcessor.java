@@ -22,39 +22,8 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.event.listeners;
+package dev.phomc.tensai.fabric.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import dev.phomc.tensai.keybinding.KeyBinding;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-
-import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
-
-public class PlayerJoinListener implements Listener {
-	private final TensaiBukkit tensai;
-
-	public PlayerJoinListener(TensaiBukkit tensai) {
-		this.tensai = tensai;
-	}
-
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		Collection<KeyBinding> keyBindings = tensai.getKeyBindingManager().getKeyBindings().values();
-
-		if (!keyBindings.isEmpty()) {
-			TensaiBukkit.getClient(player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
-					TensaiBukkit.getInstance().getKeyBindingManager().getInputDelay(),
-					new ArrayList<>(keyBindings)
-			).pack());
-		}
-	}
+public interface GameOptionProcessor {
+	void reprocessKeys();
 }

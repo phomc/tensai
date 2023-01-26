@@ -33,13 +33,13 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 
+import dev.phomc.tensai.fabric.client.GameOptionProcessor;
 import dev.phomc.tensai.fabric.client.i18n.CustomTranslationStorage;
 import dev.phomc.tensai.fabric.client.mixins.KeyBindingMixin;
 import dev.phomc.tensai.fabric.client.security.Permission;
@@ -109,8 +109,7 @@ public class KeyBindingManager {
 			registeredKeys.add(v);
 		}
 
-		GameOptions gameOptions = MinecraftClient.getInstance().options;
-		ReflectionUtil.setDeclaredField(GameOptions.class, gameOptions, "allKeys", KeyBindingRegistryImpl.process(gameOptions.allKeys));
+		((GameOptionProcessor) MinecraftClient.getInstance().options).reprocessKeys();
 	}
 
 	public void unregisterAll() {

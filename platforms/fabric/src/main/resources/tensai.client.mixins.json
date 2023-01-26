@@ -7,11 +7,13 @@
   "client": [
     "MinecraftClientMixin",
     "ClientPlayNetworkAddonMixin",
+    "TranslationStorageMixin",
     "KeyBindingMixin",
-    "TranslationStorageMixin"
+    "GameOptionsMixin"
   ],
   "server": [],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "refmap": "client-tensai-fabric-refmap.json"
 }

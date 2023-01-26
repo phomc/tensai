@@ -54,6 +54,7 @@ tasks {
         dependsOn(remapJar.get())
         archiveClassifier.set("fat")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        delete(File("$buildDir/remapped"))
         remapJar.get().outputs.files
             .filter { it.name.endsWith("jar") }
             .map {
