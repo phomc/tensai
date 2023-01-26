@@ -30,7 +30,7 @@ import java.util.Collection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChannelEvent;
+import org.bukkit.event.player.PlayerRegisterChannelEvent;
 
 import dev.phomc.tensai.bukkit.TensaiBukkit;
 import dev.phomc.tensai.keybinding.KeyBinding;
@@ -45,7 +45,7 @@ public class PlayerChannelListener implements Listener {
 	}
 
 	@EventHandler
-	public void regChannel(PlayerChannelEvent event) {
+	public void regChannel(PlayerRegisterChannelEvent event) {
 		Player player = event.getPlayer();
 
 		if (event.getChannel().equals(Channel.KEYBINDING.getNamespace())) {

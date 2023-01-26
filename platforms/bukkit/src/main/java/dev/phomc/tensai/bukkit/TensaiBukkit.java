@@ -37,6 +37,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
 import dev.phomc.tensai.bukkit.event.listeners.PlayerChannelListener;
+import dev.phomc.tensai.bukkit.event.listeners.PlayerJoinListener;
 import dev.phomc.tensai.bukkit.event.listeners.PlayerQuitListener;
 import dev.phomc.tensai.bukkit.keybinding.KeyBindingMessageSubscriber;
 import dev.phomc.tensai.bukkit.networking.ServerSubscriber;
@@ -83,6 +84,7 @@ public class TensaiBukkit extends JavaPlugin implements Tensai {
 		registerIncomingMessenger(new KeyBindingMessageSubscriber(Channel.KEYBINDING));
 
 		// Events
+		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerChannelListener(this), this);
 

@@ -24,36 +24,30 @@
 
 package dev.phomc.tensai.bukkit.event.listeners;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.lang.reflect.Method;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
 
 public class PlayerJoinListener implements Listener {
-	private final TensaiBukkit tensai;
-
-	public PlayerJoinListener(TensaiBukkit tensai) {
-		this.tensai = tensai;
-	}
-
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		Collection<KeyBinding> keyBindings = tensai.getKeyBindingManager().getKeyBindings().values();
 
-		if (!keyBindings.isEmpty()) {
-			TensaiBukkit.getClient(player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
-					TensaiBukkit.getInstance().getKeyBindingManager().getInputDelay(),
-					new ArrayList<>(keyBindings)
-			).pack());
+		try {
+			Method method = player.getClass().getDeclaredMethod("addChannel", String.class);
+			method.setAccessible(true);
+
+			for (Channel channel : Channel.values()) {
+				// add incoming channel without the need of registration from client
+				method.invoke(player, channel.getNamespace());
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 }
