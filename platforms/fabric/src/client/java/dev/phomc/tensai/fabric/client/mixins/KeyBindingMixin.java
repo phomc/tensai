@@ -43,7 +43,4 @@ public interface KeyBindingMixin {
 	static Map<InputUtil.Key, net.minecraft.client.option.KeyBinding> getKeyCodeMapping() {
 		throw new UnsupportedOperationException();
 	}
-
-	@Accessor("timesPressed")
-	int getTimesPressed();
 }

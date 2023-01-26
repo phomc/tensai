@@ -131,7 +131,8 @@ public class KeyBindingManager {
 		Map<Key, KeyState> states = new HashMap<>();
 
 		for (net.minecraft.client.option.KeyBinding key : registeredKeys) {
-			int n = ((KeyBindingMixin) key).getTimesPressed();
+			int n = 0;
+			while (key.wasPressed()) n++;
 			Key k = lookupKey(key.getDefaultKey());
 			Integer old = stateTable.put(k, n);
 

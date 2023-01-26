@@ -27,14 +27,13 @@ package dev.phomc.tensai.bukkit.event.listeners;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import dev.phomc.tensai.bukkit.TensaiBukkit;
+import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
 
