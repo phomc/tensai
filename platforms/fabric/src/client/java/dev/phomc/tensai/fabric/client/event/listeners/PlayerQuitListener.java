@@ -34,6 +34,6 @@ import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
 public class PlayerQuitListener implements ClientPlayConnectionEvents.Disconnect {
 	@Override
 	public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
-		KeyBindingManager.getInstance().unregisterAll();
+		KeyBindingManager.getInstance().reset();
 	}
 }

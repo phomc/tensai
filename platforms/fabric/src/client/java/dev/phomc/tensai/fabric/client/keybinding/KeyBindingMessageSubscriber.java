@@ -62,8 +62,7 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 							TensaiFabric.LOGGER.info("Keybinding registration allowed");
 
 							if (KeyBindingManager.getInstance().testBulkAvailability(msg.getKeymap())) {
-								KeyBindingManager.getInstance().registerBulk(msg.getKeymap());
-								KeyBindingManager.getInstance().setInputDelay(msg.getInputDelay());
+								KeyBindingManager.getInstance().initialize(msg.getKeymap(), msg.getInputDelay());
 								result = KeyBinding.RegisterStatus.SUCCESS;
 								TensaiFabric.LOGGER.info("Keybinding registered ({} keys)", msg.getKeymap().size());
 							} else {

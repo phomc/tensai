@@ -42,11 +42,14 @@ import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 import dev.phomc.tensai.fabric.client.GameOptionProcessor;
 import dev.phomc.tensai.fabric.client.i18n.CustomTranslationStorage;
 import dev.phomc.tensai.fabric.client.mixins.KeyBindingMixin;
+import dev.phomc.tensai.fabric.client.scheduler.tasks.KeyStateCheckTask;
 import dev.phomc.tensai.fabric.client.security.Permission;
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.scheduler.Task;
+import dev.phomc.tensai.server.Tensai;
 import dev.phomc.tensai.util.ReflectionUtil;
 
 public class KeyBindingManager {
@@ -56,11 +59,12 @@ public class KeyBindingManager {
 			"gui.permissionPrompt.message.keybinding",
 			Permission.Context.SERVER, true
 	);
-	private static final int DEFAULT_INPUT_DELAY = 5;
+	private static final int MIN_INPUT_DELAY = 5;
 	private static final KeyBindingManager INSTANCE = new KeyBindingManager();
 	private List<net.minecraft.client.option.KeyBinding> registeredKeys = new ArrayList<>();
 	private Map<Key, Integer> stateTable = new HashMap<>();
-	private int inputDelay = DEFAULT_INPUT_DELAY;
+	private int inputDelay = MIN_INPUT_DELAY;
+	private Task keyStateCheckTask;
 
 	public static KeyBindingManager getInstance() {
 		return INSTANCE;
@@ -78,10 +82,6 @@ public class KeyBindingManager {
 		return inputDelay;
 	}
 
-	public void setInputDelay(int inputDelay) {
-		this.inputDelay = Math.max(inputDelay, DEFAULT_INPUT_DELAY);
-	}
-
 	public boolean testBulkAvailability(@NotNull List<KeyBinding> keymap) {
 		for (KeyBinding keyBinding : keymap) {
 			InputUtil.Key key = getInputKey(keyBinding.getKey());
@@ -94,8 +94,9 @@ public class KeyBindingManager {
 		return true;
 	}
 
-	public void registerBulk(@NotNull List<KeyBinding> keymap) {
-		unregisterAll();
+	public void initialize(@NotNull List<KeyBinding> keymap, int inputDelay) {
+		reset();
+		this.inputDelay = Math.max(inputDelay, MIN_INPUT_DELAY);
 
 		for (KeyBinding keyBinding : keymap) {
 			net.minecraft.client.option.KeyBinding v = new net.minecraft.client.option.KeyBinding(
@@ -110,9 +111,11 @@ public class KeyBindingManager {
 		}
 
 		((GameOptionProcessor) MinecraftClient.getInstance().options).reprocessKeys();
+		keyStateCheckTask = KeyStateCheckTask.build();
+		((Tensai) MinecraftClient.getInstance()).getTaskScheduler().schedule(keyStateCheckTask, 100);
 	}
 
-	public void unregisterAll() {
+	public void reset() {
 		for (net.minecraft.client.option.KeyBinding keyBinding : registeredKeys) {
 			CustomTranslationStorage.getInstance().remove(keyBinding.getTranslationKey());
 			KeyBindingMixin.getId2KeyMapping().remove(keyBinding.getTranslationKey());
@@ -124,7 +127,11 @@ public class KeyBindingManager {
 
 		stateTable = new HashMap<>();
 		registeredKeys = new ArrayList<>();
-		inputDelay = DEFAULT_INPUT_DELAY;
+		inputDelay = MIN_INPUT_DELAY;
+
+		if (keyStateCheckTask != null) {
+			keyStateCheckTask.cancel();
+		}
 	}
 
 	public Map<Key, KeyState> fetchStates() {
