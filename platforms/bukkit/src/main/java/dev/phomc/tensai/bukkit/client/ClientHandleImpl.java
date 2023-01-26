@@ -25,6 +25,7 @@
 package dev.phomc.tensai.bukkit.client;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 
 import com.google.common.base.Preconditions;
 
@@ -46,7 +47,7 @@ public class ClientHandleImpl implements ClientHandle {
 		Preconditions.checkNotNull(plugin);
 		Preconditions.checkNotNull(player);
 		this.plugin = plugin;
-		this.playerRef = new WeakReference<Player>(player);
+		this.playerRef = new WeakReference<>(player);
 
 		this.vfx = new ClientVisualEffectsImpl(this);
 	}
@@ -59,6 +60,17 @@ public class ClientHandleImpl implements ClientHandle {
 	public void sendPluginMessage(Channel channel, byte[] bytes) {
 		Player p = getPlayer();
 		if (p == null) return; // TODO: player is dereferenced, maybe throw an exception?
+
+		if (!p.getListeningPluginChannels().contains(channel.getNamespace())) {
+			try {
+				Method method = p.getClass().getDeclaredMethod("addChannel", String.class);
+				method.setAccessible(true);
+				method.invoke(p, channel.getNamespace());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
 		p.sendPluginMessage(plugin, channel.getNamespace(), bytes);
 	}
 
