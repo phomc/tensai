@@ -43,9 +43,8 @@ import dev.phomc.tensai.keybinding.KeyState;
  *     <li>The server-sided key state is shared across plugins.</li>
  * </ul>
  */
-public final class KeyStateUpdateEvent extends PlayerEvent {
+public class KeyStateUpdateEvent extends PlayerEvent {
 	private static final HandlerList handlers = new HandlerList();
-
 	private final Map<Key, KeyState> keyStates;
 
 	public KeyStateUpdateEvent(Player player, Map<Key, KeyState> keyStates) {
@@ -64,7 +63,7 @@ public final class KeyStateUpdateEvent extends PlayerEvent {
 
 	@Override
 	public HandlerList getHandlers() {
-		return new HandlerList();
+		return handlers;
 	}
 
 	public static HandlerList getHandlerList() {

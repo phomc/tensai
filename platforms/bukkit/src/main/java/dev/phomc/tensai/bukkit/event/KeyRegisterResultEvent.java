@@ -34,7 +34,7 @@ import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
  * This event returns the keybinding registration result.
  * <b>Note:</b> This event is called asynchronously.
  */
-public final class KeyRegisterResultEvent extends PlayerEvent {
+public class KeyRegisterResultEvent extends PlayerEvent {
 	private static final HandlerList handlers = new HandlerList();
 	private final KeyBindingRegisterResponse response;
 
@@ -49,7 +49,7 @@ public final class KeyRegisterResultEvent extends PlayerEvent {
 
 	@Override
 	public HandlerList getHandlers() {
-		return new HandlerList();
+		return handlers;
 	}
 
 	public static HandlerList getHandlerList() {

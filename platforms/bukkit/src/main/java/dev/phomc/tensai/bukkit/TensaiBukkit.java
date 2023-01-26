@@ -99,6 +99,7 @@ public class TensaiBukkit extends JavaPlugin implements Tensai {
 
 	private void registerIncomingMessenger(ServerSubscriber subscriber) {
 		getServer().getMessenger().registerIncomingPluginChannel(this, subscriber.getChannel().getNamespace(), subscriber);
+		subscriber.onInitialize();
 	}
 
 	// APIs
