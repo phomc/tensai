@@ -97,6 +97,8 @@ public class KeyBindingManager {
 	public void initialize(@NotNull List<KeyBinding> keymap, int inputDelay) {
 		reset();
 		this.inputDelay = Math.max(inputDelay, MIN_INPUT_DELAY);
+		keyStateCheckTask = KeyStateCheckTask.build();
+		((Tensai) MinecraftClient.getInstance()).getTaskScheduler().schedule(keyStateCheckTask, inputDelay);
 
 		for (KeyBinding keyBinding : keymap) {
 			net.minecraft.client.option.KeyBinding v = new net.minecraft.client.option.KeyBinding(
@@ -111,8 +113,6 @@ public class KeyBindingManager {
 		}
 
 		((GameOptionProcessor) MinecraftClient.getInstance().options).reprocessKeys();
-		keyStateCheckTask = KeyStateCheckTask.build();
-		((Tensai) MinecraftClient.getInstance()).getTaskScheduler().schedule(keyStateCheckTask, 100);
 	}
 
 	public void reset() {
@@ -124,6 +124,7 @@ public class KeyBindingManager {
 
 		//noinspection unchecked
 		((List<net.minecraft.client.option.KeyBinding>) Objects.requireNonNull(ReflectionUtil.getDeclaredFieldValue(KeyBindingRegistryImpl.class, null, "MODDED_KEY_BINDINGS"))).removeAll(registeredKeys);
+		((GameOptionProcessor) MinecraftClient.getInstance().options).reprocessKeys();
 
 		stateTable = new HashMap<>();
 		registeredKeys = new ArrayList<>();

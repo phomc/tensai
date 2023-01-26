@@ -35,9 +35,10 @@ import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.keybinding.KeyState;
 
 public class SimpleKeyBindingManager implements KeyBindingManager {
+	private final int MIN_INPUT_DELAY = 5;
 	private final Map<Key, KeyBinding> keyBindings = new HashMap<>();
 	private final Map<Key, KeyState> keyStates = new HashMap<>();
-	private int inputDelay;
+	private int inputDelay = MIN_INPUT_DELAY;
 
 	@Override
 	public boolean registerKeyBinding(@NotNull KeyBinding keyBinding) {
@@ -82,6 +83,6 @@ public class SimpleKeyBindingManager implements KeyBindingManager {
 
 	@Override
 	public void setInputDelay(int inputDelay) {
-		this.inputDelay = inputDelay;
+		this.inputDelay = Math.max(MIN_INPUT_DELAY, inputDelay);
 	}
 }

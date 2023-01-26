@@ -47,6 +47,7 @@ public class KeyState {
 
 	/**
 	 * Checks whether the key was pressed, and <b>decreases</b> the press counter by {@code 1}.<br>
+	 * This behaviour is preserved to be the same as in Fabric environment.<br>
 	 * To avoid the decrement, uses {@link #getTimesPressed()}.
 	 * <br>
 	 * For example:
@@ -68,10 +69,10 @@ public class KeyState {
 	}
 
 	/**
-	 * Resets the state.<br>
+	 * Clears the state.<br>
 	 * <b>Note:</b> No key state update will be sent to the client.
 	 */
-	public void reset() {
+	public void flush() {
 		timesPressed = 0;
 	}
 
