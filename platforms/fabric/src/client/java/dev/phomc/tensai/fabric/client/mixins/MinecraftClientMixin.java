@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,58 +22,46 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.mixins;
+package dev.phomc.tensai.fabric.client.mixins;
 
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.client.MinecraftClient;
 
-import dev.phomc.tensai.fabric.scheduler.ServerScheduler;
-import dev.phomc.tensai.fabric.vfx.GlobalVisualEffectsImpl;
+import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
 import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.TensaiServer;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
-import dev.phomc.tensai.server.keybinding.SimpleKeyBindingManager;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
-@Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin implements TensaiServer {
+@Mixin(MinecraftClient.class)
+public abstract class MinecraftClientMixin implements TensaiServer {
 	@Shadow
-	@Final
-	private Thread serverThread;
+	private Thread thread;
 
 	@Unique
-	private GlobalVisualEffectsImpl globalVfx;
-
-	@Unique
-	private KeyBindingManager keyBindingManager;
-
-	@Unique
-	private ServerScheduler serverScheduler;
+	private ClientScheduler clientScheduler;
 
 	@Override
 	public VisualEffects getGlobalVfx() {
-		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
-		return globalVfx;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public KeyBindingManager getKeyBindingManager() {
-		if (keyBindingManager == null) keyBindingManager = new SimpleKeyBindingManager();
-		return keyBindingManager;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Scheduler getTaskScheduler() {
-		if (serverScheduler == null) serverScheduler = new ServerScheduler();
-		return serverScheduler;
+		if (clientScheduler == null) clientScheduler = new ClientScheduler();
+		return clientScheduler;
 	}
 
 	@Override
 	public boolean isPrimaryThread() {
-		return Thread.currentThread().equals(serverThread);
+		return Thread.currentThread().equals(thread);
 	}
 }

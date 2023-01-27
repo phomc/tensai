@@ -36,7 +36,9 @@ import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
 import dev.phomc.tensai.bukkit.client.PlayerQuitEventsListener;
 import dev.phomc.tensai.bukkit.keybinding.KeyBindingPluginMessageListener;
 import dev.phomc.tensai.bukkit.listener.player.PlayerJoinListener;
+import dev.phomc.tensai.bukkit.scheduler.ServerScheduler;
 import dev.phomc.tensai.bukkit.vfx.GlobalVisualEffectsImpl;
+import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.TensaiServer;
 import dev.phomc.tensai.server.client.ClientHandle;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
@@ -52,6 +54,7 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 	protected Logger logger;
 	private GlobalVisualEffectsImpl globalVfx;
 	private KeyBindingManager keyBindingManager;
+	private Scheduler scheduler;
 
 	public static TensaiBukkit getInstance() {
 		return INSTANCE;
@@ -84,6 +87,7 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 
 		globalVfx = new GlobalVisualEffectsImpl(this);
 		keyBindingManager = new SimpleKeyBindingManager();
+		scheduler = new ServerScheduler(this);
 	}
 
 	@Override
@@ -103,5 +107,15 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 	@Override
 	public KeyBindingManager getKeyBindingManager() {
 		return keyBindingManager;
+	}
+
+	@Override
+	public Scheduler getTaskScheduler() {
+		return scheduler;
+	}
+
+	@Override
+	public boolean isPrimaryThread() {
+		return getServer().isPrimaryThread();
 	}
 }
