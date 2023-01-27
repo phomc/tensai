@@ -22,13 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.client;
+package dev.phomc.tensai.fabric.scheduler;
 
-import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 
-public class TensaiFabricClientMod implements ClientModInitializer {
-	@Override
-	public void onInitializeClient() {
-		// TODO: Client-side initialization
+import dev.phomc.tensai.scheduler.Scheduler;
+
+@Environment(EnvType.SERVER)
+public class ServerScheduler extends Scheduler {
+	public ServerScheduler() {
+		ServerTickEvents.END_SERVER_TICK.register(server -> onTick());
 	}
 }

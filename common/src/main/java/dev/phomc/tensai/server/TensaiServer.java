@@ -24,6 +24,7 @@
 
 package dev.phomc.tensai.server;
 
+import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
@@ -44,4 +45,21 @@ public interface TensaiServer {
 	VisualEffects getGlobalVfx();
 
 	KeyBindingManager getKeyBindingManager();
+
+	/**
+	 * Gets Tensai's internal task scheduler.
+	 *
+	 * @return {@link Scheduler}
+	 */
+	Scheduler getTaskScheduler();
+
+	/**
+	 * Checks whether the current thread is the primary one.<br>
+	 * The primary thread is used to execute most activities on such as: ticking, event handling, etc. Besides, there
+	 * are asynchronous operations which are executed on auxiliary threads, e.g: networking, I/O, etc.<br>
+	 * It is <b>important</b> to distinct and utilize them in safe manners.
+	 *
+	 * @return {@code true} or {@code false}
+	 */
+	boolean isPrimaryThread();
 }
