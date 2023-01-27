@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.support.unzipTo
+
 plugins {
     id("fabric-loom")
 }
@@ -45,4 +47,21 @@ dependencies {
     mappings("net.fabricmc:yarn:${property("minecraftVersion")}+${property("yarnMappings")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${property("loaderVersion")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabricApiVersion")}")
+}
+
+tasks {
+    register("fabricFatJar", Jar::class.java) {
+        mustRunAfter(build)
+        dependsOn(remapJar)
+        archiveClassifier.set("fat")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        delete(File("$buildDir/remapped"))
+        remapJar.get().outputs.files
+            .filter { it.name.endsWith("jar") && it.isFile && it.exists() }
+            .map {
+                unzipTo(File("$buildDir/remapped"), it)
+            }
+        from(File("$buildDir/remapped"))
+        from(File(project(":tensai-common").buildDir, "classes/java/main"))
+    }
 }
