@@ -24,12 +24,16 @@
 
 package dev.phomc.tensai.fabric.mixins;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import net.minecraft.server.MinecraftServer;
 
+import dev.phomc.tensai.fabric.scheduler.ServerScheduler;
 import dev.phomc.tensai.fabric.vfx.GlobalVisualEffectsImpl;
+import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.TensaiServer;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
 import dev.phomc.tensai.server.keybinding.SimpleKeyBindingManager;
@@ -37,11 +41,18 @@ import dev.phomc.tensai.server.vfx.VisualEffects;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin implements TensaiServer {
+	@Shadow
+	@Final
+	private Thread serverThread;
+
 	@Unique
 	private GlobalVisualEffectsImpl globalVfx;
 
 	@Unique
 	private KeyBindingManager keyBindingManager;
+
+	@Unique
+	private ServerScheduler serverScheduler;
 
 	@Override
 	public VisualEffects getGlobalVfx() {
@@ -53,5 +64,16 @@ public abstract class MinecraftServerMixin implements TensaiServer {
 	public KeyBindingManager getKeyBindingManager() {
 		if (keyBindingManager == null) keyBindingManager = new SimpleKeyBindingManager();
 		return keyBindingManager;
+	}
+
+	@Override
+	public Scheduler getTaskScheduler() {
+		if (serverScheduler == null) serverScheduler = new ServerScheduler();
+		return serverScheduler;
+	}
+
+	@Override
+	public boolean isPrimaryThread() {
+		return Thread.currentThread().equals(serverThread);
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,15 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric;
+package dev.phomc.tensai.bukkit.scheduler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
-import net.fabricmc.api.ModInitializer;
+import dev.phomc.tensai.scheduler.Scheduler;
 
-public class TensaiFabric implements ModInitializer {
-	public static final String MOD_ID = "tensai";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-
-	@Override
-	public void onInitialize() {
+public class ServerScheduler extends Scheduler {
+	public ServerScheduler(Plugin plugin) {
+		Bukkit.getScheduler().runTaskTimer(plugin, this::onTick, 0, 1);
 	}
 }

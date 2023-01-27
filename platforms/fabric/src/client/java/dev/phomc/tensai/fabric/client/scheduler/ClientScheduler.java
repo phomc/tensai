@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric;
+package dev.phomc.tensai.fabric.client.scheduler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
-import net.fabricmc.api.ModInitializer;
+import dev.phomc.tensai.scheduler.Scheduler;
 
-public class TensaiFabric implements ModInitializer {
-	public static final String MOD_ID = "tensai";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-
-	@Override
-	public void onInitialize() {
+@Environment(EnvType.CLIENT)
+public class ClientScheduler extends Scheduler {
+	public ClientScheduler() {
+		ClientTickEvents.END_CLIENT_TICK.register(server -> onTick());
 	}
 }

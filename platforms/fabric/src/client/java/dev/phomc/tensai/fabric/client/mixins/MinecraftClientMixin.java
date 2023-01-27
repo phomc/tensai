@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2023 PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,46 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.client;
+package dev.phomc.tensai.fabric.client.mixins;
 
-import net.fabricmc.api.ClientModInitializer;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
-public class TensaiFabricClientMod implements ClientModInitializer {
+import net.minecraft.client.MinecraftClient;
+
+import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
+import dev.phomc.tensai.scheduler.Scheduler;
+import dev.phomc.tensai.server.TensaiServer;
+import dev.phomc.tensai.server.keybinding.KeyBindingManager;
+import dev.phomc.tensai.server.vfx.VisualEffects;
+
+@Mixin(MinecraftClient.class)
+public abstract class MinecraftClientMixin implements TensaiServer {
+	@Shadow
+	private Thread thread;
+
+	@Unique
+	private ClientScheduler clientScheduler;
+
 	@Override
-	public void onInitializeClient() {
-		// TODO: Client-side initialization
+	public VisualEffects getGlobalVfx() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public KeyBindingManager getKeyBindingManager() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Scheduler getTaskScheduler() {
+		if (clientScheduler == null) clientScheduler = new ClientScheduler();
+		return clientScheduler;
+	}
+
+	@Override
+	public boolean isPrimaryThread() {
+		return Thread.currentThread().equals(thread);
 	}
 }
