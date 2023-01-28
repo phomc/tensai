@@ -30,7 +30,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.server.keybinding.KeyBindingPluginMessage;
 
 public class PlayerJoinListener implements Listener {
 	private final TensaiBukkit tensai;
@@ -43,6 +42,6 @@ public class PlayerJoinListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
-		tensai.sendPluginMessageToPlayer(player, new KeyBindingPluginMessage(tensai));
+		//tensai.sendPluginMessageToPlayer(player, new KeyBindingPluginMessage(tensai));
 	}
 }

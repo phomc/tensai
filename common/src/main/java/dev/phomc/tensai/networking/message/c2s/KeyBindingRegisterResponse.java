@@ -29,7 +29,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.Message;
 import dev.phomc.tensai.networking.message.MessageType;
 
@@ -41,7 +40,7 @@ public class KeyBindingRegisterResponse extends Message {
 	}
 
 	public KeyBindingRegisterResponse(byte result) {
-		super(Channel.KEYBINDING, MessageType.KEYBINDING_REGISTER_RESPONSE);
+		super(MessageType.KEYBINDING_REGISTER_RESPONSE);
 		this.result = result;
 	}
 

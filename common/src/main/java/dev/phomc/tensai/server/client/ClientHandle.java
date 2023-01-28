@@ -24,6 +24,7 @@
 
 package dev.phomc.tensai.server.client;
 
+import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
 /**
@@ -34,4 +35,6 @@ import dev.phomc.tensai.server.vfx.VisualEffects;
  */
 public interface ClientHandle {
 	VisualEffects getVfx();
+
+	void sendPluginMessage(Channel channel, byte[] bytes);
 }

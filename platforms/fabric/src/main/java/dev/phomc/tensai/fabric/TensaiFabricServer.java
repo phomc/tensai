@@ -28,7 +28,6 @@ import net.minecraft.util.Identifier;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import dev.phomc.tensai.fabric.clients.FabricClientHandle;
@@ -41,10 +40,6 @@ public class TensaiFabricServer implements DedicatedServerModInitializer {
 	public void onInitializeServer() {
 		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
 			((FabricClientHandle) oldPlayer).transferTo(newPlayer);
-		});
-
-		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			((FabricClientHandle) handler.player).sendPluginMessage(new KeyBindingPluginMessage((TensaiServer) server));
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(new Identifier(KeyBindingPluginMessage.CHANNEL), (server, player, handler, buf, responseSender) -> {

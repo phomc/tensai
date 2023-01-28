@@ -31,4 +31,5 @@ public class MessageType {
 	public static final byte KEYBINDING_STATE_UPDATE = 3;
 
 	// VFX
+	public static final byte VFX_ANIMATION_PLAY = 1;
 }
