@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,54 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server.networking;
+package dev.phomc.tensai.fabric.client.iam;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
-public interface Serializer<T> {
-	void serialize(T obj, DataOutput stream) throws IOException;
+import org.jetbrains.annotations.NotNull;
 
-	T deserialize(DataInput stream) throws IOException;
+import dev.phomc.tensai.util.Serializer;
+
+public class PermissionData {
+	public static final Serializer<PermissionData> SERIALIZER = new Serializer<>() {
+		@Override
+		public void serialize(PermissionData obj, DataOutput stream) throws IOException {
+			stream.writeInt(obj.permittedServers.size());
+
+			for (String str : obj.permittedServers) {
+				stream.writeUTF(str);
+			}
+		}
+
+		@Override
+		public PermissionData deserialize(DataInput stream) throws IOException {
+			int size = stream.readInt();
+			Set<String> permittedServers = new HashSet<>(size);
+
+			for (int i = 0; i < size; i++) {
+				permittedServers.add(stream.readUTF());
+			}
+
+			return new PermissionData(permittedServers);
+		}
+	};
+
+	private final Set<String> permittedServers;
+
+	public PermissionData(@NotNull Set<String> permittedServers) {
+		this.permittedServers = permittedServers;
+	}
+
+	public PermissionData() {
+		this(new HashSet<>());
+	}
+
+	@NotNull
+	public Set<String> getPermittedServers() {
+		return permittedServers;
+	}
 }

@@ -24,11 +24,45 @@
 
 package dev.phomc.tensai.fabric.client;
 
+import java.io.File;
+
+import net.minecraft.client.MinecraftClient;
+
 import net.fabricmc.api.ClientModInitializer;
 
+import dev.phomc.tensai.fabric.client.iam.ClientAuthorizer;
+import dev.phomc.tensai.fabric.client.scheduler.tasks.PermissionLoadTask;
+import dev.phomc.tensai.fabric.client.scheduler.tasks.PermissionSaveTask;
+import dev.phomc.tensai.scheduler.Scheduler;
+import dev.phomc.tensai.server.TensaiServer;
+
 public class TensaiFabricClient implements ClientModInitializer {
+	private static TensaiFabricClient INSTANCE;
+
+	public static TensaiFabricClient getInstance() {
+		return INSTANCE;
+	}
+
+	private File tensaiDir;
+	private ClientAuthorizer clientAuthorizer;
+
+	public File getTensaiDirectory() {
+		return tensaiDir;
+	}
+
+	public ClientAuthorizer getClientAuthorizer() {
+		return clientAuthorizer;
+	}
+
 	@Override
 	public void onInitializeClient() {
-		// TODO: Client-side initialization
+		INSTANCE = this;
+		tensaiDir = new File(MinecraftClient.getInstance().runDirectory, ".tensai");
+		tensaiDir.mkdir();
+		clientAuthorizer = new ClientAuthorizer();
+
+		Scheduler taskScheduler = ((TensaiServer) MinecraftClient.getInstance()).getTaskScheduler();
+		taskScheduler.schedule(PermissionLoadTask.build());
+		taskScheduler.schedule(PermissionSaveTask.build(), 100);
 	}
 }

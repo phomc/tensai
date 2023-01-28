@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,13 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server.util;
+package dev.phomc.tensai.util;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
 
-import dev.phomc.tensai.server.networking.Serializer;
 import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
 
 /**
@@ -38,7 +37,7 @@ import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
  * <p>This class is mainly used for {@link AnimationProperty}.</p>
  */
 public class Vec4 {
-	public static final Serializer<Vec4> SERIALIZER = new Serializer<Vec4>() {
+	public static final Serializer<Vec4> SERIALIZER = new Serializer<>() {
 		@Override
 		public void serialize(Vec4 obj, DataOutput stream) throws IOException {
 			stream.writeDouble(obj.x);
