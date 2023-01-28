@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +22,39 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server.networking;
+package dev.phomc.tensai.fabric.client.mixins;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.util.List;
 
-public abstract class PluginMessage {
-	public static final String CHANNEL_VFX = "tensai:vfx";
+import com.google.common.collect.Lists;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 
-	public final String channel;
-	public final String messageType;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.KeyBinding;
 
-	public PluginMessage(String channel, String messageType) {
-		this.channel = channel;
-		this.messageType = messageType;
+import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
+
+import dev.phomc.tensai.fabric.client.GameOptionProcessor;
+
+@Mixin(GameOptions.class)
+public class GameOptionsMixin implements GameOptionProcessor {
+	@Mutable
+	@Shadow
+	@Final
+	public KeyBinding[] allKeys;
+
+	@Override
+	public void reprocessKeys() {
+		allKeys = KeyBindingRegistryImpl.process(allKeys);
 	}
 
-	public void write(DataOutput stream) throws IOException {
-	}
-
-	public void read(DataInput stream) throws IOException {
-	}
-
-	public byte[] createBytes() {
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		DataOutputStream wrapped = new DataOutputStream(stream);
-
-		try {
-			wrapped.writeUTF(messageType);
-			write(wrapped);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return stream.toByteArray();
+	@Override
+	public void resetKeys(List<KeyBinding> keys) {
+		List<KeyBinding> newKeysAll = Lists.newArrayList(allKeys);
+		newKeysAll.removeAll(keys);
+		allKeys = newKeysAll.toArray(new KeyBinding[0]);
 	}
 }

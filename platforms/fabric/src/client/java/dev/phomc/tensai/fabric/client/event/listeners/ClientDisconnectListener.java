@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,17 +22,18 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.client;
+package dev.phomc.tensai.fabric.client.event.listeners;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
-public class PlayerQuitEventsListener implements Listener {
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		TensaiBukkit.internalReset(event.getPlayer());
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
+
+public class ClientDisconnectListener implements ClientPlayConnectionEvents.Disconnect {
+	@Override
+	public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+		KeyBindingManager.getInstance().reset();
 	}
 }

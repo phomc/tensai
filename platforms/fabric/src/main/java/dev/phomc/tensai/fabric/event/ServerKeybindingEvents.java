@@ -24,19 +24,37 @@
 
 package dev.phomc.tensai.fabric.event;
 
+import java.util.Map;
+
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
+import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyState;
+import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 
-public interface KeyPressCallback {
-	Event<KeyPressCallback> EVENT = EventFactory.createArrayBacked(KeyPressCallback.class, (listeners) -> (player, keyBinding) -> {
-		for (KeyPressCallback event : listeners) {
-			event.handle(player, keyBinding);
+public class ServerKeybindingEvents {
+	public static final Event<ServerKeybindingEvents.KeyRegisterResultEvent> REGISTER_RESULT = EventFactory.createArrayBacked(ServerKeybindingEvents.KeyRegisterResultEvent.class, (listeners) -> (player, result) -> {
+		for (KeyRegisterResultEvent event : listeners) {
+			event.respond(player, result);
 		}
 	});
 
-	void handle(ServerPlayerEntity player, KeyBinding keyBinding);
+	public static final Event<ServerKeybindingEvents.KeyStateUpdateEvent> STATE_UPDATE = EventFactory.createArrayBacked(ServerKeybindingEvents.KeyStateUpdateEvent.class, (listeners) -> (player, states) -> {
+		for (KeyStateUpdateEvent event : listeners) {
+			event.updateKeyState(player, states);
+		}
+	});
+
+	@FunctionalInterface
+	public interface KeyRegisterResultEvent {
+		void respond(ServerPlayerEntity player, KeyBindingRegisterResponse response);
+	}
+
+	@FunctionalInterface
+	public interface KeyStateUpdateEvent {
+		void updateKeyState(ServerPlayerEntity player, Map<Key, KeyState> keyStates);
+	}
 }

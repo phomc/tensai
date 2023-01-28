@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,27 +22,32 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.test.client;
+package dev.phomc.tensai.bukkit.event.listeners;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.lang.reflect.Method;
 
-import net.minecraft.util.Identifier;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
-import dev.phomc.tensai.fabric.test.TensaiFabricTestMod;
 import dev.phomc.tensai.networking.Channel;
 
-@Environment(EnvType.CLIENT)
-public class TensaiFabricTestClient implements ClientModInitializer {
-	public static final Logger LOGGER = LoggerFactory.getLogger(TensaiFabricTestMod.MOD_ID + "-client");
+public class PlayerJoinListener implements Listener {
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
 
-	@Override
-	public void onInitializeClient() {
-		LOGGER.info("Hello client!");
-		PluginMessagingChannelListener.listen(new Identifier(Channel.VFX.getNamespace()));
+		try {
+			Method method = player.getClass().getDeclaredMethod("addChannel", String.class);
+			method.setAccessible(true);
+
+			for (Channel channel : Channel.values()) {
+				// add incoming channel without the need of registration from client
+				method.invoke(player, channel.getNamespace());
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

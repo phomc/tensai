@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2023 PhoMC
+ * Copyright (c) 2022 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,36 +22,15 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.keybinding;
+package dev.phomc.tensai.fabric.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
+import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
+import dev.phomc.tensai.server.client.ClientHandle;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.bukkit.event.KeyPressEvent;
-import dev.phomc.tensai.server.keybinding.KeyBindingPluginMessage;
+public interface FabricClientHandle extends ClientHandle {
+	void transferTo(ServerPlayerEntity newPlayer);
 
-public class KeyBindingPluginMessageListener implements PluginMessageListener {
-	private final TensaiBukkit tensai;
-
-	public KeyBindingPluginMessageListener(TensaiBukkit tensai) {
-		this.tensai = tensai;
-	}
-
-	@Override
-	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-		if (!channel.equals(KeyBindingPluginMessage.CHANNEL)) return;
-
-		try {
-			DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-			String key = in.readUTF();
-
-			tensai.getServer().getPluginManager().callEvent(new KeyPressEvent(player, tensai.getKeyBindingManager().getKeyBindings().get(key)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	void setVfx(ClientVisualEffectsImpl vfx);
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,27 +22,36 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.test.client;
+package dev.phomc.tensai.fabric.client.scheduler.tasks;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.client.MinecraftClient;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
-import dev.phomc.tensai.fabric.test.TensaiFabricTestMod;
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
+import dev.phomc.tensai.fabric.client.networking.ClientPublisher;
+import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.c2s.KeyBindingStateUpdate;
+import dev.phomc.tensai.scheduler.Task;
 
-@Environment(EnvType.CLIENT)
-public class TensaiFabricTestClient implements ClientModInitializer {
-	public static final Logger LOGGER = LoggerFactory.getLogger(TensaiFabricTestMod.MOD_ID + "-client");
+public class KeyStateCheckTask implements Runnable {
+	public static Task build() {
+		return new Task.Builder()
+				.setInterval(KeyBindingManager.getInstance().getInputDelay())
+				.setPriority(10)
+				.setInfiniteRecurrence()
+				.setExecutor(new KeyStateCheckTask()).build();
+	}
 
 	@Override
-	public void onInitializeClient() {
-		LOGGER.info("Hello client!");
-		PluginMessagingChannelListener.listen(new Identifier(Channel.VFX.getNamespace()));
+	public void run() {
+		if (MinecraftClient.getInstance().getNetworkHandler() == null) return;
+		Map<Key, KeyState> states = KeyBindingManager.getInstance().fetchStates();
+
+		if (!states.isEmpty()) {
+			ClientPublisher.publish(Channel.KEYBINDING, new KeyBindingStateUpdate(states));
+		}
 	}
 }

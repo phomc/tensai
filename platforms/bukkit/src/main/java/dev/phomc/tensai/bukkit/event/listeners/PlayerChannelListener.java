@@ -22,32 +22,41 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server.keybinding;
+package dev.phomc.tensai.bukkit.event.listeners;
 
-import java.io.DataOutput;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerRegisterChannelEvent;
+
+import dev.phomc.tensai.bukkit.TensaiBukkit;
 import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.server.TensaiServer;
-import dev.phomc.tensai.server.networking.PluginMessage;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
 
-public class KeyBindingPluginMessage extends PluginMessage {
-	public static final String CHANNEL = "tensai:keybinding";
+public class PlayerChannelListener implements Listener {
+	private final TensaiBukkit tensai;
 
-	private final TensaiServer tensai;
-
-	public KeyBindingPluginMessage(TensaiServer tensai) {
-		super(CHANNEL, "keybinding");
+	public PlayerChannelListener(TensaiBukkit tensai) {
 		this.tensai = tensai;
 	}
 
-	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeInt(tensai.getKeyBindingManager().getKeyBindings().size());
+	@EventHandler
+	public void regChannel(PlayerRegisterChannelEvent event) {
+		Player player = event.getPlayer();
 
-		for (KeyBinding keyBinding : tensai.getKeyBindingManager().getKeyBindings().values()) {
-			stream.writeUTF(keyBinding.getName());
-			stream.writeInt(keyBinding.getKey().getCode());
+		if (event.getChannel().equals(Channel.KEYBINDING.getNamespace())) {
+			Collection<KeyBinding> keyBindings = tensai.getKeyBindingManager().getKeyBindings().values();
+
+			if (!keyBindings.isEmpty()) {
+				TensaiBukkit.getClient(player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
+						TensaiBukkit.getInstance().getKeyBindingManager().getInputDelay(),
+						new ArrayList<>(keyBindings)
+				).pack());
+			}
 		}
 	}
 }

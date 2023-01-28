@@ -22,26 +22,36 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric;
+package dev.phomc.tensai.fabric.event.listeners;
 
-import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 import dev.phomc.tensai.fabric.client.FabricClientHandle;
-import dev.phomc.tensai.fabric.event.listeners.PlayerJoinListener;
-import dev.phomc.tensai.fabric.keybinding.KeyBindingMessageSubscriber;
+import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
+import dev.phomc.tensai.server.TensaiServer;
 
-public class TensaiFabricServer implements DedicatedServerModInitializer {
+public class PlayerJoinListener implements ServerPlayConnectionEvents.Join {
 	@Override
-	public void onInitializeServer() {
-		new KeyBindingMessageSubscriber(Channel.KEYBINDING).onInitialize();
+	public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+		TensaiServer tensai = (TensaiServer) server;
+		Collection<KeyBinding> keyBindings = tensai.getKeyBindingManager().getKeyBindings().values();
 
-		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
-			((FabricClientHandle) oldPlayer).transferTo(newPlayer);
-		});
-
-		ServerPlayConnectionEvents.JOIN.register(new PlayerJoinListener());
+		if (!keyBindings.isEmpty()) {
+			((TensaiServer) server).getTaskScheduler().runSync(() -> {
+				((FabricClientHandle) handler.player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
+						tensai.getKeyBindingManager().getInputDelay(),
+						new ArrayList<>(keyBindings)
+				).pack());
+			}, 40);
+		}
 	}
 }

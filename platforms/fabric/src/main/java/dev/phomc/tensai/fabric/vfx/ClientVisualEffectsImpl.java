@@ -26,7 +26,7 @@ package dev.phomc.tensai.fabric.vfx;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import dev.phomc.tensai.fabric.clients.FabricClientHandle;
+import dev.phomc.tensai.fabric.client.FabricClientHandle;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.s2c.AnimationPlayMessage;
 import dev.phomc.tensai.server.vfx.VisualEffects;

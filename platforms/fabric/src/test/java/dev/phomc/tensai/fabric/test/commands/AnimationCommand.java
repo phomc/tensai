@@ -43,7 +43,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import dev.phomc.tensai.fabric.clients.FabricClientHandle;
+import dev.phomc.tensai.fabric.client.FabricClientHandle;
 
 public class AnimationCommand {
 	public static final String COMMAND = "animation";

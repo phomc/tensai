@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.clients;
+package dev.phomc.tensai.fabric.mixins;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
-import dev.phomc.tensai.server.client.ClientHandle;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 
-public interface FabricClientHandle extends ClientHandle {
-	void transferTo(ServerPlayerEntity newPlayer);
+import net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon;
 
-	void setVfx(ClientVisualEffectsImpl vfx);
+@Mixin(ServerPlayNetworkAddon.class)
+public interface ServerPlayNetworkAddonMixin {
+	@Accessor("handler")
+	ServerPlayNetworkHandler getHandler();
 }

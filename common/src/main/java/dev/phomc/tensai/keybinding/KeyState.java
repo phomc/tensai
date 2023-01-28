@@ -26,30 +26,39 @@ package dev.phomc.tensai.keybinding;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Represents a key state.<br>
  * <b>The key state is used on server-side only. No key state update will be sent to client.</b>
  */
 public class KeyState {
-	private final Key key;
 	private int timesPressed;
 
-	public KeyState(@NotNull Key key, int timesPressed) {
-		this.key = key;
+	public KeyState(int timesPressed) {
 		this.timesPressed = timesPressed;
-	}
-
-	@NotNull
-	public Key getKey() {
-		return key;
 	}
 
 	public int getTimesPressed() {
 		return timesPressed;
 	}
 
+	public void setTimesPressed(int timesPressed) {
+		this.timesPressed = timesPressed;
+	}
+
+	/**
+	 * Checks whether the key was pressed, and <b>decreases</b> the press counter by {@code 1}.<br>
+	 * This behaviour is preserved to be the same as in Fabric environment.<br>
+	 * To avoid the decrement, uses {@link #getTimesPressed()}.
+	 * <br>
+	 * For example:
+	 * <pre>{@code
+	 * 	while (keyState.wasPressed()) {
+	 * 		player.sendMessage("Key pressed");
+	 *  }
+	 * }</pre>
+	 *
+	 * @return {@code true} or {@code false}
+	 */
 	public boolean wasPressed() {
 		if (timesPressed == 0) {
 			return false;
@@ -59,7 +68,11 @@ public class KeyState {
 		return true;
 	}
 
-	public void reset() {
+	/**
+	 * Clears the state.<br>
+	 * <b>Note:</b> No key state update will be sent to the client.
+	 */
+	public void flush() {
 		timesPressed = 0;
 	}
 
@@ -68,11 +81,11 @@ public class KeyState {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		KeyState keyState = (KeyState) o;
-		return timesPressed == keyState.timesPressed && key == keyState.key;
+		return timesPressed == keyState.timesPressed;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(key, timesPressed);
+		return Objects.hash(timesPressed);
 	}
 }

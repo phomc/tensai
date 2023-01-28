@@ -6,7 +6,10 @@
   "mixins": [],
   "client": [
     "MinecraftClientMixin",
-    "TranslationStorageMixin"
+    "ClientPlayNetworkAddonMixin",
+    "TranslationStorageMixin",
+    "KeyBindingMixin",
+    "GameOptionsMixin"
   ],
   "server": [],
   "injectors": {

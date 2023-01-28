@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,27 +22,37 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.test.client;
+package dev.phomc.tensai.bukkit.event;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerEvent;
 
-import net.minecraft.util.Identifier;
+import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+/**
+ * This event returns the keybinding registration result.
+ * <b>Note:</b> This event is called asynchronously.
+ */
+public class KeyRegisterResultEvent extends PlayerEvent {
+	private static final HandlerList handlers = new HandlerList();
+	private final KeyBindingRegisterResponse response;
 
-import dev.phomc.tensai.fabric.test.TensaiFabricTestMod;
-import dev.phomc.tensai.networking.Channel;
+	public KeyRegisterResultEvent(Player player, KeyBindingRegisterResponse response) {
+		super(player);
+		this.response = response;
+	}
 
-@Environment(EnvType.CLIENT)
-public class TensaiFabricTestClient implements ClientModInitializer {
-	public static final Logger LOGGER = LoggerFactory.getLogger(TensaiFabricTestMod.MOD_ID + "-client");
+	public KeyBindingRegisterResponse getResponse() {
+		return this.response;
+	}
 
 	@Override
-	public void onInitializeClient() {
-		LOGGER.info("Hello client!");
-		PluginMessagingChannelListener.listen(new Identifier(Channel.VFX.getNamespace()));
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

@@ -22,57 +22,51 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking.message.c2s;
+package dev.phomc.tensai.bukkit.event;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerEvent;
 
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyState;
-import dev.phomc.tensai.networking.message.Message;
-import dev.phomc.tensai.networking.message.MessageType;
 
-public class KeyBindingStateUpdate extends Message {
-	private final Map<Key, KeyState> states;
+/**
+ * This event is triggered whenever one or more key states is updated.<br>
+ * <b>Note:</b>
+ * <ul>
+ *     <li>The timing may be different from client-side due to connection latency.</li>
+ *     <li>This event is called asynchronously.</li>
+ *     <li>No key state update will be sent back to the client.</li>
+ *     <li>The server-sided key state is shared across plugins.</li>
+ * </ul>
+ */
+public class KeyStateUpdateEvent extends PlayerEvent {
+	private static final HandlerList handlers = new HandlerList();
+	private final Map<Key, KeyState> keyStates;
 
-	public KeyBindingStateUpdate() {
-		this(new HashMap<>());
+	public KeyStateUpdateEvent(Player player, Map<Key, KeyState> keyStates) {
+		super(player);
+		this.keyStates = keyStates;
 	}
 
-	public KeyBindingStateUpdate(Map<Key, KeyState> states) {
-		super(MessageType.KEYBINDING_STATE_UPDATE);
-		this.states = states;
-	}
-
-	public Map<Key, KeyState> getStates() {
-		return states;
+	/**
+	 * Returns the current key states.
+	 *
+	 * @return an <b>unmodifiable</b> map representing the key states
+	 */
+	public Map<Key, KeyState> getKeyStates() {
+		return this.keyStates;
 	}
 
 	@Override
-	public void write(DataOutput stream) throws IOException {
-		stream.writeInt(states.size());
-
-		for (Map.Entry<Key, KeyState> entry : states.entrySet()) {
-			stream.writeInt(entry.getKey().getCode());
-			stream.writeInt(entry.getValue().getTimesPressed());
-		}
+	public HandlerList getHandlers() {
+		return handlers;
 	}
 
-	@Override
-	public void read(DataInput stream) throws IOException {
-		int size = stream.readInt();
-
-		for (int i = 0; i < size; i++) {
-			Key key = Key.lookup(stream.readInt());
-			KeyState state = states.get(key);
-			int timesPressed = stream.readInt();
-
-			if (key != null && state != null) {
-				state.setTimesPressed(timesPressed);
-			}
-		}
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

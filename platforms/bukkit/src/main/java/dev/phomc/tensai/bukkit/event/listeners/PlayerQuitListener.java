@@ -22,28 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.event;
+package dev.phomc.tensai.bukkit.event.listeners;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
+import dev.phomc.tensai.bukkit.TensaiBukkit;
 
-public final class KeyPressEvent extends PlayerEvent {
-	private final KeyBinding keyBinding;
-
-	public KeyPressEvent(Player player, KeyBinding keyBinding) {
-		super(player);
-		this.keyBinding = keyBinding;
-	}
-
-	public KeyBinding getKeyBinding() {
-		return this.keyBinding;
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return new HandlerList();
+public class PlayerQuitListener implements Listener {
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		TensaiBukkit.internalReset(event.getPlayer());
 	}
 }

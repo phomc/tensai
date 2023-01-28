@@ -36,8 +36,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-import dev.phomc.tensai.server.networking.PluginMessage;
-
 @Environment(EnvType.CLIENT)
 public class PluginMessagingChannelListener {
 	private static final int BYTES_PER_ROW = 16;
@@ -49,7 +47,7 @@ public class PluginMessagingChannelListener {
 				.append(Text.literal(channel.toString()).formatted(Formatting.YELLOW))
 				.append(Text.literal(" >> ").formatted(Formatting.DARK_GRAY));
 
-		ClientPlayNetworking.registerGlobalReceiver(new Identifier(PluginMessage.CHANNEL_VFX), (client, handler, buf, responseSender) -> {
+		ClientPlayNetworking.registerGlobalReceiver(channel, (client, handler, buf, responseSender) -> {
 			byte[] bs = buf.array();
 			String messageType = "(unknown)";
 
