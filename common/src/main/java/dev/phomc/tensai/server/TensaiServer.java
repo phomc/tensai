@@ -44,6 +44,11 @@ public interface TensaiServer {
 	 */
 	VisualEffects getGlobalVfx();
 
+	/**
+	 * Gets the key binding manager.
+	 *
+	 * @return {@link KeyBindingManager}
+	 */
 	KeyBindingManager getKeyBindingManager();
 
 	/**

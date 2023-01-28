@@ -22,28 +22,39 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.event;
+package dev.phomc.tensai.fabric.client.mixins;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
+import java.util.List;
 
-import dev.phomc.tensai.keybinding.KeyBinding;
+import com.google.common.collect.Lists;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 
-public final class KeyPressEvent extends PlayerEvent {
-	private final KeyBinding keyBinding;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.KeyBinding;
 
-	public KeyPressEvent(Player player, KeyBinding keyBinding) {
-		super(player);
-		this.keyBinding = keyBinding;
-	}
+import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 
-	public KeyBinding getKeyBinding() {
-		return this.keyBinding;
+import dev.phomc.tensai.fabric.client.GameOptionProcessor;
+
+@Mixin(GameOptions.class)
+public class GameOptionsMixin implements GameOptionProcessor {
+	@Mutable
+	@Shadow
+	@Final
+	public KeyBinding[] allKeys;
+
+	@Override
+	public void reprocessKeys() {
+		allKeys = KeyBindingRegistryImpl.process(allKeys);
 	}
 
 	@Override
-	public HandlerList getHandlers() {
-		return new HandlerList();
+	public void resetKeys(List<KeyBinding> keys) {
+		List<KeyBinding> newKeysAll = Lists.newArrayList(allKeys);
+		newKeysAll.removeAll(keys);
+		allKeys = newKeysAll.toArray(new KeyBinding[0]);
 	}
 }

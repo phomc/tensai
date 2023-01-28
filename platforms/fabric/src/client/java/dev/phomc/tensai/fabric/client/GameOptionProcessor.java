@@ -22,26 +22,14 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.listener.player;
+package dev.phomc.tensai.fabric.client;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import java.util.List;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
+import net.minecraft.client.option.KeyBinding;
 
-public class PlayerJoinListener implements Listener {
-	private final TensaiBukkit tensai;
+public interface GameOptionProcessor {
+	void reprocessKeys();
 
-	public PlayerJoinListener(TensaiBukkit tensai) {
-		this.tensai = tensai;
-	}
-
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-
-		//tensai.sendPluginMessageToPlayer(player, new KeyBindingPluginMessage(tensai));
-	}
+	void resetKeys(List<KeyBinding> keys);
 }

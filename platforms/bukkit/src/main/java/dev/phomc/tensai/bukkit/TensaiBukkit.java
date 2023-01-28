@@ -35,9 +35,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
-import dev.phomc.tensai.bukkit.client.PlayerQuitEventsListener;
-import dev.phomc.tensai.bukkit.keybinding.KeyBindingPluginMessageListener;
-import dev.phomc.tensai.bukkit.listener.player.PlayerJoinListener;
+import dev.phomc.tensai.bukkit.event.listeners.PlayerChannelListener;
+import dev.phomc.tensai.bukkit.event.listeners.PlayerJoinListener;
+import dev.phomc.tensai.bukkit.event.listeners.PlayerQuitListener;
+import dev.phomc.tensai.bukkit.keybinding.KeyBindingMessageSubscriber;
 import dev.phomc.tensai.bukkit.networking.ServerSubscriber;
 import dev.phomc.tensai.bukkit.scheduler.ServerScheduler;
 import dev.phomc.tensai.bukkit.vfx.GlobalVisualEffectsImpl;
@@ -46,7 +47,6 @@ import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.TensaiServer;
 import dev.phomc.tensai.server.client.ClientHandle;
 import dev.phomc.tensai.server.keybinding.KeyBindingManager;
-import dev.phomc.tensai.server.keybinding.KeyBindingPluginMessage;
 import dev.phomc.tensai.server.keybinding.SimpleKeyBindingManager;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
@@ -80,11 +80,12 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 			getServer().getMessenger().registerOutgoingPluginChannel(this, channel.getNamespace());
 		}
 
-		getServer().getMessenger().registerIncomingPluginChannel(this, KeyBindingPluginMessage.CHANNEL, new KeyBindingPluginMessageListener(this));
+		registerIncomingMessenger(new KeyBindingMessageSubscriber(Channel.KEYBINDING));
 
 		// Events
-		getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-		getServer().getPluginManager().registerEvents(new PlayerQuitEventsListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerChannelListener(this), this);
 
 		globalVfx = new GlobalVisualEffectsImpl(this);
 		keyBindingManager = new SimpleKeyBindingManager();

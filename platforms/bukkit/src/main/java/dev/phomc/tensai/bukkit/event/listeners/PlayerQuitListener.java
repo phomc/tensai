@@ -22,36 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.keybinding;
+package dev.phomc.tensai.bukkit.event.listeners;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import dev.phomc.tensai.bukkit.TensaiBukkit;
-import dev.phomc.tensai.bukkit.event.KeyPressEvent;
-import dev.phomc.tensai.server.keybinding.KeyBindingPluginMessage;
 
-public class KeyBindingPluginMessageListener implements PluginMessageListener {
-	private final TensaiBukkit tensai;
-
-	public KeyBindingPluginMessageListener(TensaiBukkit tensai) {
-		this.tensai = tensai;
-	}
-
-	@Override
-	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-		if (!channel.equals(KeyBindingPluginMessage.CHANNEL)) return;
-
-		try {
-			DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-			String key = in.readUTF();
-
-			tensai.getServer().getPluginManager().callEvent(new KeyPressEvent(player, tensai.getKeyBindingManager().getKeyBindings().get(key)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+public class PlayerQuitListener implements Listener {
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		TensaiBukkit.internalReset(event.getPlayer());
 	}
 }

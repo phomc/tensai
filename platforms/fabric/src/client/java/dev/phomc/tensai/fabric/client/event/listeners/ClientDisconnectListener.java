@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +22,18 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server.networking;
+package dev.phomc.tensai.fabric.client.event.listeners;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 
-public abstract class PluginMessage {
-	public static final String CHANNEL_VFX = "tensai:vfx";
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
-	public final String channel;
-	public final String messageType;
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
 
-	public PluginMessage(String channel, String messageType) {
-		this.channel = channel;
-		this.messageType = messageType;
-	}
-
-	public void write(DataOutput stream) throws IOException {
-	}
-
-	public void read(DataInput stream) throws IOException {
-	}
-
-	public byte[] createBytes() {
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		DataOutputStream wrapped = new DataOutputStream(stream);
-
-		try {
-			wrapped.writeUTF(messageType);
-			write(wrapped);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return stream.toByteArray();
+public class ClientDisconnectListener implements ClientPlayConnectionEvents.Disconnect {
+	@Override
+	public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+		KeyBindingManager.getInstance().reset();
 	}
 }

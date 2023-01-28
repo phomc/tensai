@@ -28,22 +28,61 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
+import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyBinding;
+import dev.phomc.tensai.keybinding.KeyState;
 
 public class SimpleKeyBindingManager implements KeyBindingManager {
-	private final Map<String, KeyBinding> keyBindings = new HashMap<>();
+	private final int MIN_INPUT_DELAY = 5;
+	private final Map<Key, KeyBinding> keyBindings = new HashMap<>();
+	private final Map<Key, KeyState> keyStates = new HashMap<>();
+	private int inputDelay = MIN_INPUT_DELAY;
 
 	@Override
-	public void registerKeyBinding(KeyBinding keyBinding) {
-		if (keyBindings.containsKey(keyBinding.getName())) {
-			throw new IllegalArgumentException("KeyBinding with id " + keyBinding.getName() + " already exists!");
+	public boolean registerKeyBinding(@NotNull KeyBinding keyBinding) {
+		if (keyBindings.containsKey(keyBinding.getKey())) {
+			return false;
 		}
 
-		keyBindings.put(keyBinding.getName(), keyBinding);
+		keyBindings.put(keyBinding.getKey(), keyBinding);
+		keyStates.put(keyBinding.getKey(), new KeyState(0));
+		return true;
 	}
 
 	@Override
-	public Map<String, KeyBinding> getKeyBindings() {
+	public @NotNull Map<Key, KeyBinding> getKeyBindings() {
 		return Collections.unmodifiableMap(keyBindings);
+	}
+
+	@Override
+	public boolean hasKeyBinding(Key key) {
+		return keyBindings.containsKey(key);
+	}
+
+	@Override
+	public KeyBinding getKeyBinding(Key key) {
+		return keyBindings.get(key);
+	}
+
+	@Override
+	public @NotNull Map<Key, KeyState> getKeyStates() {
+		return Collections.unmodifiableMap(keyStates);
+	}
+
+	@Override
+	public KeyState getKeyState(Key key) {
+		return keyStates.get(key);
+	}
+
+	@Override
+	public int getInputDelay() {
+		return inputDelay;
+	}
+
+	@Override
+	public void setInputDelay(int inputDelay) {
+		this.inputDelay = Math.max(MIN_INPUT_DELAY, inputDelay);
 	}
 }

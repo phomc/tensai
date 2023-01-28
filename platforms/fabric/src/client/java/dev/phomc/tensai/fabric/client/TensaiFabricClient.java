@@ -29,10 +29,14 @@ import java.io.File;
 import net.minecraft.client.MinecraftClient;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
+import dev.phomc.tensai.fabric.client.event.listeners.ClientDisconnectListener;
 import dev.phomc.tensai.fabric.client.iam.ClientAuthorizer;
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingMessageSubscriber;
 import dev.phomc.tensai.fabric.client.scheduler.tasks.PermissionLoadTask;
 import dev.phomc.tensai.fabric.client.scheduler.tasks.PermissionSaveTask;
+import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.TensaiServer;
 
@@ -60,6 +64,10 @@ public class TensaiFabricClient implements ClientModInitializer {
 		tensaiDir = new File(MinecraftClient.getInstance().runDirectory, ".tensai");
 		tensaiDir.mkdir();
 		clientAuthorizer = new ClientAuthorizer();
+
+		new KeyBindingMessageSubscriber(Channel.KEYBINDING).onInitialize();
+
+		ClientPlayConnectionEvents.DISCONNECT.register(new ClientDisconnectListener());
 
 		Scheduler taskScheduler = ((TensaiServer) MinecraftClient.getInstance()).getTaskScheduler();
 		taskScheduler.schedule(PermissionLoadTask.build());

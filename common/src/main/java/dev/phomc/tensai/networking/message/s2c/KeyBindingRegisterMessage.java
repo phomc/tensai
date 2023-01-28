@@ -75,9 +75,10 @@ public class KeyBindingRegisterMessage extends Message {
 
 		for (int i = 0; i < size; i++) {
 			Key key = Key.lookup(stream.readInt());
+			String str = stream.readUTF();
 
 			if (key != null) {
-				keymap.add(new KeyBinding(key, stream.readUTF()));
+				keymap.add(new KeyBinding(key, str));
 			}
 		}
 	}
