@@ -22,14 +22,36 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.networking.message;
+package dev.phomc.tensai.fabric.client.scheduler.tasks;
 
-import java.io.DataInput;
-import java.io.DataOutput;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 
-public interface Serializer<T> {
-	void serialize(T obj, DataOutput stream) throws IOException;
+import org.apache.commons.io.FileUtils;
 
-	T deserialize(DataInput stream) throws IOException;
+import dev.phomc.tensai.fabric.client.TensaiFabricClient;
+import dev.phomc.tensai.fabric.client.iam.PermissionStorage;
+import dev.phomc.tensai.scheduler.Task;
+
+public class PermissionLoadTask implements Runnable {
+	public static Task build() {
+		return new Task.Builder().async().setExecutor(new PermissionLoadTask()).build();
+	}
+
+	@Override
+	public void run() {
+		File file = new File(TensaiFabricClient.getInstance().getTensaiDirectory(), "permit.bin");
+		if (!file.exists()) return;
+
+		try {
+			byte[] data = FileUtils.readFileToByteArray(file);
+			ByteArrayInputStream stream = new ByteArrayInputStream(data);
+			PermissionStorage st = PermissionStorage.SERIALIZER.deserialize(new DataInputStream(stream));
+			TensaiFabricClient.getInstance().getClientAuthorizer().getPersistentStorage().getPermits().putAll(st.getPermits());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
