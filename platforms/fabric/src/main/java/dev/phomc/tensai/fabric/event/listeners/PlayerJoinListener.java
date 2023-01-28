@@ -33,7 +33,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
-import dev.phomc.tensai.fabric.clients.FabricClientHandle;
+import dev.phomc.tensai.fabric.client.FabricClientHandle;
 import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;

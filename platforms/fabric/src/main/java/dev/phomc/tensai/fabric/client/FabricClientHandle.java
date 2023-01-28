@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.clients;
+package dev.phomc.tensai.fabric.client;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 

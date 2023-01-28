@@ -34,7 +34,7 @@ import net.minecraft.util.Identifier;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
-import dev.phomc.tensai.fabric.clients.FabricClientHandle;
+import dev.phomc.tensai.fabric.client.FabricClientHandle;
 import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.server.vfx.VisualEffects;
