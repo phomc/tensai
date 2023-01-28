@@ -24,61 +24,40 @@
 
 package dev.phomc.tensai.networking.message.s2c;
 
-import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import dev.phomc.tensai.keybinding.Key;
-import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.networking.message.Message;
 import dev.phomc.tensai.networking.message.MessageType;
+import dev.phomc.tensai.server.vfx.animations.AnimationProperty;
 
-public class KeyBindingRegisterMessage extends Message {
-	private final List<KeyBinding> keymap;
-	private int inputDelay;
+public class AnimationPlayMessage extends Message {
+	public static final int PLAY_ONCE = 0x00;
 
-	public KeyBindingRegisterMessage() {
-		this(0, new ArrayList<>());
-	}
+	public final String animationType;
+	public final int playMode;
+	public final double startSec;
+	public final double durationSec;
+	public final AnimationProperty<?>[] properties;
 
-	public KeyBindingRegisterMessage(int inputDelay, List<KeyBinding> keymap) {
-		super(MessageType.KEYBINDING_REGISTER);
-		this.inputDelay = inputDelay;
-		this.keymap = keymap;
-	}
+	public AnimationPlayMessage(String animationType, int playMode, double startSec, double durationSec, AnimationProperty<?>... properties) {
+		super(MessageType.VFX_ANIMATION_PLAY);
 
-	public int getInputDelay() {
-		return inputDelay;
-	}
-
-	public List<KeyBinding> getKeymap() {
-		return keymap;
+		this.animationType = animationType;
+		this.playMode = playMode;
+		this.startSec = startSec;
+		this.durationSec = durationSec;
+		this.properties = properties;
 	}
 
 	@Override
 	public void write(DataOutput stream) throws IOException {
-		stream.writeInt(inputDelay);
-		stream.writeInt(keymap.size());
+		stream.writeUTF(animationType);
+		stream.writeByte(playMode);
+		stream.writeDouble(startSec);
+		stream.writeDouble(durationSec);
 
-		for (KeyBinding entry : keymap) {
-			stream.writeInt(entry.getKey().getCode());
-			stream.writeUTF(entry.getName());
-		}
-	}
-
-	@Override
-	public void read(DataInput stream) throws IOException {
-		inputDelay = stream.readInt();
-		int size = stream.readInt();
-
-		for (int i = 0; i < size; i++) {
-			Key key = Key.lookup(stream.readInt());
-
-			if (key != null) {
-				keymap.add(new KeyBinding(key, stream.readUTF()));
-			}
-		}
+		stream.writeInt(properties.length);
+		for (AnimationProperty<?> prop : properties) AnimationProperty.SERIALIZER.serialize(prop, stream);
 	}
 }

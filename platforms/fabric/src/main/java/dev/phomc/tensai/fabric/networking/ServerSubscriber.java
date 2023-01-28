@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,49 +22,55 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.mixins;
+package dev.phomc.tensai.fabric.networking;
 
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
-import dev.phomc.tensai.fabric.clients.FabricClientHandle;
-import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
+import dev.phomc.tensai.fabric.TensaiFabric;
 import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.server.vfx.VisualEffects;
+import dev.phomc.tensai.networking.Subscriber;
+import dev.phomc.tensai.networking.message.Message;
 
-@Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin implements FabricClientHandle {
-	@Unique
-	private ClientVisualEffectsImpl vfx;
+@Environment(EnvType.SERVER)
+public abstract class ServerSubscriber extends Subscriber<PacketSender> {
+	private final Identifier identifier;
 
-	@Override
-	public void sendPluginMessage(Channel channel, byte[] bytes) {
-		PacketByteBuf buf = new PacketByteBuf(Unpooled.wrappedBuffer(bytes));
-		ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, new Identifier(channel.getNamespace()), buf);
+	public ServerSubscriber(Channel channel) {
+		super(channel);
+		identifier = new Identifier(channel.getNamespace());
+
+		ServerPlayNetworking.registerGlobalReceiver(identifier, (server, player, handler, buf, responseSender) -> {
+			byte[] bytes = ByteBufUtil.getBytes(buf);
+			TensaiFabric.LOGGER.debug("Received message id {} at channel {}", bytes[0], getChannel());
+			Callback<PacketSender> callback = subscription.get(bytes[0]);
+
+			if (callback != null) {
+				callback.call(bytes, responseSender);
+			}
+		});
 	}
 
-	@Override
-	public void transferTo(ServerPlayerEntity newPlayer) {
-		FabricClientHandle newClientHandle = (FabricClientHandle) newPlayer;
-		newClientHandle.setVfx(this.vfx);
-		this.vfx = null;
+	public abstract void onInitialize();
+
+	public Identifier getIdentifier() {
+		return identifier;
 	}
 
-	@Override
-	public VisualEffects getVfx() {
-		if (vfx == null) vfx = new ClientVisualEffectsImpl((ServerPlayerEntity) (Object) this);
-		return vfx;
+	public void publish(Message message, PacketSender consumer) {
+		consumer.sendPacket(identifier, new PacketByteBuf(Unpooled.wrappedBuffer(message.pack())));
 	}
 
-	@Override
-	public void setVfx(ClientVisualEffectsImpl vfx) {
-		this.vfx = vfx;
+	public void publish(Message message, ServerPlayerEntity player) {
+		publish(message, ServerPlayNetworking.getSender(player));
 	}
 }

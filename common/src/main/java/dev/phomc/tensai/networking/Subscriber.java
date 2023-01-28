@@ -24,23 +24,53 @@
 
 package dev.phomc.tensai.networking;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a message channel.
+ * A subscriber is one who listens to incoming messages.
+ *
+ * @param <T> Represents the sender. It is different per platforms.
  */
-public enum Channel {
-	KEYBINDING,
-	VFX;
+public abstract class Subscriber<T> {
+	protected final Map<Byte, Callback<T>> subscription = new HashMap<>();
+	private final Channel channel;
 
-	private final String namespace;
-
-	Channel() {
-		namespace = String.format("tensai:%s", name().toLowerCase());
+	public Subscriber(Channel channel) {
+		this.channel = channel;
 	}
 
 	@NotNull
-	public String getNamespace() {
-		return namespace;
+	public Channel getChannel() {
+		return channel;
+	}
+
+	/**
+	 * This method is called after this subscriber was initialized successfully.
+	 */
+	public abstract void onInitialize();
+
+	/**
+	 * Subscribe a specific type of message.
+	 *
+	 * @param id       message type
+	 * @param callback callback
+	 */
+	public void subscribe(byte id, Callback<T> callback) {
+		subscription.put(id, callback);
+	}
+
+	public interface Callback<T> {
+		/**
+		 * This callback triggers when a message is received.<br>
+		 * <b>Note:</b> It may be called asynchronously. In some platforms such as Bukkit, it is unsafe to do
+		 * synchronous operations inside this method's implementation.
+		 *
+		 * @param data message data
+		 * @param sender message sender
+		 */
+		void call(byte[] data, T sender);
 	}
 }

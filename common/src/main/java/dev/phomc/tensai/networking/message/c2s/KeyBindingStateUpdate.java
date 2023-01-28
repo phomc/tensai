@@ -32,7 +32,6 @@ import java.util.List;
 
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyState;
-import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.Message;
 import dev.phomc.tensai.networking.message.MessageType;
 
@@ -44,7 +43,7 @@ public class KeyBindingStateUpdate extends Message {
 	}
 
 	public KeyBindingStateUpdate(List<KeyState> states) {
-		super(Channel.KEYBINDING, MessageType.KEYBINDING_STATE_UPDATE);
+		super(MessageType.KEYBINDING_STATE_UPDATE);
 		this.states = states;
 	}
 

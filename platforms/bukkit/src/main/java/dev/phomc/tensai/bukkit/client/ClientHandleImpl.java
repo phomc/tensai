@@ -32,8 +32,8 @@ import org.bukkit.entity.Player;
 
 import dev.phomc.tensai.bukkit.TensaiBukkit;
 import dev.phomc.tensai.bukkit.vfx.ClientVisualEffectsImpl;
+import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.server.client.ClientHandle;
-import dev.phomc.tensai.server.networking.PluginMessage;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
 public class ClientHandleImpl implements ClientHandle {
@@ -46,7 +46,7 @@ public class ClientHandleImpl implements ClientHandle {
 		Preconditions.checkNotNull(plugin);
 		Preconditions.checkNotNull(player);
 		this.plugin = plugin;
-		this.playerRef = new WeakReference<Player>(player);
+		this.playerRef = new WeakReference<>(player);
 
 		this.vfx = new ClientVisualEffectsImpl(this);
 	}
@@ -55,10 +55,11 @@ public class ClientHandleImpl implements ClientHandle {
 		return playerRef.get();
 	}
 
-	public void sendPluginMessage(PluginMessage message) {
+	@Override
+	public void sendPluginMessage(Channel channel, byte[] bytes) {
 		Player p = getPlayer();
 		if (p == null) return; // TODO: player is dereferenced, maybe throw an exception?
-		p.sendPluginMessage(plugin, message.channel, message.createBytes());
+		p.sendPluginMessage(plugin, channel.getNamespace(), bytes);
 	}
 
 	@Override

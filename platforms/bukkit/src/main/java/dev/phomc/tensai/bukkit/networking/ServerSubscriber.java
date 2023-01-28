@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,33 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.clients;
+package dev.phomc.tensai.bukkit.networking;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.NotNull;
 
-import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
+
+import dev.phomc.tensai.bukkit.TensaiBukkit;
+import dev.phomc.tensai.networking.Channel;
+import dev.phomc.tensai.networking.Subscriber;
 import dev.phomc.tensai.server.client.ClientHandle;
 
-public interface FabricClientHandle extends ClientHandle {
-	void transferTo(ServerPlayerEntity newPlayer);
+public abstract class ServerSubscriber extends Subscriber<ClientHandle> implements PluginMessageListener {
+	public ServerSubscriber(Channel channel) {
+		super(channel);
+	}
 
-	void setVfx(ClientVisualEffectsImpl vfx);
+	public abstract void onInitialize();
+
+	@Override
+	public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] message) {
+		if (!channel.equals(getChannel().getNamespace())) return;
+		TensaiBukkit.LOGGER.debug("Received message id {} at channel {}", message[0], channel);
+		Callback<ClientHandle> callback = subscription.get(message[0]);
+
+		if (callback != null) {
+			callback.call(message, TensaiBukkit.getClient(player));
+		}
+	}
 }
