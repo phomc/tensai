@@ -47,6 +47,7 @@ public class PermissionTableGUI extends LightweightGuiDescription {
 			if (showFalseOnly && map.get(perm)) {
 				continue;
 			}
+
 			map.put(perm, defaultVal);
 
 			WToggleButton toggleButton = new WToggleButton(perm.getDescription());
