@@ -40,18 +40,20 @@ import net.minecraft.text.Text;
 import dev.phomc.tensai.fabric.client.iam.Permission;
 
 public class PermissionTableGUI extends LightweightGuiDescription {
-	public PermissionTableGUI(Map<Permission, Boolean> map, boolean showFalseOnly, Runnable callback) {
+	public PermissionTableGUI(Map<Permission, Boolean> map, boolean showFalseOnly, boolean defaultVal, Runnable callback) {
 		WBox container = new WBox(Axis.VERTICAL);
 
 		for (Permission perm : map.keySet()) {
 			if (showFalseOnly && map.get(perm)) {
 				continue;
 			}
+			map.put(perm, defaultVal);
 
 			WToggleButton toggleButton = new WToggleButton(perm.getDescription());
 			toggleButton.setOnToggle(on -> {
 				map.put(perm, on);
 			});
+			toggleButton.setToggle(defaultVal);
 			container.add(toggleButton);
 		}
 
