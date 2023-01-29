@@ -24,6 +24,7 @@
 
 package dev.phomc.tensai.fabric.keybinding;
 
+import java.util.Collections;
 import java.util.Map;
 
 import net.minecraft.server.MinecraftServer;
@@ -52,8 +53,7 @@ public class KeyBindingMessageSubscriber extends ServerSubscriber {
 		subscribe(MessageType.KEYBINDING_REGISTER_RESPONSE, (data, sender) -> {
 			KeyBindingRegisterResponse msg = new KeyBindingRegisterResponse();
 			msg.unpack(data);
-			TensaiFabric.LOGGER.info("Keybinding registration status: {}", msg.getResult());
-			ServerKeybindingEvents.REGISTER_RESULT.invoker().respond(((ServerPlayNetworkAddonMixin) sender).getHandler().player, msg);
+			ServerKeybindingEvents.REGISTER_RESULT.invoker().respond(((ServerPlayNetworkAddonMixin) sender).getHandler().player, Collections.unmodifiableMap(msg.getStatus()));
 		});
 
 		subscribe(MessageType.KEYBINDING_STATE_UPDATE, (data, sender) -> {

@@ -24,6 +24,7 @@
 
 package dev.phomc.tensai.bukkit.keybinding;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -50,7 +51,7 @@ public class KeyBindingMessageSubscriber extends ServerSubscriber {
 		subscribe(MessageType.KEYBINDING_REGISTER_RESPONSE, (data, sender) -> {
 			KeyBindingRegisterResponse msg = new KeyBindingRegisterResponse();
 			msg.unpack(data);
-			Bukkit.getPluginManager().callEvent(new KeyRegisterResultEvent(((ClientHandleImpl) sender).getPlayer(), msg));
+			Bukkit.getPluginManager().callEvent(new KeyRegisterResultEvent(((ClientHandleImpl) sender).getPlayer(), Collections.unmodifiableMap(msg.getStatus())));
 		});
 
 		subscribe(MessageType.KEYBINDING_STATE_UPDATE, (data, sender) -> {

@@ -124,7 +124,7 @@ public class ClientAuthorizer {
 			return;
 		}
 
-		MinecraftClient.getInstance().setScreen(new TensaiScreen(new PermissionTableGUI(map, true, () -> {
+		MinecraftClient.getInstance().setScreen(new TensaiScreen(new PermissionTableGUI(map, true, true, () -> {
 			for (Permission perm : permissions) {
 				if (map.get(perm)) {
 					forceGrant(perm, serverAddr);

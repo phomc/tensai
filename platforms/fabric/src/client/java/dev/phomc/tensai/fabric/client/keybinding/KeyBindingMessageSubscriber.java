@@ -24,14 +24,25 @@
 
 package dev.phomc.tensai.fabric.client.keybinding;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
+
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 
 import dev.phomc.tensai.fabric.TensaiFabric;
 import dev.phomc.tensai.fabric.client.TensaiFabricClient;
+import dev.phomc.tensai.fabric.client.iam.Permission;
 import dev.phomc.tensai.fabric.client.mixins.ClientPlayNetworkAddonMixin;
 import dev.phomc.tensai.fabric.client.networking.ClientSubscriber;
+import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.MessageType;
@@ -51,31 +62,52 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 			KeyBindingRegisterMessage msg = new KeyBindingRegisterMessage();
 			msg.unpack(data);
 
-			// TODO Show registering-keys explicitly
-			String server = Objects.requireNonNull(((ClientPlayNetworkAddonMixin) sender).getHandler().getServerInfo()).address;
+			((TensaiServer) MinecraftClient.getInstance()).getTaskScheduler().runSync(() -> prompt(msg, sender));
+		});
+	}
 
-			((TensaiServer) MinecraftClient.getInstance()).getTaskScheduler().runSync(() ->
-					TensaiFabricClient.getInstance().getClientAuthorizer().tryGrant(KeyBindingManager.KEY_RECORD_PERMISSION, server, ok -> {
-						byte result = ok ? KeyBinding.RegisterStatus.UNKNOWN : KeyBinding.RegisterStatus.CLIENT_REJECTED;
+	private void prompt(KeyBindingRegisterMessage msg, PacketSender sender) {
+		String server = Objects.requireNonNull(((ClientPlayNetworkAddonMixin) sender).getHandler().getServerInfo()).address;
+		Map<Permission, KeyBinding> mapping = new HashMap<>();
+		Set<Permission> set = msg.getKeymap().stream()
+				.map(keyBinding -> {
+					Permission perm = new Permission(
+							KeyBindingManager.KEYBINDING_NAMESPACE, keyBinding.getKey().name(),
+							Text.translatable("gui.permissionTable.keybinding", keyBinding.getKey().name(), keyBinding.getName()),
+							Permission.Context.SERVER,
+							true
+					);
+					mapping.put(perm, keyBinding);
+					return perm;
+				}).collect(Collectors.toSet());
 
-						if (ok) {
-							TensaiFabric.LOGGER.info("Keybinding registration allowed");
+		TensaiFabricClient.getInstance().getClientAuthorizer().tryGrantMulti(set, server, table -> {
+			Map<Key, KeyBinding.RegisterStatus> status = new HashMap<>();
+			List<KeyBinding> keylist = new ArrayList<>();
 
-							if (KeyBindingManager.getInstance().testBulkAvailability(msg.getKeymap())) {
-								KeyBindingManager.getInstance().initialize(msg.getKeymap(), msg.getInputDelay());
-								result = KeyBinding.RegisterStatus.SUCCESS;
-								TensaiFabric.LOGGER.info("Keybinding registered ({} keys)", msg.getKeymap().size());
-							} else {
-								result = KeyBinding.RegisterStatus.KEY_DUPLICATED;
-								TensaiFabric.LOGGER.info("Keybinding collision detected");
-							}
-						} else {
-							TensaiFabric.LOGGER.info("Keybinding registration declined");
-						}
+			for (Map.Entry<Permission, Boolean> entry : table.entrySet()) {
+				KeyBinding kb = mapping.get(entry.getKey());
 
-						publish(new KeyBindingRegisterResponse(result), sender);
-					})
-			);
+				if (!entry.getValue()) {
+					status.put(kb.getKey(), KeyBinding.RegisterStatus.CLIENT_REJECTED);
+					continue;
+				}
+
+				if (!KeyBindingManager.getInstance().testAvailability(kb.getKey())) {
+					status.put(kb.getKey(), KeyBinding.RegisterStatus.KEY_DUPLICATED);
+					continue;
+				}
+
+				status.put(kb.getKey(), KeyBinding.RegisterStatus.SUCCESS);
+				keylist.add(kb);
+			}
+
+			if (!keylist.isEmpty()) {
+				KeyBindingManager.getInstance().initialize(keylist, msg.getInputDelay());
+				TensaiFabric.LOGGER.info("Keybinding registered ({} keys)", msg.getKeymap().size());
+			}
+
+			publish(new KeyBindingRegisterResponse(status), sender);
 		});
 	}
 }

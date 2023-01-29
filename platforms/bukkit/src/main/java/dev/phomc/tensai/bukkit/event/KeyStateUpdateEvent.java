@@ -55,7 +55,7 @@ public class KeyStateUpdateEvent extends PlayerEvent {
 	/**
 	 * Returns the current key states.
 	 *
-	 * @return an <b>unmodifiable</b> map representing the key states
+	 * @return a modifiable, shared map
 	 */
 	public Map<Key, KeyState> getKeyStates() {
 		return this.keyStates;
