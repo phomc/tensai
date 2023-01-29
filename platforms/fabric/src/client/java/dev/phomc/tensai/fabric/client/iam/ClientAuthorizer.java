@@ -24,6 +24,11 @@
 
 package dev.phomc.tensai.fabric.client.iam;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +36,9 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.text.Text;
+
+import dev.phomc.tensai.fabric.client.gui.PermissionTableGUI;
+import dev.phomc.tensai.fabric.client.gui.TensaiScreen;
 
 public class ClientAuthorizer {
 	private final PermissionStorage persist = new PermissionStorage();
@@ -83,13 +91,48 @@ public class ClientAuthorizer {
 						forceGrant(permission, serverAddr);
 					}
 
-					callback.accept(ok);
 					MinecraftClient.getInstance().setScreen(null);
+					callback.accept(ok);
 				},
 				Text.translatable("gui.permissionPrompt.title"),
-				Text.translatable(permission.getMessageTranslationKey()),
+				permission.getDescription(),
 				Text.translatable("gui.permissionPrompt.accept"),
 				Text.translatable("gui.permissionPrompt.decline")
 		));
+	}
+
+	/**
+	 * Try to grant multiple permissions.<br>
+	 * <b>SYNCHRONOUS OPERATION</b>
+	 *
+	 * @param permissions permission set
+	 * @param serverAddr server address (for server-level permission)
+	 * @param callback callback
+	 */
+	public void tryGrantMulti(@NotNull Set<Permission> permissions, @Nullable String serverAddr, @NotNull Consumer<Map<Permission, Boolean>> callback) {
+		Map<Permission, Boolean> map = new HashMap<>();
+		int k = 0;
+
+		for (Permission perm : permissions) {
+			boolean granted = isGranted(perm, serverAddr);
+			if (!granted) k++;
+			map.put(perm, granted);
+		}
+
+		if (k == 0) {
+			callback.accept(map);
+			return;
+		}
+
+		MinecraftClient.getInstance().setScreen(new TensaiScreen(new PermissionTableGUI(map, true, () -> {
+			for (Permission perm : permissions) {
+				if (map.get(perm)) {
+					forceGrant(perm, serverAddr);
+				}
+			}
+
+			MinecraftClient.getInstance().setScreen(null);
+			callback.accept(map);
+		})));
 	}
 }

@@ -28,29 +28,30 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class Permission {
 	private final Identifier namespace;
 	private final String key;
-	private final String messageTranslationKey;
+	private final Text description;
 	private final Context context;
 	private final boolean persistent;
 
-	public Permission(@NotNull Identifier namespace, @NotNull String key, @NotNull String messageTranslationKey, @NotNull Context context, boolean persistent) {
+	public Permission(@NotNull Identifier namespace, @NotNull String key, @NotNull Text description, @NotNull Context context, boolean persistent) {
 		if (!key.matches("[0-9A-Za-z-_]+")) {
 			throw new IllegalArgumentException("invalid permission key");
 		}
 
 		this.namespace = namespace;
 		this.key = key;
-		this.messageTranslationKey = messageTranslationKey;
+		this.description = description;
 		this.context = context;
 		this.persistent = persistent;
 	}
 
-	public Permission(String namespace, String key, String messageTranslationKey, Context context, boolean persistent) {
-		this(new Identifier(namespace), key, messageTranslationKey, context, persistent);
+	public Permission(String namespace, String key, Text description, Context context, boolean persistent) {
+		this(new Identifier(namespace), key, description, context, persistent);
 	}
 
 	@NotNull
@@ -64,8 +65,8 @@ public class Permission {
 	}
 
 	@NotNull
-	public String getMessageTranslationKey() {
-		return messageTranslationKey;
+	public Text getDescription() {
+		return description;
 	}
 
 	@NotNull
@@ -82,7 +83,7 @@ public class Permission {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Permission that = (Permission) o;
-		return namespace.equals(that.namespace) && key.equals(that.key) && messageTranslationKey.equals(that.messageTranslationKey) && context == that.context && persistent == that.persistent;
+		return namespace.equals(that.namespace) && key.equals(that.key) && description.equals(that.description) && context == that.context && persistent == that.persistent;
 	}
 
 	@Override
