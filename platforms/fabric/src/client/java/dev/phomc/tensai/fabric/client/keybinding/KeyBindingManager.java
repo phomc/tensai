@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -55,7 +56,7 @@ public class KeyBindingManager {
 	public static final Identifier KEYBINDING_NAMESPACE = new Identifier(Channel.KEYBINDING.getNamespace());
 	public static final Permission KEY_RECORD_PERMISSION = new Permission(
 			KEYBINDING_NAMESPACE, "record",
-			"gui.permissionPrompt.message.keybinding",
+			Text.translatable("gui.permissionPrompt.message.keybinding"),
 			Permission.Context.SERVER, true
 	);
 	private static final int MIN_INPUT_DELAY = 5;

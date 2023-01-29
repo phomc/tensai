@@ -36,6 +36,12 @@ loom {
 	}
 }
 
+repositories {
+    maven("https://server.bbkr.space/artifactory/libs-release") {
+        name = "CottonMC"
+    }
+}
+
 dependencies {
     implementation(project(":tensai-common"))
 
@@ -47,6 +53,7 @@ dependencies {
     mappings("net.fabricmc:yarn:${property("minecraftVersion")}+${property("yarnMappings")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${property("loaderVersion")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabricApiVersion")}")
+    modImplementation("io.github.cottonmc:LibGui:${property("libGuiVersion")}")
 }
 
 tasks {
