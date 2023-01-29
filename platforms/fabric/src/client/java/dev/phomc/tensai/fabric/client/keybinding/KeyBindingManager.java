@@ -76,7 +76,7 @@ public class KeyBindingManager {
 	}
 
 	public boolean testAvailability(@NotNull Key key) {
-		return KeyBindingMixin.getKeyCodeMapping().containsKey(getInputKey(key));
+		return !KeyBindingMixin.getKeyCodeMapping().containsKey(getInputKey(key));
 	}
 
 	public void initialize(@NotNull List<KeyBinding> keymap, int inputDelay) {

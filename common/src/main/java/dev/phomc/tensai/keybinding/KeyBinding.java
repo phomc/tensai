@@ -29,11 +29,13 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a key binding.
+ * Represents a key binding.<br>
+ * A keybinding is listened by the client and its state updates will be broadcast back to the server.
  */
 public class KeyBinding {
 	private final Key key;
 	private final String name;
+	private final boolean enforced;
 
 	/**
 	 * Constructs a keybinding.
@@ -42,8 +44,20 @@ public class KeyBinding {
 	 * @param name Keybinding name
 	 */
 	public KeyBinding(@NotNull Key key, @NotNull String name) {
+		this(key, name, false);
+	}
+
+	/**
+	 * Constructs a keybinding.
+	 *
+	 * @param key  A {@link Key}
+	 * @param name Keybinding name
+	 * @param enforced Whether the keybinding is enforced to be accepted
+	 */
+	public KeyBinding(@NotNull Key key, @NotNull String name, boolean enforced) {
 		this.key = key;
 		this.name = name;
+		this.enforced = enforced;
 	}
 
 	@NotNull
@@ -56,12 +70,16 @@ public class KeyBinding {
 		return name;
 	}
 
+	public boolean isEnforced() {
+		return enforced;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		KeyBinding that = (KeyBinding) o;
-		return key == that.key && name.equals(that.name);
+		return key == that.key && name.equals(that.name) && enforced == that.enforced;
 	}
 
 	@Override
@@ -70,8 +88,19 @@ public class KeyBinding {
 	}
 
 	public enum RegisterStatus {
+		/**
+		 * The client denied the keybinding registration.
+		 */
 		CLIENT_REJECTED,
+
+		/**
+		 * The keybinding was duplicated (collided) with another one.
+		 */
 		KEY_DUPLICATED,
+
+		/**
+		 * The keybinding registration was successful.
+		 */
 		SUCCESS;
 	}
 }
