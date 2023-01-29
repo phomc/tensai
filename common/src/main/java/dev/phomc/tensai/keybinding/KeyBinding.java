@@ -69,10 +69,9 @@ public class KeyBinding {
 		return Objects.hash(key, name);
 	}
 
-	public static class RegisterStatus {
-		public static final byte UNKNOWN = 0;
-		public static final byte CLIENT_REJECTED = 1;
-		public static final byte KEY_DUPLICATED = 2;
-		public static final byte SUCCESS = 127;
+	public enum RegisterStatus {
+		CLIENT_REJECTED,
+		KEY_DUPLICATED,
+		SUCCESS;
 	}
 }

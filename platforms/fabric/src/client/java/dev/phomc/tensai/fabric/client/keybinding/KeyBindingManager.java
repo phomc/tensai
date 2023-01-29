@@ -34,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -42,7 +41,6 @@ import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 
 import dev.phomc.tensai.fabric.client.GameOptionProcessor;
 import dev.phomc.tensai.fabric.client.i18n.CustomTranslationStorage;
-import dev.phomc.tensai.fabric.client.iam.Permission;
 import dev.phomc.tensai.fabric.client.mixins.KeyBindingMixin;
 import dev.phomc.tensai.fabric.client.scheduler.tasks.KeyStateCheckTask;
 import dev.phomc.tensai.keybinding.Key;
@@ -54,11 +52,6 @@ import dev.phomc.tensai.server.TensaiServer;
 
 public class KeyBindingManager {
 	public static final Identifier KEYBINDING_NAMESPACE = new Identifier(Channel.KEYBINDING.getNamespace());
-	public static final Permission KEY_RECORD_PERMISSION = new Permission(
-			KEYBINDING_NAMESPACE, "record",
-			Text.translatable("gui.permissionPrompt.message.keybinding"),
-			Permission.Context.SERVER, true
-	);
 	private static final int MIN_INPUT_DELAY = 5;
 	private static final KeyBindingManager INSTANCE = new KeyBindingManager();
 	private List<net.minecraft.client.option.KeyBinding> registeredKeys = new ArrayList<>();
@@ -82,16 +75,8 @@ public class KeyBindingManager {
 		return inputDelay;
 	}
 
-	public boolean testBulkAvailability(@NotNull List<KeyBinding> keymap) {
-		for (KeyBinding keyBinding : keymap) {
-			InputUtil.Key key = getInputKey(keyBinding.getKey());
-
-			if (KeyBindingMixin.getKeyCodeMapping().containsKey(key)) {
-				return false;
-			}
-		}
-
-		return true;
+	public boolean testAvailability(@NotNull Key key) {
+		return KeyBindingMixin.getKeyCodeMapping().containsKey(getInputKey(key));
 	}
 
 	public void initialize(@NotNull List<KeyBinding> keymap, int inputDelay) {

@@ -24,11 +24,14 @@
 
 package dev.phomc.tensai.bukkit.event;
 
+import java.util.Map;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
-import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
+import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyBinding;
 
 /**
  * This event returns the keybinding registration result.
@@ -36,15 +39,20 @@ import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
  */
 public class KeyRegisterResultEvent extends PlayerEvent {
 	private static final HandlerList handlers = new HandlerList();
-	private final KeyBindingRegisterResponse response;
+	private final Map<Key, KeyBinding.RegisterStatus> status;
 
-	public KeyRegisterResultEvent(Player player, KeyBindingRegisterResponse response) {
+	public KeyRegisterResultEvent(Player player, Map<Key, KeyBinding.RegisterStatus> status) {
 		super(player);
-		this.response = response;
+		this.status = status;
 	}
 
-	public KeyBindingRegisterResponse getResponse() {
-		return this.response;
+	/**
+	 * Gets the status of registered keys.
+	 *
+	 * @return an <b>unmodifiable</b> status map
+	 */
+	public Map<Key, KeyBinding.RegisterStatus> getStatus() {
+		return this.status;
 	}
 
 	@Override

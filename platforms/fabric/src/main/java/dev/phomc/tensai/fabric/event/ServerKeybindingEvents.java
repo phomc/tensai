@@ -32,8 +32,8 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyBinding;
 import dev.phomc.tensai.keybinding.KeyState;
-import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 
 public class ServerKeybindingEvents {
 	public static final Event<ServerKeybindingEvents.KeyRegisterResultEvent> REGISTER_RESULT = EventFactory.createArrayBacked(ServerKeybindingEvents.KeyRegisterResultEvent.class, (listeners) -> (player, result) -> {
@@ -48,13 +48,37 @@ public class ServerKeybindingEvents {
 		}
 	});
 
+	/**
+	 * This event returns the keybinding registration result.
+	 * <b>Note:</b> This event is called asynchronously.
+	 */
 	@FunctionalInterface
 	public interface KeyRegisterResultEvent {
-		void respond(ServerPlayerEntity player, KeyBindingRegisterResponse response);
+		/**
+		 * Called when the status of registered keys is returned.
+		 * @param player the relevant player
+		 * @param status an <b>unmodifiable</b> status map
+		 */
+		void respond(ServerPlayerEntity player, Map<Key, KeyBinding.RegisterStatus> status);
 	}
 
+	/**
+	 * This event is triggered whenever one or more key states is updated.<br>
+	 * <b>Note:</b>
+	 * <ul>
+	 *     <li>The timing may be different from client-side due to connection latency.</li>
+	 *     <li>This event is called asynchronously.</li>
+	 *     <li>No key state update will be sent back to the client.</li>
+	 *     <li>The server-sided key state is shared across mods.</li>
+	 * </ul>
+	 */
 	@FunctionalInterface
 	public interface KeyStateUpdateEvent {
+		/**
+		 * Called when the key states are updated.
+		 * @param player the relevant player
+		 * @param keyStates a modifiable, shared map
+		 */
 		void updateKeyState(ServerPlayerEntity player, Map<Key, KeyState> keyStates);
 	}
 }
