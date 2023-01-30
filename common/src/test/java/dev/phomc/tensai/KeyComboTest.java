@@ -24,14 +24,14 @@
 
 package dev.phomc.tensai;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.combo.CommitResult;
 import dev.phomc.tensai.keybinding.combo.KeyCombo;
 import dev.phomc.tensai.keybinding.combo.KeyComboMatcher;
 import dev.phomc.tensai.keybinding.combo.KeyComboState;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 public class KeyComboTest {
 	@Test
@@ -49,7 +49,7 @@ public class KeyComboTest {
 		Assertions.assertEquals(CommitResult.NOT_FOUND, matcher.commitKey(state, Key.KEY_2));
 		Thread.sleep(5 * 50);
 		Assertions.assertEquals(CommitResult.COMMITTED, matcher.commitKey(state, Key.KEY_3));
-		Thread.sleep(7 * 50);
+		Thread.sleep(6 * 50);
 		Assertions.assertEquals(CommitResult.COMMITTED, matcher.commitKey(state, Key.KEY_4));
 		Thread.sleep(8 * 50);
 		Assertions.assertEquals(CommitResult.TIMEOUT, matcher.commitKey(state, Key.KEY_5));
