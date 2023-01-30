@@ -24,19 +24,18 @@
 
 package dev.phomc.tensai.keybinding.combo;
 
-import dev.phomc.tensai.keybinding.Key;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
+import dev.phomc.tensai.keybinding.Key;
 
 /**
  * A key-combo matcher is an utility class to store and match key-combo based on given inputs.
  */
 public class KeyComboMatcher {
-
 	private final Map<Long, Integer> chainHashes = new HashMap<>();
 	private final Map<Long, KeyCombo> comboMapping = new HashMap<>();
 	private final float delaySensitivity;
@@ -62,12 +61,14 @@ public class KeyComboMatcher {
 	 */
 	public void offerCombo(@NotNull KeyCombo keyCombo) {
 		long previous = 0;
+
 		for (int i = 0; i < keyCombo.getKeyUnits().length; i++) {
 			KeyUnit keyUnit = keyCombo.getKeyUnits()[i];
 			long hash = hash(previous, keyUnit.getKey().getCode());
 			chainHashes.put(hash, keyUnit.getRelativeDelayTime());
 			previous = hash;
 		}
+
 		comboMapping.put(previous, keyCombo);
 	}
 
@@ -91,15 +92,13 @@ public class KeyComboMatcher {
 	public CommitResult commitKey(@NotNull KeyComboState state, @NotNull Key key) {
 		long hash = hash(state.getLastHash(), key.getCode());
 		Integer delay = chainHashes.get(hash);
-		if (delay == null) {
-			return CommitResult.NOT_FOUND;
-		}
+		if (delay == null) return CommitResult.NOT_FOUND;
+
 		long time = System.currentTimeMillis();
 		long delta = state.getLastKeyPress() == 0 ? 0 : (time - state.getLastKeyPress());
-		double delayMilli = delay * 50;
-		if (Math.abs(delta / delayMilli) > delaySensitivity) {
-			return CommitResult.TIMEOUT;
-		}
+		float ratio = delta / (delay * 50f);
+		if (ratio < 1.0f || ratio > delaySensitivity) return CommitResult.TIMEOUT;
+
 		state.setLastHash(hash);
 		state.setLastKeyPress(time);
 		return CommitResult.COMMITTED;

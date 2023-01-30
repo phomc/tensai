@@ -133,12 +133,14 @@ public class KeyCombo {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(keyUnits[0].getKey());
+
 		for (int i = 1; i < keyUnits.length; i++) {
 			sb.append(' ');
 			sb.append(keyUnits[i].getRelativeDelayTime());
 			sb.append('>');
 			sb.append(keyUnits[i].getKey());
 		}
+
 		return sb.toString();
 	}
 
