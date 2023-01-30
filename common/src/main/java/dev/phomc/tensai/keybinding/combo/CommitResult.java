@@ -24,6 +24,9 @@
 
 package dev.phomc.tensai.keybinding.combo;
 
+/**
+ * The result of committing a {@link KeyUnit} to a {@link KeyComboMatcher}.
+ */
 public enum CommitResult {
 	/**
 	 * The given key did not match any key-combo.<br>
