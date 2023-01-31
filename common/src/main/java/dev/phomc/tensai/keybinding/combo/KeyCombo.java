@@ -55,6 +55,8 @@ public class KeyCombo {
 		KeyCombo.Builder builder = new KeyCombo.Builder();
 
 		for (String unit : units) {
+			if (unit.isEmpty()) continue;
+
 			if (unit.charAt(0) == '>') {
 				builder.then(Key.valueOf(unit.substring(1).toUpperCase()), 0);
 				continue;
@@ -178,6 +180,7 @@ public class KeyCombo {
 		 * @return this builder
 		 */
 		public Builder then(@NotNull Key key, int relativeDelayTime) {
+			if (keyUnits.isEmpty()) relativeDelayTime = 0;
 			absoluteDelayTime += relativeDelayTime;
 			then(new KeyUnit(key, relativeDelayTime, absoluteDelayTime));
 			return this;
