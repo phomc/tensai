@@ -33,7 +33,8 @@ public class KeyComboState {
 	private long lastHash;
 
 	/**
-	 * Returns the last time a key was pressed
+	 * Returns the last time a key was pressed.
+	 *
 	 * @return last key press in <b>milliseconds</b>
 	 */
 	public long getLastKeyPress() {
@@ -46,6 +47,7 @@ public class KeyComboState {
 
 	/**
 	 * Returns the last key-chain hash.
+	 *
 	 * @return last key chain hash
 	 */
 	public long getLastHash() {

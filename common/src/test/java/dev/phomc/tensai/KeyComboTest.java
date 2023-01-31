@@ -36,12 +36,12 @@ import dev.phomc.tensai.keybinding.combo.KeyComboState;
 public class KeyComboTest {
 	@Test
 	public void matchTest() throws InterruptedException {
-		KeyComboMatcher matcher = new KeyComboMatcher(1.5f);
+		KeyComboMatcher matcher = new KeyComboMatcher(3f);
 		matcher.offerCombo(
 				new KeyCombo.Builder(Key.KEY_1)
 						.then(Key.KEY_3, 5)
 						.then(Key.KEY_4, 5)
-						.then(Key.KEY_5, 5)
+						.then(Key.KEY_5, 0)
 						.build()
 		);
 		KeyComboState state = new KeyComboState();
@@ -51,7 +51,7 @@ public class KeyComboTest {
 		Assertions.assertEquals(CommitResult.COMMITTED, matcher.commitKey(state, Key.KEY_3));
 		Thread.sleep(6 * 50);
 		Assertions.assertEquals(CommitResult.COMMITTED, matcher.commitKey(state, Key.KEY_4));
-		Thread.sleep(8 * 50);
+		Thread.sleep(50);
 		Assertions.assertEquals(CommitResult.TIMEOUT, matcher.commitKey(state, Key.KEY_5));
 	}
 
