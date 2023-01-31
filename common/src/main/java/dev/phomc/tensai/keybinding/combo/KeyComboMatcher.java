@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import dev.phomc.tensai.keybinding.Key;
 
 /**
- * A key-combo matcher is an utility class to store and match key-combo based on given inputs.
+ * A key-combo matcher is a utility class to store and match key-combo based on given inputs.
  */
 public class KeyComboMatcher {
 	private final Map<Long, Integer> chainHashes = new HashMap<>();
