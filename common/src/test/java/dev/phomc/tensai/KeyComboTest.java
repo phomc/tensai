@@ -57,11 +57,25 @@ public class KeyComboTest {
 
 	@Test
 	public void parseTest() {
+		Assertions.assertEquals(new KeyCombo.Builder(Key.KEY_V).build(), KeyCombo.parse("").then(Key.KEY_V, 7).build());
+
 		KeyCombo keyCombo = new KeyCombo.Builder(Key.KEY_1)
 				.then(Key.KEY_3, 5)
 				.then(Key.KEY_4, 5)
 				.then(Key.KEY_5, 5)
 				.build();
+		Assertions.assertEquals("KEY_1 5>KEY_3 5>KEY_4 5>KEY_5", keyCombo.toString());
+		Assertions.assertEquals(keyCombo, KeyCombo.parse("KEY_1 5>KEY_3 5>KEY_4 5>KEY_5").build());
+		Assertions.assertEquals(keyCombo, KeyCombo.parse("KEY_1  5>KEY_3  5>KEY_4  5>KEY_5").build());
+		Assertions.assertEquals(keyCombo, KeyCombo.parse("		KEY_1		5>KEY_3		    5>KEY_4			5>KEY_5   ").build());
 		Assertions.assertEquals(keyCombo, KeyCombo.parse(keyCombo.toString()).build());
+
+		keyCombo = new KeyCombo.Builder(Key.MOUSE_BUTTON_1).build();
+		Assertions.assertEquals("MOUSE_BUTTON_1", keyCombo.toString());
+		Assertions.assertEquals(keyCombo, KeyCombo.parse(keyCombo.toString()).build());
+
+		keyCombo = new KeyCombo.Builder(Key.KEY_A).named("Test Key-combo").build();
+		Assertions.assertEquals("KEY_A", keyCombo.toString());
+		Assertions.assertEquals(keyCombo, KeyCombo.parse(keyCombo.toString()).named("Test Key-combo").build());
 	}
 }
