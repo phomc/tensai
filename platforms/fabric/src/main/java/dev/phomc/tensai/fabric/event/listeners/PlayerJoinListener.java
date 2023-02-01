@@ -48,7 +48,6 @@ public class PlayerJoinListener implements ServerPlayConnectionEvents.Join {
 		if (!keyBindings.isEmpty()) {
 			((TensaiServer) server).getTaskScheduler().runSync(() -> {
 				((FabricClientHandle) handler.player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
-						tensai.getKeyBindingManager().getInputDelay(),
 						new ArrayList<>(keyBindings)
 				).pack());
 			}, 40);

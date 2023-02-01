@@ -48,8 +48,4 @@ public interface KeyBindingManager {
 	@NotNull Map<Key, KeyState> getKeyStates();
 
 	@Nullable KeyState getKeyState(Key key);
-
-	int getInputDelay();
-
-	void setInputDelay(int inputDelay);
 }

@@ -37,20 +37,14 @@ import dev.phomc.tensai.networking.message.MessageType;
 
 public class KeyBindingRegisterMessage extends Message {
 	private final List<KeyBinding> keymap;
-	private int inputDelay;
 
 	public KeyBindingRegisterMessage() {
-		this(0, new ArrayList<>());
+		this(new ArrayList<>());
 	}
 
-	public KeyBindingRegisterMessage(int inputDelay, List<KeyBinding> keymap) {
+	public KeyBindingRegisterMessage(List<KeyBinding> keymap) {
 		super(MessageType.KEYBINDING_REGISTER);
-		this.inputDelay = inputDelay;
 		this.keymap = keymap;
-	}
-
-	public int getInputDelay() {
-		return inputDelay;
 	}
 
 	public List<KeyBinding> getKeymap() {
@@ -59,7 +53,6 @@ public class KeyBindingRegisterMessage extends Message {
 
 	@Override
 	public void write(DataOutput stream) throws IOException {
-		stream.writeInt(inputDelay);
 		stream.writeInt(keymap.size());
 
 		for (KeyBinding entry : keymap) {
@@ -70,7 +63,6 @@ public class KeyBindingRegisterMessage extends Message {
 
 	@Override
 	public void read(DataInput stream) throws IOException {
-		inputDelay = stream.readInt();
 		int size = stream.readInt();
 
 		for (int i = 0; i < size; i++) {

@@ -53,7 +53,6 @@ public class PlayerChannelListener implements Listener {
 
 			if (!keyBindings.isEmpty()) {
 				TensaiBukkit.getClient(player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
-						TensaiBukkit.getInstance().getKeyBindingManager().getInputDelay(),
 						new ArrayList<>(keyBindings)
 				).pack());
 			}
