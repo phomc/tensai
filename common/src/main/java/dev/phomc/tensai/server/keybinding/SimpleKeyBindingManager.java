@@ -47,7 +47,7 @@ public class SimpleKeyBindingManager implements KeyBindingManager {
 		}
 
 		keyBindings.put(keyBinding.getKey(), keyBinding);
-		keyStates.put(keyBinding.getKey(), new KeyState(0));
+		keyStates.put(keyBinding.getKey(), new KeyState(0, false));
 		return true;
 	}
 

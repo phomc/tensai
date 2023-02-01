@@ -57,7 +57,8 @@ public class KeyBindingStateUpdate extends Message {
 
 		for (Map.Entry<Key, KeyState> entry : states.entrySet()) {
 			stream.writeInt(entry.getKey().getCode());
-			stream.writeInt(entry.getValue().getTimesPressed());
+			stream.writeShort(entry.getValue().getTimesPressed());
+			stream.writeBoolean(entry.getValue().isPressed());
 		}
 	}
 
@@ -68,10 +69,12 @@ public class KeyBindingStateUpdate extends Message {
 		for (int i = 0; i < size; i++) {
 			Key key = Key.lookup(stream.readInt());
 			KeyState state = states.get(key);
-			int timesPressed = stream.readInt();
+			short timesPressed = stream.readShort();
+			boolean pressing = stream.readBoolean();
 
 			if (key != null && state != null) {
 				state.setTimesPressed(timesPressed);
+				state.setPressed(pressing);
 			}
 		}
 	}

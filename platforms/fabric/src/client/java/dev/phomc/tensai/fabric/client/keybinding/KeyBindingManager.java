@@ -127,17 +127,18 @@ public class KeyBindingManager {
 		}
 	}
 
-	public Map<Key, KeyState> fetchStates() {
+	public Map<Key, KeyState> fetchUpdatedStates() {
 		Map<Key, KeyState> states = new HashMap<>();
 
 		for (net.minecraft.client.option.KeyBinding key : registeredKeys) {
-			int n = 0;
+			short n = 0;
 			while (key.wasPressed()) n++;
 			Key k = lookupKey(key.getDefaultKey());
-			Integer old = stateTable.put(k, n);
+			int hash = n + (key.isPressed() ? 1 << 17 : 0);
+			Integer old = stateTable.put(k, hash);
 
-			if (old == null || old != n) {
-				states.put(k, new KeyState(n));
+			if (old == null || old != hash) {
+				states.put(k, new KeyState(n, key.isPressed()));
 			}
 		}
 

@@ -32,28 +32,52 @@ import java.util.Objects;
  */
 public class KeyState {
 	private int timesPressed;
+	private boolean pressed;
 
-	public KeyState(int timesPressed) {
+	public KeyState(int timesPressed, boolean pressed) {
 		this.timesPressed = timesPressed;
+		this.pressed = pressed;
 	}
 
+	/**
+	 * Gets how many times the key press event was fired.<br>
+	 * The value changes according to the following rules:
+	 * <ul>
+	 *     <li>It increases while the key is pressed down. The number of times is indeterminate.</li>
+	 *     <li>It <b>only decreases</b> when {@link #wasPressed()} is called. {@code 0} is the lower bound.</li>
+	 *     <li>It remains unchanged until there is a change to client's screen (client-side behaviour), and it will reset to {@code 0}.</li>
+	 *     <li>It can be modified using {@link #setTimesPressed(int)}. <b>However, this is internal method which must not be used.</b></li>
+	 * </ul>
+	 *
+	 * @return press times
+	 */
 	public int getTimesPressed() {
 		return timesPressed;
 	}
 
+	/**
+	 * Sets how many times the key press event was fired.<br>
+	 * <b>THIS IS INTERNAL METHOD. DO NOT USE.</b>
+	 * @param timesPressed press times
+	 */
 	public void setTimesPressed(int timesPressed) {
-		this.timesPressed = timesPressed;
+		this.timesPressed = Math.min(Math.max(timesPressed, 0), Short.MAX_VALUE);
 	}
 
 	/**
-	 * Checks whether the key was pressed, and <b>decreases</b> the press counter by {@code 1}.<br>
+	 * Checks whether the key press event was fired and decreases the counter by {@code 1}.<br>
 	 * This behaviour is preserved to be the same as in Fabric environment.<br>
-	 * To avoid the decrement, uses {@link #getTimesPressed()}.
-	 * <br>
+	 * To avoid the decrement, uses {@link #getTimesPressed()}.<br>
+	 * Another worthy notice is that this method is different from {@link #isPressed()}
+	 * <ul>
+	 *     <li>{@code wasPressed()} denotes whether a key press event was fired and how many times it was.</li>
+	 *     <li>{@link #isPressed()} denotes whether the key is currently being pressed (down).</li>
+	 *     <li>When {@link #isPressed()} returns {@code false}, the key is released. However, {@link #getTimesPressed()} may still not be reset, so {@code #wasPressed()} possibly returns {@code true}.</li>
+	 * </ul>
 	 * For example:
 	 * <pre>{@code
 	 * 	while (keyState.wasPressed()) {
-	 * 		player.sendMessage("Key pressed");
+	 * 		player.sendMessage("Key-press event called");
 	 *  }
 	 * }</pre>
 	 *
@@ -69,11 +93,20 @@ public class KeyState {
 	}
 
 	/**
-	 * Clears the state.<br>
-	 * <b>Note:</b> No key state update will be sent to the client.
+	 * Checks whether the key is pressed (down).
+	 * @return {@code true} if it is, or {@code false} if the key is released (press up)
 	 */
-	public void flush() {
-		timesPressed = 0;
+	public boolean isPressed() {
+		return pressed;
+	}
+
+	/**
+	 * Sets whether the key is pressed down.<br>
+	 * <b>THIS IS INTERNAL METHOD. DO NOT USE.</b>
+	 * @param pressed pressing state
+	 */
+	public void setPressed(boolean pressed) {
+		this.pressed = pressed;
 	}
 
 	@Override
@@ -81,11 +114,11 @@ public class KeyState {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		KeyState keyState = (KeyState) o;
-		return timesPressed == keyState.timesPressed;
+		return timesPressed == keyState.timesPressed && pressed == keyState.pressed;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(timesPressed);
+		return Objects.hash(timesPressed, pressed);
 	}
 }

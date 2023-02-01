@@ -11,6 +11,26 @@ The keybinding API must meet the following requirements:
 - Key capture must be under player control
 - Data transfer must be secure and reliable
 
+## Terminology
+
+- Key: In Tensai, a key can be either a keyboard key or a mouse button
+- Press (Press Down): To hold down a key
+    + Mouse Down: a mouse button is pressed
+    + Key Down: a key is pressed
+- Release (Press Up): No longer hold down a key
+    + Mouse Up: a mouse button is released
+    + Key Up: a key is released
+- A click = Mouse Down + Mouse Up
+- GLFW Key code: A number identifier tagged to a key (assigned by GLFW)
+    + The code of a keyboard key and a mouse button can be identical
+    + The key category is used to distinguish key types
+- (Tensai) Key code: A number identifier tagged to a key (assigned by Tensai)
+    + The code of a keyboard key and a mouse button is always different
+    + Tensai does not use key category
+    + The first `1 << 9` elements of the list belong to keyboard keys
+    + The rest belongs to mouse buttons
+- Key combo (Key combination): Consists of multiple keys
+
 ## Networking
 
 ### Packet identifier (PID)
@@ -37,24 +57,25 @@ For each keybinding entry:
 
 ```
 [byte]   PID
-[byte]   Status
+[int]    Size of keybinding map
+For each keybinding entry:
+    [int]    Key code
+    [byte]   Key registration status
 ```
 
 Status:
-- 0: unknown
-- 1: client rejected
-- 2: key duplicated
-- 127: success
+- 0: client rejected
+- 1: key duplicated
+- 2: success
 
 ### (Server-bound) Key State Update
-- The client holds a table of key states. After each delay period, if a change in that table is detected, a "key state update" packet is sent. In other words, all key states in an interval are contained in a single packet.
-- The client should only send key states that have been recently updated.
+- The client holds a table of key states. After each delay period, if a change in that table is detected, a "key state update" packet is sent. In other words, all key states in an interval are contained in a single packet. The client only sends key states that have been recently updated.
 
 ```
 [byte]  PID
 [int]   Number of updated key states
 For each updated keybinding entry:
-    [int]   Key code
-    [int]   Press times
+    [int]     Key code
+    [short]   Pressed times
+    [bool]    Is pressed
 ```
-A press time = 0 means the key is now unpressed.

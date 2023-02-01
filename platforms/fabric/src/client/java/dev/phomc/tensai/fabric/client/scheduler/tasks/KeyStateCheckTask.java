@@ -48,7 +48,7 @@ public class KeyStateCheckTask implements Runnable {
 	@Override
 	public void run() {
 		if (MinecraftClient.getInstance().getNetworkHandler() == null) return;
-		Map<Key, KeyState> states = KeyBindingManager.getInstance().fetchStates();
+		Map<Key, KeyState> states = KeyBindingManager.getInstance().fetchUpdatedStates();
 
 		if (!states.isEmpty()) {
 			ClientPublisher.publish(Channel.KEYBINDING, new KeyBindingStateUpdate(states));
