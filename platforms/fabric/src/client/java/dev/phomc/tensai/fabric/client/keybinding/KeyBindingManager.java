@@ -52,11 +52,9 @@ import dev.phomc.tensai.server.TensaiServer;
 
 public class KeyBindingManager {
 	public static final Identifier KEYBINDING_NAMESPACE = new Identifier(Channel.KEYBINDING.getNamespace());
-	private static final int MIN_INPUT_DELAY = 5;
 	private static final KeyBindingManager INSTANCE = new KeyBindingManager();
 	private List<net.minecraft.client.option.KeyBinding> registeredKeys = new ArrayList<>();
 	private Map<Key, Integer> stateTable = new HashMap<>();
-	private int inputDelay = MIN_INPUT_DELAY;
 	private Task keyStateCheckTask;
 
 	public static KeyBindingManager getInstance() {
@@ -71,19 +69,18 @@ public class KeyBindingManager {
 		return Key.lookupGLFW(key.getCode(), key.getCategory() == InputUtil.Type.MOUSE);
 	}
 
-	public int getInputDelay() {
-		return inputDelay;
-	}
-
 	public boolean testAvailability(@NotNull Key key) {
 		return !KeyBindingMixin.getKeyCodeMapping().containsKey(getInputKey(key));
 	}
 
-	public void initialize(@NotNull List<KeyBinding> keymap, int inputDelay) {
+	public void initialize(@NotNull List<KeyBinding> keymap) {
+		if (keyStateCheckTask != null) {
+			throw new RuntimeException("KeyBinding Manager already initialized");
+		}
+
 		reset();
-		this.inputDelay = Math.max(inputDelay, MIN_INPUT_DELAY);
 		keyStateCheckTask = KeyStateCheckTask.build();
-		((TensaiServer) MinecraftClient.getInstance()).getTaskScheduler().schedule(keyStateCheckTask, inputDelay);
+		((TensaiServer) MinecraftClient.getInstance()).getTaskScheduler().schedule(keyStateCheckTask);
 
 		for (KeyBinding keyBinding : keymap) {
 			net.minecraft.client.option.KeyBinding v = new net.minecraft.client.option.KeyBinding(
@@ -120,10 +117,10 @@ public class KeyBindingManager {
 
 		stateTable = new HashMap<>();
 		registeredKeys = new ArrayList<>();
-		inputDelay = MIN_INPUT_DELAY;
 
 		if (keyStateCheckTask != null) {
 			keyStateCheckTask.cancel();
+			keyStateCheckTask = null;
 		}
 	}
 

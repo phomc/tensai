@@ -39,8 +39,8 @@ import dev.phomc.tensai.scheduler.Task;
 public class KeyStateCheckTask implements Runnable {
 	public static Task build() {
 		return new Task.Builder()
-				.setInterval(KeyBindingManager.getInstance().getInputDelay())
-				.setPriority(10)
+				.setInterval(1)
+				.setPriority(100)
 				.setInfiniteRecurrence()
 				.setExecutor(new KeyStateCheckTask()).build();
 	}

@@ -44,7 +44,6 @@ The keybinding API must meet the following requirements:
 
 ```
 [byte]  PID
-[int]   Input delay (ticks)
 [int]   Size of keybinding map
 For each keybinding entry:
     [int]   Key code
@@ -69,7 +68,7 @@ Status:
 - 2: success
 
 ### (Server-bound) Key State Update
-- The client holds a table of key states. After each delay period, if a change in that table is detected, a "key state update" packet is sent. In other words, all key states in an interval are contained in a single packet. The client only sends key states that have been recently updated.
+- The client holds a table of key states. Every tick, if a change in that table is detected, a "key state update" packet is sent. In other words, all key states in an interval are contained in a single packet. The client only sends key states that have been recently updated.
 
 ```
 [byte]  PID

@@ -103,7 +103,7 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 			}
 
 			if (!keylist.isEmpty()) {
-				KeyBindingManager.getInstance().initialize(keylist, msg.getInputDelay());
+				KeyBindingManager.getInstance().initialize(keylist);
 				TensaiFabric.LOGGER.info("Keybinding registered ({} keys)", msg.getKeymap().size());
 			}
 
