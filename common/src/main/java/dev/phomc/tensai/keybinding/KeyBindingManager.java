@@ -27,6 +27,7 @@ package dev.phomc.tensai.keybinding;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,21 +49,16 @@ public class KeyBindingManager {
 
 	/**
 	 * Registers the given key-bindings.<br>
-	 * This operation will be done asynchronously and the response will be returned using the event system.
+	 * Already-registered ones are ignored implicitly. This operation will be done asynchronously and the response will
+	 * be returned using the event system.
 	 * @param keyBindings an array of key-bindings
 	 */
 	public void registerKeyBindings(@NotNull KeyBinding... keyBindings) {
-		if (keyBindings.length == 0) {
-			return;
-		}
+		if (keyBindings.length == 0) return;
 
-		for (KeyBinding keyBinding : keyBindings) {
-			if (isKeyRegistered(keyBinding.getKey())) {
-				throw new IllegalArgumentException(String.format("%s (%s) is already registered", keyBinding.getKey(), keyBinding.getName()));
-			}
-		}
-
-		clientHandle.sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(Arrays.asList(keyBindings)).pack());
+		clientHandle.sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
+				Arrays.stream(keyBindings).filter(k -> !isKeyRegistered(k.getKey())).collect(Collectors.toUnmodifiableList())
+		).pack());
 	}
 
 	/**
