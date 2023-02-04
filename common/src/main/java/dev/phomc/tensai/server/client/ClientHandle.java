@@ -24,6 +24,7 @@
 
 package dev.phomc.tensai.server.client;
 
+import dev.phomc.tensai.keybinding.KeyBindingManager;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
@@ -37,4 +38,11 @@ public interface ClientHandle {
 	VisualEffects getVfx();
 
 	void sendPluginMessage(Channel channel, byte[] bytes);
+
+	/**
+	 * Gets the key binding manager.
+	 *
+	 * @return {@link KeyBindingManager}
+	 */
+	KeyBindingManager getKeyBindingManager();
 }

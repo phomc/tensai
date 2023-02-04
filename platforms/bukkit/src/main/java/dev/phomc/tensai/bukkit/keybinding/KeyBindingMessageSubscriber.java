@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
 import dev.phomc.tensai.bukkit.event.KeyRegisterResultEvent;
 import dev.phomc.tensai.bukkit.event.KeyStateUpdateEvent;
@@ -55,12 +54,18 @@ public class KeyBindingMessageSubscriber extends ServerSubscriber {
 		});
 
 		subscribe(MessageType.KEYBINDING_STATE_UPDATE, (data, sender) -> {
-			Map<Key, KeyState> states = TensaiBukkit.getInstance().getKeyBindingManager().getKeyStates();
-			// we want to pass key state references rather than cloning them
-			// So key state is only updated if its corresponding key is registered
-			KeyBindingStateUpdate msg = new KeyBindingStateUpdate(states);
+			KeyBindingStateUpdate msg = new KeyBindingStateUpdate();
 			msg.unpack(data);
-			Bukkit.getPluginManager().callEvent(new KeyStateUpdateEvent(((ClientHandleImpl) sender).getPlayer(), states));
+
+			// keep original key state objects
+			for (Map.Entry<Key, KeyState> ent : msg.getStates().entrySet()) {
+				KeyState ref = sender.getKeyBindingManager().getKeyState(ent.getKey());
+				if (ref == null) throw new RuntimeException("unexpected panic");
+				ref.copyFrom(ent.getValue());
+				ent.setValue(ref);
+			}
+
+			Bukkit.getPluginManager().callEvent(new KeyStateUpdateEvent(((ClientHandleImpl) sender).getPlayer(), msg.getStates()));
 		});
 	}
 }

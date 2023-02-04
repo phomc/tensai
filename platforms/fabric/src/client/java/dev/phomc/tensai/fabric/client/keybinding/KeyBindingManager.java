@@ -26,6 +26,7 @@ package dev.phomc.tensai.fabric.client.keybinding;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +126,7 @@ public class KeyBindingManager {
 	}
 
 	public Map<Key, KeyState> fetchUpdatedStates() {
-		Map<Key, KeyState> states = new HashMap<>();
+		Map<Key, KeyState> states = new EnumMap<>(Key.class);
 
 		for (net.minecraft.client.option.KeyBinding key : registeredKeys) {
 			short n = 0;

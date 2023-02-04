@@ -35,8 +35,6 @@ import dev.phomc.tensai.fabric.scheduler.ServerScheduler;
 import dev.phomc.tensai.fabric.vfx.GlobalVisualEffectsImpl;
 import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.TensaiServer;
-import dev.phomc.tensai.server.keybinding.KeyBindingManager;
-import dev.phomc.tensai.server.keybinding.SimpleKeyBindingManager;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
 @Mixin(MinecraftServer.class)
@@ -49,21 +47,12 @@ public abstract class MinecraftServerMixin implements TensaiServer {
 	private GlobalVisualEffectsImpl globalVfx;
 
 	@Unique
-	private KeyBindingManager keyBindingManager;
-
-	@Unique
 	private ServerScheduler serverScheduler;
 
 	@Override
 	public VisualEffects getGlobalVfx() {
 		if (globalVfx == null) globalVfx = new GlobalVisualEffectsImpl((MinecraftServer) (Object) this);
 		return globalVfx;
-	}
-
-	@Override
-	public KeyBindingManager getKeyBindingManager() {
-		if (keyBindingManager == null) keyBindingManager = new SimpleKeyBindingManager();
-		return keyBindingManager;
 	}
 
 	@Override

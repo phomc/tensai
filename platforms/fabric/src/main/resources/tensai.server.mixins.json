@@ -5,8 +5,7 @@
   "server": [
     "MinecraftServerMixin",
     "ServerPlayerEntityMixin",
-    "ServerPlayNetworkAddonMixin",
-    "ServerPlayNetworkHandlerMixin"
+    "ServerPlayNetworkAddonMixin"
   ],
   "refmap": "tensai-fabric-refmap.json"
 }

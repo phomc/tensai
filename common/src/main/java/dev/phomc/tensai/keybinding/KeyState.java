@@ -35,7 +35,7 @@ public class KeyState {
 	private boolean pressed;
 
 	public KeyState(int timesPressed, boolean pressed) {
-		this.timesPressed = timesPressed;
+		this.timesPressed = Math.min(Math.max(timesPressed, 0), Short.MAX_VALUE);
 		this.pressed = pressed;
 	}
 
@@ -46,22 +46,12 @@ public class KeyState {
 	 *     <li>It increases while the key is pressed down. The number of times is indeterminate.</li>
 	 *     <li>It <b>only decreases</b> when {@link #wasPressed()} is called. {@code 0} is the lower bound.</li>
 	 *     <li>It remains unchanged until there is a change to client's screen (client-side behaviour), and it will reset to {@code 0}.</li>
-	 *     <li>It can be modified using {@link #setTimesPressed(int)}. <b>However, this is internal method which must not be used.</b></li>
 	 * </ul>
 	 *
 	 * @return press times
 	 */
 	public int getTimesPressed() {
 		return timesPressed;
-	}
-
-	/**
-	 * Sets how many times the key press event was fired.<br>
-	 * <b>THIS IS INTERNAL METHOD. DO NOT USE.</b>
-	 * @param timesPressed press times
-	 */
-	public void setTimesPressed(int timesPressed) {
-		this.timesPressed = Math.min(Math.max(timesPressed, 0), Short.MAX_VALUE);
 	}
 
 	/**
@@ -101,12 +91,13 @@ public class KeyState {
 	}
 
 	/**
-	 * Sets whether the key is pressed down.<br>
-	 * <b>THIS IS INTERNAL METHOD. DO NOT USE.</b>
-	 * @param pressed pressing state
+	 * Copies data from another key state.<br>
+	 * <b>INTERNAL METHOD. DO NOT USE.</b>
+	 * @param another key state
 	 */
-	public void setPressed(boolean pressed) {
-		this.pressed = pressed;
+	public void copyFrom(KeyState another) {
+		this.pressed = another.pressed;
+		this.timesPressed = another.timesPressed;
 	}
 
 	@Override

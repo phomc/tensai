@@ -32,6 +32,7 @@ import org.bukkit.entity.Player;
 
 import dev.phomc.tensai.bukkit.TensaiBukkit;
 import dev.phomc.tensai.bukkit.vfx.ClientVisualEffectsImpl;
+import dev.phomc.tensai.keybinding.KeyBindingManager;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.server.client.ClientHandle;
 import dev.phomc.tensai.server.vfx.VisualEffects;
@@ -41,6 +42,7 @@ public class ClientHandleImpl implements ClientHandle {
 	private WeakReference<Player> playerRef;
 
 	private ClientVisualEffectsImpl vfx;
+	private KeyBindingManager keyBindingManager;
 
 	public ClientHandleImpl(TensaiBukkit plugin, Player player) {
 		Preconditions.checkNotNull(plugin);
@@ -65,5 +67,11 @@ public class ClientHandleImpl implements ClientHandle {
 	@Override
 	public VisualEffects getVfx() {
 		return vfx;
+	}
+
+	@Override
+	public KeyBindingManager getKeyBindingManager() {
+		if (keyBindingManager == null) keyBindingManager = new KeyBindingManager(this);
+		return keyBindingManager;
 	}
 }
