@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,35 +22,22 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.test;
+package dev.phomc.tensai.fabric.test.keybinding;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
 import dev.phomc.tensai.fabric.event.ServerKeybindingEvents;
-import dev.phomc.tensai.fabric.test.commands.TensaiTestCommand;
-import dev.phomc.tensai.fabric.test.keybinding.KeyBindingInitializer;
-import dev.phomc.tensai.fabric.test.keybinding.KeyRegisterResultListener;
-import dev.phomc.tensai.fabric.test.keybinding.KeyStateUpdateListener;
+import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyBinding;
 
-public class TensaiFabricTestMod implements ModInitializer {
-	public static final String MOD_ID = "tensai-test";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-
+public class KeyRegisterResultListener implements ServerKeybindingEvents.KeyRegisterResultEvent {
 	@Override
-	public void onInitialize() {
-		LOGGER.info("Hello world!");
-
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			dispatcher.register(TensaiTestCommand.tensaiTest());
+	public void respond(ServerPlayerEntity player, Map<Key, KeyBinding.RegisterStatus> status) {
+		status.forEach((key, value) -> {
+			player.sendMessageToClient(Text.of(String.format("Key %s status %s", key, value)), false);
 		});
-
-		ServerPlayConnectionEvents.JOIN.register(new KeyBindingInitializer());
-		ServerKeybindingEvents.REGISTER_RESULT.register(new KeyRegisterResultListener());
-		ServerKeybindingEvents.STATE_UPDATE.register(new KeyStateUpdateListener());
 	}
 }

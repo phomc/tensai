@@ -1,7 +1,7 @@
 /*
  * This file is part of tensai, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2022 PhoMC
+ * Copyright (c) 2023 PhoMC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,35 +22,26 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.fabric.test;
+package dev.phomc.tensai.fabric.test.keybinding;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
-import dev.phomc.tensai.fabric.event.ServerKeybindingEvents;
-import dev.phomc.tensai.fabric.test.commands.TensaiTestCommand;
-import dev.phomc.tensai.fabric.test.keybinding.KeyBindingInitializer;
-import dev.phomc.tensai.fabric.test.keybinding.KeyRegisterResultListener;
-import dev.phomc.tensai.fabric.test.keybinding.KeyStateUpdateListener;
+import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyBinding;
+import dev.phomc.tensai.server.client.ClientHandle;
 
-public class TensaiFabricTestMod implements ModInitializer {
-	public static final String MOD_ID = "tensai-test";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-
+public class KeyBindingInitializer implements ServerPlayConnectionEvents.Join {
 	@Override
-	public void onInitialize() {
-		LOGGER.info("Hello world!");
-
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			dispatcher.register(TensaiTestCommand.tensaiTest());
-		});
-
-		ServerPlayConnectionEvents.JOIN.register(new KeyBindingInitializer());
-		ServerKeybindingEvents.REGISTER_RESULT.register(new KeyRegisterResultListener());
-		ServerKeybindingEvents.STATE_UPDATE.register(new KeyStateUpdateListener());
+	public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+		((ClientHandle) handler.player).getKeyBindingManager().registerKeyBindings(
+				new KeyBinding(Key.KEY_V, "Key V"),
+				new KeyBinding(Key.KEY_B, "Key B"),
+				new KeyBinding(Key.KEY_LEFT_CONTROL, "Key L-Ctrl"),
+				new KeyBinding(Key.KEY_LEFT_SHIFT, "Key L-Shift")
+		);
 	}
 }

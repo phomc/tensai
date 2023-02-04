@@ -58,7 +58,6 @@ dependencies {
 
 tasks {
     register("fabricFatJar", Jar::class.java) {
-        mustRunAfter(build)
         dependsOn(remapJar)
         archiveClassifier.set("fat")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -87,5 +86,6 @@ tasks {
         addNestedDependencies.set(false)
     }
 
+    build.get().dependsOn(getByName("fabricFatJar"))
     build.get().dependsOn(getByName("remapTestJar"))
 }
