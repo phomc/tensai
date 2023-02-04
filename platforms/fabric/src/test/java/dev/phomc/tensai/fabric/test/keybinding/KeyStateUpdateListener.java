@@ -24,20 +24,67 @@
 
 package dev.phomc.tensai.fabric.test.keybinding;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import dev.phomc.tensai.fabric.event.ServerKeybindingEvents;
 import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyBindingManager;
 import dev.phomc.tensai.keybinding.KeyState;
+import dev.phomc.tensai.keybinding.combo.KeyCombo;
+import dev.phomc.tensai.keybinding.combo.KeyComboMatcher;
+import dev.phomc.tensai.keybinding.combo.KeyComboState;
+import dev.phomc.tensai.server.client.ClientHandle;
 
 public class KeyStateUpdateListener implements ServerKeybindingEvents.KeyStateUpdateEvent {
+	private final KeyComboMatcher matcher = new KeyComboMatcher(0.5f);
+	private final Map<ServerPlayerEntity, KeyComboState> keyComboStates = new WeakHashMap<>();
+
+	public KeyStateUpdateListener() {
+		matcher.offerCombo(new KeyCombo.Builder(Key.KEY_V).then(Key.KEY_B, 10).build());
+	}
+
 	@Override
 	public void updateKeyState(ServerPlayerEntity player, Map<Key, KeyState> keyStates) {
-		keyStates.forEach((key, value) -> {
-			player.sendMessageToClient(Text.of(String.format("Key %s updated: timesPressed = %d, isPressed = %b", key, value.getTimesPressed(), value.isPressed())), false);
-		});
+		KeyBindingManager kbm = ((ClientHandle) player).getKeyBindingManager();
+		List<String> list = new ArrayList<>();
+
+		for (Key key : kbm.getRegisteredKeys()) {
+			KeyState state = kbm.getKeyState(key);
+			if (state == null) continue;
+			String n = key.name()
+					.replace("KEY_", "")
+					.replace("MOUSE_BUTTON_", "M-");
+			list.add("[" + (state.isPressed() ? n : n.toLowerCase()) + "] " + state.getTimesPressed());
+		}
+
+		player.sendMessageToClient(Text.of(String.join(" | ", list)), true);
+
+		for (Map.Entry<Key, KeyState> ent : keyStates.entrySet()) {
+			KeyComboState state = keyComboStates.computeIfAbsent(player, k -> new KeyComboState());
+
+			switch (matcher.commitKey(state, ent.getKey())) {
+				case COMMITTED: {
+					player.sendMessageToClient(Text.of("Committed: " + ent.getKey().name()), false);
+					KeyCombo kb = matcher.lookupCombo(state);
+
+					if (kb != null) {
+						player.sendMessageToClient(Text.of("Completed combo: " + kb.getName()), false);
+						keyComboStates.remove(player);
+					}
+
+					break;
+				}
+				case TIMEOUT: {
+					keyComboStates.remove(player);
+					break;
+				}
+			}
+		}
 	}
 }
