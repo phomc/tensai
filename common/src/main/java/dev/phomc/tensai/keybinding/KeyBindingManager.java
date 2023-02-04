@@ -88,6 +88,18 @@ public class KeyBindingManager {
 	}
 
 	/**
+	 * Sets the state for the given key.<br>
+	 * <b>INTERNAL METHOD. DO NOT USE.</b>
+	 * @param key key
+	 * @param keyState key state
+	 */
+	public void setKeyState(@NotNull Key key, @NotNull KeyState keyState) {
+		if (isKeyRegistered(key)) throw new RuntimeException("attempted to reinitialize key state");
+
+		keyStates[key.ordinal()] = keyState;
+	}
+
+	/**
 	 * Checks whether the given key is registered.
 	 * @param key the key to be checked
 	 * @return {@code true} if registered, otherwise {@code false}

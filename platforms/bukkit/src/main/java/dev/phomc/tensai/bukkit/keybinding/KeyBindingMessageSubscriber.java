@@ -60,9 +60,13 @@ public class KeyBindingMessageSubscriber extends ServerSubscriber {
 			// keep original key state objects
 			for (Map.Entry<Key, KeyState> ent : msg.getStates().entrySet()) {
 				KeyState ref = sender.getKeyBindingManager().getKeyState(ent.getKey());
-				if (ref == null) throw new RuntimeException("unexpected panic");
-				ref.copyFrom(ent.getValue());
-				ent.setValue(ref);
+
+				if (ref == null) {
+					sender.getKeyBindingManager().setKeyState(ent.getKey(), ent.getValue());
+				} else {
+					ref.copyFrom(ent.getValue());
+					ent.setValue(ref);
+				}
 			}
 
 			Bukkit.getPluginManager().callEvent(new KeyStateUpdateEvent(((ClientHandleImpl) sender).getPlayer(), msg.getStates()));

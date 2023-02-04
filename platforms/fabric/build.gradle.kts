@@ -76,7 +76,6 @@ tasks {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         from(sourceSets.test.get().output)
         from(sourceSets.test.get().resources)
-        getByName("prepareRemapTestJar").dependsOn("testJar")
     }
 
     register("remapTestJar", net.fabricmc.loom.task.RemapJarTask::class.java) {
@@ -84,6 +83,7 @@ tasks {
         inputFile.set((getByName("testJar") as Jar).archiveFile.get())
         archiveClassifier.set("test")
         addNestedDependencies.set(false)
+        findByName("prepareRemapTestJar")?.rangeTo(dependsOn("testJar"))
     }
 
     build.get().dependsOn(getByName("fabricFatJar"))
