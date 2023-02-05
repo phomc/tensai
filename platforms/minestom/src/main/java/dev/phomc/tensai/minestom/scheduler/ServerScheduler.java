@@ -22,39 +22,28 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.minestom;
+package dev.phomc.tensai.minestom.scheduler;
 
-import net.minestom.server.extensions.Extension;
+import net.minestom.server.MinecraftServer;
+import net.minestom.server.timer.Task;
+import net.minestom.server.timer.TaskSchedule;
 
-import dev.phomc.tensai.minestom.scheduler.ServerScheduler;
-import dev.phomc.tensai.server.TensaiServer;
-import dev.phomc.tensai.server.vfx.VisualEffects;
+import dev.phomc.tensai.scheduler.Scheduler;
 
-public class TensaiMinestom extends Extension implements TensaiServer {
-	private final ServerScheduler scheduler = new ServerScheduler();
+public class ServerScheduler extends Scheduler {
+	private Task task;
 
-	@Override
-	public void initialize() {
-		scheduler.register();
+	public void register() {
+		if (task != null) {
+			throw new IllegalStateException("Scheduler is already registered");
+		}
+
+		task = MinecraftServer.getSchedulerManager().scheduleTask(this::onTick, TaskSchedule.immediate(), TaskSchedule.nextTick());
 	}
 
-	@Override
-	public void terminate() {
-		scheduler.unregister();
-	}
-
-	@Override
-	public VisualEffects getGlobalVfx() {
-		return null;
-	}
-
-	@Override
-	public ServerScheduler getTaskScheduler() {
-		return scheduler;
-	}
-
-	@Override
-	public boolean isPrimaryThread() {
-		return false;
+	public void unregister() {
+		if (task != null) {
+			task.cancel();
+		}
 	}
 }
