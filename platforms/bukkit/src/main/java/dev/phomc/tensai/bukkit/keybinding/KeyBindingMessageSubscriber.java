@@ -26,6 +26,7 @@ package dev.phomc.tensai.bukkit.keybinding;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import org.bukkit.Bukkit;
 
@@ -34,6 +35,7 @@ import dev.phomc.tensai.bukkit.event.KeyRegisterResultEvent;
 import dev.phomc.tensai.bukkit.event.KeyStateUpdateEvent;
 import dev.phomc.tensai.bukkit.networking.ServerSubscriber;
 import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyBindingManager;
 import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.MessageType;
@@ -57,15 +59,20 @@ public class KeyBindingMessageSubscriber extends ServerSubscriber {
 			KeyBindingStateUpdate msg = new KeyBindingStateUpdate();
 			msg.unpack(data);
 
-			// keep original key state objects
+			KeyBindingManager kbm = sender.getKeyBindingManager();
+
+			for (Key k : kbm.getRegisteredKeys()) {
+				Objects.requireNonNull(kbm.getKeyState(k)).sweep();
+			}
+
 			for (Map.Entry<Key, KeyState> ent : msg.getStates().entrySet()) {
-				KeyState ref = sender.getKeyBindingManager().getKeyState(ent.getKey());
+				KeyState ref = kbm.getKeyState(ent.getKey());
 
 				if (ref == null) {
-					sender.getKeyBindingManager().setKeyState(ent.getKey(), ent.getValue());
+					kbm.setKeyState(ent.getKey(), ent.getValue());
 				} else {
 					ref.copyFrom(ent.getValue());
-					ent.setValue(ref);
+					ent.setValue(ref); // point reference to original objects
 				}
 			}
 

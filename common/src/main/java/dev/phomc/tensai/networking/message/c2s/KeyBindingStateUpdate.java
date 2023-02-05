@@ -59,6 +59,7 @@ public class KeyBindingStateUpdate extends Message {
 			stream.writeInt(entry.getKey().getCode());
 			stream.writeShort(entry.getValue().getTimesPressed());
 			stream.writeBoolean(entry.getValue().isPressed());
+			stream.writeByte(entry.getValue().getDirty());
 		}
 	}
 
@@ -70,9 +71,10 @@ public class KeyBindingStateUpdate extends Message {
 			Key key = Key.lookup(stream.readInt());
 			short timesPressed = stream.readShort();
 			boolean pressing = stream.readBoolean();
+			byte dirty = stream.readByte();
 
 			if (key != null) {
-				states.put(key, new KeyState(timesPressed, pressing));
+				states.put(key, new KeyState(timesPressed, pressing, dirty));
 			}
 		}
 	}

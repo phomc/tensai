@@ -51,12 +51,15 @@ public class KeyStateUpdateListener implements ServerKeybindingEvents.KeyStateUp
 
 	@Override
 	public void updateKeyState(ServerPlayerEntity player, Map<Key, KeyState> keyStates) {
+		player.sendMessageToClient(Text.of("-".repeat(10)), false);
+
 		KeyBindingManager kbm = ((ClientHandle) player).getKeyBindingManager();
 		List<String> list = new ArrayList<>();
 
 		for (Key key : kbm.getRegisteredKeys()) {
 			KeyState state = kbm.getKeyState(key);
 			if (state == null) continue;
+
 			String n = key.name()
 					.replace("KEY_", "")
 					.replace("MOUSE_BUTTON_", "M-");
@@ -66,6 +69,11 @@ public class KeyStateUpdateListener implements ServerKeybindingEvents.KeyStateUp
 		player.sendMessageToClient(Text.of(String.join(" | ", list)), true);
 
 		for (Map.Entry<Key, KeyState> ent : keyStates.entrySet()) {
+			List<String> dirty = new ArrayList<>();
+			if ((ent.getValue().getDirty() & KeyState.DIRTY_TIME_PRESSED) > 0) dirty.add("TimesPressed");
+			if ((ent.getValue().getDirty() & KeyState.DIRTY_PRESSED) > 0) dirty.add("Pressed");
+			player.sendMessageToClient(Text.of(String.format("[%s] property %s changed", ent.getKey(), String.join(", ", dirty))), false);
+
 			KeyComboState state = keyComboStates.computeIfAbsent(player, k -> new KeyComboState());
 
 			switch (matcher.commitKey(state, ent.getKey())) {
