@@ -20,7 +20,7 @@ rootProject.name = "tensai"
 include("tensai-common")
 project(":tensai-common").projectDir = file("common")
 
-listOf("bukkit", "fabric").forEach {
+listOf("bukkit", "fabric", "minestom").forEach {
     include("tensai-$it")
     project(":tensai-$it").projectDir = file("platforms/$it")
 }
