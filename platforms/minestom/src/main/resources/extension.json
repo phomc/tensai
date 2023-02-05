@@ -1,0 +1,5 @@
+{
+  "entrypoint": "dev.phomc.tensai.minestom.TensaiMinestom",
+  "name": "Tensai",
+  "version": "${version}"
+}

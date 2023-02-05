@@ -35,7 +35,7 @@ allprojects {
 	tasks.withType<ProcessResources>().configureEach {
 		inputs.property("version", project.version)
 
-		filesMatching(listOf("fabric.mod.json", "plugin.yml")) {
+		filesMatching(listOf("fabric.mod.json", "plugin.yml", "extension.json")) {
 			expand("version" to project.version)
 		}
 	}
@@ -56,5 +56,6 @@ tasks {
     register("fatJar", Jar::class.java) {
         dependsOn(":tensai-bukkit:bukkitFatJar")
         dependsOn(":tensai-fabric:fabricFatJar")
+        dependsOn(":tensai-minestom:minestomFatJar")
     }
 }
