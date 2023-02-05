@@ -26,6 +26,7 @@ package dev.phomc.tensai.fabric.client.keybinding;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,17 +126,23 @@ public class KeyBindingManager {
 	}
 
 	public Map<Key, KeyState> fetchUpdatedStates() {
-		Map<Key, KeyState> states = new HashMap<>();
+		Map<Key, KeyState> states = new EnumMap<>(Key.class);
 
 		for (net.minecraft.client.option.KeyBinding key : registeredKeys) {
+			Key k = lookupKey(key.getDefaultKey());
+
 			short n = 0;
 			while (key.wasPressed()) n++;
-			Key k = lookupKey(key.getDefaultKey());
-			int hash = n + (key.isPressed() ? 1 << 17 : 0);
-			Integer old = stateTable.put(k, hash);
 
-			if (old == null || old != hash) {
-				states.put(k, new KeyState(n, key.isPressed()));
+			int hash = n + (key.isPressed() ? 0x10000 : 0);
+			Integer old = stateTable.put(k, hash);
+			if (old == null) old = 0;
+			int diff = hash ^ old;
+
+			if (diff > 0) {
+				int dirty = (diff & 0xFFFF) > 0 ? KeyState.DIRTY_TIME_PRESSED : 0;
+				dirty |= (diff & 0x10000) > 0 ? KeyState.DIRTY_PRESSED : 0;
+				states.put(k, new KeyState(n, key.isPressed(), (byte) dirty));
 			}
 		}
 

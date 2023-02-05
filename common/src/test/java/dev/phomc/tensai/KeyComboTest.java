@@ -36,7 +36,7 @@ import dev.phomc.tensai.keybinding.combo.KeyComboState;
 public class KeyComboTest {
 	@Test
 	public void matchTest() throws InterruptedException {
-		KeyComboMatcher matcher = new KeyComboMatcher(3f);
+		KeyComboMatcher matcher = new KeyComboMatcher(0.2f);
 		matcher.offerCombo(
 				new KeyCombo.Builder(Key.KEY_1)
 						.then(Key.KEY_3, 5)

@@ -58,7 +58,6 @@ dependencies {
 
 tasks {
     register("fabricFatJar", Jar::class.java) {
-        mustRunAfter(build)
         dependsOn(remapJar)
         archiveClassifier.set("fat")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -71,4 +70,22 @@ tasks {
         from(File("$buildDir/remapped"))
         from(File(project(":tensai-common").buildDir, "classes/java/main"))
     }
+
+    register("testJar", Jar::class.java) {
+        archiveClassifier.set("test-sources")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from(sourceSets.test.get().output)
+        from(sourceSets.test.get().resources)
+    }
+
+    register("remapTestJar", net.fabricmc.loom.task.RemapJarTask::class.java) {
+        dependsOn("testJar")
+        inputFile.set((getByName("testJar") as Jar).archiveFile.get())
+        archiveClassifier.set("test")
+        addNestedDependencies.set(false)
+        findByName("prepareRemapTestJar")?.rangeTo(dependsOn("testJar"))
+    }
+
+    build.get().dependsOn(getByName("fabricFatJar"))
+    build.get().dependsOn(getByName("remapTestJar"))
 }

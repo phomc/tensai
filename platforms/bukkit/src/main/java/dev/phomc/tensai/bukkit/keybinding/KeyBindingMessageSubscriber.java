@@ -26,15 +26,16 @@ package dev.phomc.tensai.bukkit.keybinding;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import org.bukkit.Bukkit;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
 import dev.phomc.tensai.bukkit.event.KeyRegisterResultEvent;
 import dev.phomc.tensai.bukkit.event.KeyStateUpdateEvent;
 import dev.phomc.tensai.bukkit.networking.ServerSubscriber;
 import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyBindingManager;
 import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.MessageType;
@@ -55,12 +56,27 @@ public class KeyBindingMessageSubscriber extends ServerSubscriber {
 		});
 
 		subscribe(MessageType.KEYBINDING_STATE_UPDATE, (data, sender) -> {
-			Map<Key, KeyState> states = TensaiBukkit.getInstance().getKeyBindingManager().getKeyStates();
-			// we want to pass key state references rather than cloning them
-			// So key state is only updated if its corresponding key is registered
-			KeyBindingStateUpdate msg = new KeyBindingStateUpdate(states);
+			KeyBindingStateUpdate msg = new KeyBindingStateUpdate();
 			msg.unpack(data);
-			Bukkit.getPluginManager().callEvent(new KeyStateUpdateEvent(((ClientHandleImpl) sender).getPlayer(), states));
+
+			KeyBindingManager kbm = sender.getKeyBindingManager();
+
+			for (Key k : kbm.getRegisteredKeys()) {
+				Objects.requireNonNull(kbm.getKeyState(k)).sweep();
+			}
+
+			for (Map.Entry<Key, KeyState> ent : msg.getStates().entrySet()) {
+				KeyState ref = kbm.getKeyState(ent.getKey());
+
+				if (ref == null) {
+					kbm.setKeyState(ent.getKey(), ent.getValue());
+				} else {
+					ref.copyFrom(ent.getValue());
+					ent.setValue(ref); // point reference to original objects
+				}
+			}
+
+			Bukkit.getPluginManager().callEvent(new KeyStateUpdateEvent(((ClientHandleImpl) sender).getPlayer(), msg.getStates()));
 		});
 	}
 }

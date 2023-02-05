@@ -27,7 +27,7 @@ package dev.phomc.tensai.networking.message.c2s;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import dev.phomc.tensai.keybinding.Key;
@@ -39,7 +39,7 @@ public class KeyBindingStateUpdate extends Message {
 	private final Map<Key, KeyState> states;
 
 	public KeyBindingStateUpdate() {
-		this(new HashMap<>());
+		this(new EnumMap<>(Key.class));
 	}
 
 	public KeyBindingStateUpdate(Map<Key, KeyState> states) {
@@ -59,6 +59,7 @@ public class KeyBindingStateUpdate extends Message {
 			stream.writeInt(entry.getKey().getCode());
 			stream.writeShort(entry.getValue().getTimesPressed());
 			stream.writeBoolean(entry.getValue().isPressed());
+			stream.writeByte(entry.getValue().getDirty());
 		}
 	}
 
@@ -68,13 +69,12 @@ public class KeyBindingStateUpdate extends Message {
 
 		for (int i = 0; i < size; i++) {
 			Key key = Key.lookup(stream.readInt());
-			KeyState state = states.get(key);
 			short timesPressed = stream.readShort();
 			boolean pressing = stream.readBoolean();
+			byte dirty = stream.readByte();
 
-			if (key != null && state != null) {
-				state.setTimesPressed(timesPressed);
-				state.setPressed(pressing);
+			if (key != null) {
+				states.put(key, new KeyState(timesPressed, pressing, dirty));
 			}
 		}
 	}

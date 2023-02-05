@@ -36,6 +36,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import dev.phomc.tensai.fabric.client.FabricClientHandle;
 import dev.phomc.tensai.fabric.vfx.ClientVisualEffectsImpl;
+import dev.phomc.tensai.keybinding.KeyBindingManager;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
@@ -43,6 +44,9 @@ import dev.phomc.tensai.server.vfx.VisualEffects;
 public abstract class ServerPlayerEntityMixin implements FabricClientHandle {
 	@Unique
 	private ClientVisualEffectsImpl vfx;
+
+	@Unique
+	private KeyBindingManager keyBindingManager;
 
 	@Override
 	public void sendPluginMessage(Channel channel, byte[] bytes) {
@@ -66,5 +70,11 @@ public abstract class ServerPlayerEntityMixin implements FabricClientHandle {
 	@Override
 	public void setVfx(ClientVisualEffectsImpl vfx) {
 		this.vfx = vfx;
+	}
+
+	@Override
+	public KeyBindingManager getKeyBindingManager() {
+		if (keyBindingManager == null) keyBindingManager = new KeyBindingManager(this);
+		return keyBindingManager;
 	}
 }

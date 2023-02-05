@@ -35,7 +35,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.phomc.tensai.bukkit.client.ClientHandleImpl;
-import dev.phomc.tensai.bukkit.event.listeners.PlayerChannelListener;
 import dev.phomc.tensai.bukkit.event.listeners.PlayerJoinListener;
 import dev.phomc.tensai.bukkit.event.listeners.PlayerQuitListener;
 import dev.phomc.tensai.bukkit.keybinding.KeyBindingMessageSubscriber;
@@ -46,8 +45,6 @@ import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.TensaiServer;
 import dev.phomc.tensai.server.client.ClientHandle;
-import dev.phomc.tensai.server.keybinding.KeyBindingManager;
-import dev.phomc.tensai.server.keybinding.SimpleKeyBindingManager;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
 public class TensaiBukkit extends JavaPlugin implements TensaiServer {
@@ -56,7 +53,6 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 	private static TensaiBukkit INSTANCE;
 	public static final Logger LOGGER = LoggerFactory.getLogger("tensai");
 	private GlobalVisualEffectsImpl globalVfx;
-	private KeyBindingManager keyBindingManager;
 	private Scheduler scheduler;
 
 	public static TensaiBukkit getInstance() {
@@ -85,10 +81,8 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 		// Events
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
-		getServer().getPluginManager().registerEvents(new PlayerChannelListener(this), this);
 
 		globalVfx = new GlobalVisualEffectsImpl(this);
-		keyBindingManager = new SimpleKeyBindingManager();
 		scheduler = new ServerScheduler(this);
 	}
 
@@ -105,11 +99,6 @@ public class TensaiBukkit extends JavaPlugin implements TensaiServer {
 	@Override
 	public VisualEffects getGlobalVfx() {
 		return globalVfx;
-	}
-
-	@Override
-	public KeyBindingManager getKeyBindingManager() {
-		return keyBindingManager;
 	}
 
 	@Override

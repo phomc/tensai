@@ -22,30 +22,22 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.server.keybinding;
+package dev.phomc.tensai.fabric.test.keybinding;
 
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
+import dev.phomc.tensai.fabric.event.ServerKeybindingEvents;
 import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.keybinding.KeyState;
 
-/**
- * Represents a keybinding manager.
- */
-public interface KeyBindingManager {
-	boolean registerKeyBinding(@NotNull KeyBinding keyBinding);
-
-	@NotNull Map<Key, KeyBinding> getKeyBindings();
-
-	boolean hasKeyBinding(Key key);
-
-	@Nullable KeyBinding getKeyBinding(Key key);
-
-	@NotNull Map<Key, KeyState> getKeyStates();
-
-	@Nullable KeyState getKeyState(Key key);
+public class KeyRegisterResultListener implements ServerKeybindingEvents.KeyRegisterResultEvent {
+	@Override
+	public void respond(ServerPlayerEntity player, Map<Key, KeyBinding.RegisterStatus> status) {
+		status.forEach((key, value) -> {
+			player.sendMessageToClient(Text.of(String.format("Key %s status %s", key, value)), false);
+		});
+	}
 }

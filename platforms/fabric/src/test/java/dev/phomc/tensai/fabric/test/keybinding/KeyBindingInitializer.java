@@ -22,40 +22,26 @@
  * SOFTWARE.
  */
 
-package dev.phomc.tensai.bukkit.event.listeners;
+package dev.phomc.tensai.fabric.test.keybinding;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerRegisterChannelEvent;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
-import dev.phomc.tensai.bukkit.TensaiBukkit;
+import dev.phomc.tensai.keybinding.Key;
 import dev.phomc.tensai.keybinding.KeyBinding;
-import dev.phomc.tensai.networking.Channel;
-import dev.phomc.tensai.networking.message.s2c.KeyBindingRegisterMessage;
+import dev.phomc.tensai.server.client.ClientHandle;
 
-public class PlayerChannelListener implements Listener {
-	private final TensaiBukkit tensai;
-
-	public PlayerChannelListener(TensaiBukkit tensai) {
-		this.tensai = tensai;
-	}
-
-	@EventHandler
-	public void regChannel(PlayerRegisterChannelEvent event) {
-		Player player = event.getPlayer();
-
-		if (event.getChannel().equals(Channel.KEYBINDING.getNamespace())) {
-			Collection<KeyBinding> keyBindings = tensai.getKeyBindingManager().getKeyBindings().values();
-
-			if (!keyBindings.isEmpty()) {
-				TensaiBukkit.getClient(player).sendPluginMessage(Channel.KEYBINDING, new KeyBindingRegisterMessage(
-						new ArrayList<>(keyBindings)
-				).pack());
-			}
-		}
+public class KeyBindingInitializer implements ServerPlayConnectionEvents.Join {
+	@Override
+	public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+		((ClientHandle) handler.player).getKeyBindingManager().registerKeyBindings(
+				new KeyBinding(Key.KEY_V, "Key V"),
+				new KeyBinding(Key.KEY_B, "Key B"),
+				new KeyBinding(Key.KEY_LEFT_CONTROL, "Key L-Ctrl"),
+				new KeyBinding(Key.KEY_LEFT_SHIFT, "Key L-Shift")
+		);
 	}
 }

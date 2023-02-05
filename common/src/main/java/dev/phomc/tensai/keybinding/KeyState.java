@@ -28,15 +28,22 @@ import java.util.Objects;
 
 /**
  * Represents a key state.<br>
- * <b>The key state is used on server-side only. No key state update will be sent to client.</b>
+ * The key state is used on <b>server-side only</b>. No key state update will be sent to client.<br>
+ * Note: <b>Thread safety is not guaranteed</b> due to performance cost increase. Please ensure that reading and writing
+ * with {@code KeyState} is done in the same thread as one involved in the event system.
  */
 public class KeyState {
+	public static byte DIRTY_TIME_PRESSED = 1;
+	public static byte DIRTY_PRESSED = 2;
+
 	private int timesPressed;
 	private boolean pressed;
+	private byte dirty;
 
-	public KeyState(int timesPressed, boolean pressed) {
-		this.timesPressed = timesPressed;
+	public KeyState(int timesPressed, boolean pressed, byte dirty) {
+		this.timesPressed = Math.min(Math.max(timesPressed, 0), Short.MAX_VALUE);
 		this.pressed = pressed;
+		this.dirty = dirty;
 	}
 
 	/**
@@ -44,24 +51,15 @@ public class KeyState {
 	 * The value changes according to the following rules:
 	 * <ul>
 	 *     <li>It increases while the key is pressed down. The number of times is indeterminate.</li>
-	 *     <li>It <b>only decreases</b> when {@link #wasPressed()} is called. {@code 0} is the lower bound.</li>
+	 *     <li>It <b>only decreases</b> when {@link #wasPressed()} is called.</li>
 	 *     <li>It remains unchanged until there is a change to client's screen (client-side behaviour), and it will reset to {@code 0}.</li>
-	 *     <li>It can be modified using {@link #setTimesPressed(int)}. <b>However, this is internal method which must not be used.</b></li>
 	 * </ul>
+	 * The range of timesPressed is {@code [0, Short.MAX_VALUE]}
 	 *
 	 * @return press times
 	 */
 	public int getTimesPressed() {
 		return timesPressed;
-	}
-
-	/**
-	 * Sets how many times the key press event was fired.<br>
-	 * <b>THIS IS INTERNAL METHOD. DO NOT USE.</b>
-	 * @param timesPressed press times
-	 */
-	public void setTimesPressed(int timesPressed) {
-		this.timesPressed = Math.min(Math.max(timesPressed, 0), Short.MAX_VALUE);
 	}
 
 	/**
@@ -101,12 +99,36 @@ public class KeyState {
 	}
 
 	/**
-	 * Sets whether the key is pressed down.<br>
-	 * <b>THIS IS INTERNAL METHOD. DO NOT USE.</b>
-	 * @param pressed pressing state
+	 * Gets the dirty value representing which state property was recently changed.
+	 * <ul>
+	 *     <li>If {@code (dirty & KeyState.DIRTY_TIME_PRESSED) > 0} then {@code timesPressed} changed.
+	 *     {@link #getTimesPressed()} returns the new result.</li>
+	 *     <li>If {@code (dirty & KeyState.DIRTY_PRESSED) > 0} then {@code pressed} changed.
+	 *     {@link #isPressed()} returns the new result.</li>
+	 * </ul>
+	 * @return dirty value
 	 */
-	public void setPressed(boolean pressed) {
-		this.pressed = pressed;
+	public byte getDirty() {
+		return dirty;
+	}
+
+	/**
+	 * Clean dirty.<br>
+	 * <b>INTERNAL METHOD. DO NOT USE.</b>
+	 */
+	public void sweep() {
+		dirty = 0;
+	}
+
+	/**
+	 * Copies data from another key state.<br>
+	 * <b>INTERNAL METHOD. DO NOT USE.</b>
+	 * @param another key state
+	 */
+	public void copyFrom(KeyState another) {
+		this.pressed = another.pressed;
+		this.timesPressed = another.timesPressed;
+		this.dirty = another.dirty;
 	}
 
 	@Override
@@ -114,11 +136,11 @@ public class KeyState {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		KeyState keyState = (KeyState) o;
-		return timesPressed == keyState.timesPressed && pressed == keyState.pressed;
+		return timesPressed == keyState.timesPressed && pressed == keyState.pressed && dirty == keyState.dirty;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(timesPressed, pressed);
+		return Objects.hash(timesPressed, pressed, dirty);
 	}
 }

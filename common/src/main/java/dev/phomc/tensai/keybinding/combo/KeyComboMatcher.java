@@ -45,7 +45,7 @@ public class KeyComboMatcher {
 	 * @param delaySensitivity the delay sensitivity
 	 */
 	public KeyComboMatcher(float delaySensitivity) {
-		this.delaySensitivity = Math.max(1.0f, delaySensitivity);
+		this.delaySensitivity = Math.min(1.0f, Math.max(0.01f, delaySensitivity));
 	}
 
 	private long hash(long previous, long key) {
@@ -96,8 +96,7 @@ public class KeyComboMatcher {
 
 		long time = System.currentTimeMillis();
 		long delta = state.getLastKeyPress() == 0 ? 0 : (time - state.getLastKeyPress());
-		float ratio = delta / (delay * 50f);
-		if (ratio < 1.0f || ratio > delaySensitivity) return CommitResult.TIMEOUT;
+		if (delta > 0 && (delay * 50f) / delta < delaySensitivity) return CommitResult.TIMEOUT;
 
 		state.setLastHash(hash);
 		state.setLastKeyPress(time);

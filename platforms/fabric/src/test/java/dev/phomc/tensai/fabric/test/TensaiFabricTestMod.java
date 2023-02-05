@@ -29,8 +29,13 @@ import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
+import dev.phomc.tensai.fabric.event.ServerKeybindingEvents;
 import dev.phomc.tensai.fabric.test.commands.TensaiTestCommand;
+import dev.phomc.tensai.fabric.test.keybinding.KeyBindingInitializer;
+import dev.phomc.tensai.fabric.test.keybinding.KeyRegisterResultListener;
+import dev.phomc.tensai.fabric.test.keybinding.KeyStateUpdateListener;
 
 public class TensaiFabricTestMod implements ModInitializer {
 	public static final String MOD_ID = "tensai-test";
@@ -43,5 +48,9 @@ public class TensaiFabricTestMod implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			dispatcher.register(TensaiTestCommand.tensaiTest());
 		});
+
+		ServerPlayConnectionEvents.JOIN.register(new KeyBindingInitializer());
+		ServerKeybindingEvents.REGISTER_RESULT.register(new KeyRegisterResultListener());
+		ServerKeybindingEvents.STATE_UPDATE.register(new KeyStateUpdateListener());
 	}
 }

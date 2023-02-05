@@ -26,22 +26,21 @@ package dev.phomc.tensai.fabric.keybinding;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 
-import dev.phomc.tensai.fabric.TensaiFabric;
+import dev.phomc.tensai.fabric.client.FabricClientHandle;
 import dev.phomc.tensai.fabric.event.ServerKeybindingEvents;
 import dev.phomc.tensai.fabric.mixins.ServerPlayNetworkAddonMixin;
-import dev.phomc.tensai.fabric.mixins.ServerPlayNetworkHandlerMixin;
 import dev.phomc.tensai.fabric.networking.ServerSubscriber;
 import dev.phomc.tensai.keybinding.Key;
+import dev.phomc.tensai.keybinding.KeyBindingManager;
 import dev.phomc.tensai.keybinding.KeyState;
 import dev.phomc.tensai.networking.Channel;
 import dev.phomc.tensai.networking.message.MessageType;
 import dev.phomc.tensai.networking.message.c2s.KeyBindingRegisterResponse;
 import dev.phomc.tensai.networking.message.c2s.KeyBindingStateUpdate;
-import dev.phomc.tensai.server.TensaiServer;
 
 public class KeyBindingMessageSubscriber extends ServerSubscriber {
 	public KeyBindingMessageSubscriber(Channel channel) {
@@ -58,14 +57,28 @@ public class KeyBindingMessageSubscriber extends ServerSubscriber {
 
 		subscribe(MessageType.KEYBINDING_STATE_UPDATE, (data, sender) -> {
 			ServerPlayNetworkHandler handler = ((ServerPlayNetworkAddonMixin) sender).getHandler();
-			MinecraftServer server = ((ServerPlayNetworkHandlerMixin) handler).getServer();
-			Map<Key, KeyState> states = ((TensaiServer) server).getKeyBindingManager().getKeyStates();
-			TensaiFabric.LOGGER.info("Keybinding state updated for {} keys", states.size());
-			// we want to pass key state references rather than cloning them
-			// So key state is only updated if its corresponding key is registered
-			KeyBindingStateUpdate msg = new KeyBindingStateUpdate(states);
+			FabricClientHandle clientHandle = (FabricClientHandle) handler.player;
+			KeyBindingStateUpdate msg = new KeyBindingStateUpdate();
 			msg.unpack(data);
-			ServerKeybindingEvents.STATE_UPDATE.invoker().updateKeyState(handler.player, states);
+
+			KeyBindingManager kbm = clientHandle.getKeyBindingManager();
+
+			for (Key k : kbm.getRegisteredKeys()) {
+				Objects.requireNonNull(kbm.getKeyState(k)).sweep();
+			}
+
+			for (Map.Entry<Key, KeyState> ent : msg.getStates().entrySet()) {
+				KeyState ref = kbm.getKeyState(ent.getKey());
+
+				if (ref == null) {
+					kbm.setKeyState(ent.getKey(), ent.getValue());
+				} else {
+					ref.copyFrom(ent.getValue());
+					ent.setValue(ref); // point reference to original objects
+				}
+			}
+
+			ServerKeybindingEvents.STATE_UPDATE.invoker().updateKeyState(handler.player, msg.getStates());
 		});
 	}
 }

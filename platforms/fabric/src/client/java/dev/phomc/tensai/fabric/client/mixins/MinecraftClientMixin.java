@@ -33,7 +33,6 @@ import net.minecraft.client.MinecraftClient;
 import dev.phomc.tensai.fabric.client.scheduler.ClientScheduler;
 import dev.phomc.tensai.scheduler.Scheduler;
 import dev.phomc.tensai.server.TensaiServer;
-import dev.phomc.tensai.server.keybinding.KeyBindingManager;
 import dev.phomc.tensai.server.vfx.VisualEffects;
 
 @Mixin(MinecraftClient.class)
@@ -46,11 +45,6 @@ public abstract class MinecraftClientMixin implements TensaiServer {
 
 	@Override
 	public VisualEffects getGlobalVfx() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public KeyBindingManager getKeyBindingManager() {
 		throw new UnsupportedOperationException();
 	}
 
