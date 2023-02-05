@@ -28,7 +28,8 @@ import java.util.Objects;
 
 /**
  * Represents a key state.<br>
- * <b>The key state is used on server-side only. No key state update will be sent to client.</b>
+ * The key state is used on <b>server-side only</b>. No key state update will be sent to client.<br>
+ * Also, key state <b>does not guarantee thread safety</b> due to increasing performance cost.
  */
 public class KeyState {
 	public static byte DIRTY_TIME_PRESSED = 1;
