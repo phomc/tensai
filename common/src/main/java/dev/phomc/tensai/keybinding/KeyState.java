@@ -29,7 +29,8 @@ import java.util.Objects;
 /**
  * Represents a key state.<br>
  * The key state is used on <b>server-side only</b>. No key state update will be sent to client.<br>
- * Also, key state <b>does not guarantee thread safety</b> due to increasing performance cost.
+ * Note: <b>Thread safety is not guaranteed</b> due to performance cost increase. Please ensure that reading and writing
+ * with {@code KeyState} is done in the same thread as one involved in the event system.
  */
 public class KeyState {
 	public static byte DIRTY_TIME_PRESSED = 1;
