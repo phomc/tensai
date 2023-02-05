@@ -24,6 +24,7 @@
 
 package dev.phomc.tensai.minestom;
 
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.extensions.Extension;
 
 import dev.phomc.tensai.minestom.scheduler.ServerScheduler;
@@ -55,6 +56,6 @@ public class TensaiMinestom extends Extension implements TensaiServer {
 
 	@Override
 	public boolean isPrimaryThread() {
-		return false;
+		return Thread.currentThread().getName().equals(MinecraftServer.THREAD_NAME_TICK_SCHEDULER);
 	}
 }
