@@ -27,6 +27,9 @@ package dev.phomc.tensai.fabric.client.mixins;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -48,7 +51,9 @@ public class GameOptionsMixin implements GameOptionProcessor {
 
 	@Override
 	public void reprocessKeys() {
-		allKeys = KeyBindingRegistryImpl.process(allKeys);
+		List<KeyBinding> newKeysAll = Lists.newArrayList(KeyBindingRegistryImpl.process(allKeys));
+		newKeysAll.removeAll(KeyBindingManager.getInstance().getNonEditableKeyBindings());
+		allKeys = newKeysAll.toArray(new KeyBinding[0]);
 	}
 
 	@Override

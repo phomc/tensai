@@ -93,7 +93,7 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 					continue;
 				}
 
-				if (!KeyBindingManager.getInstance().testAvailability(kb.getKey())) {
+				if (KeyBindingManager.getInstance().isRegistered(kb.getKey())) {
 					status.put(kb.getKey(), KeyBinding.RegisterStatus.KEY_DUPLICATED);
 					continue;
 				}

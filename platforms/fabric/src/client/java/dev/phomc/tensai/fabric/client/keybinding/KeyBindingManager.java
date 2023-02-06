@@ -30,6 +30,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -55,7 +57,8 @@ public class KeyBindingManager {
 	public static final Identifier KEYBINDING_NAMESPACE = new Identifier(Channel.KEYBINDING.getNamespace());
 	private static final KeyBindingManager INSTANCE = new KeyBindingManager();
 	private List<net.minecraft.client.option.KeyBinding> registeredKeys = new ArrayList<>();
-	private Map<Key, Integer> stateTable = new HashMap<>();
+	private Map<Key, Integer> stateTable = new EnumMap<>(Key.class);
+	private Map<Key, Byte> flagTable = new EnumMap<>(Key.class);
 	private Task keyStateCheckTask;
 
 	public static KeyBindingManager getInstance() {
@@ -70,8 +73,18 @@ public class KeyBindingManager {
 		return Key.lookupGLFW(key.getCode(), key.getCategory() == InputUtil.Type.MOUSE);
 	}
 
-	public boolean testAvailability(@NotNull Key key) {
-		return !KeyBindingMixin.getKeyCodeMapping().containsKey(getInputKey(key));
+	public byte getFlag(@NotNull Key key) {
+		return flagTable.getOrDefault(key, KeyBinding.DEFAULT_FLAG);
+	}
+
+	public boolean isRegistered(@NotNull Key key) {
+		return KeyBindingMixin.getKeyCodeMapping().containsKey(getInputKey(key));
+	}
+
+	public List<net.minecraft.client.option.KeyBinding> getNonEditableKeyBindings() {
+		return registeredKeys.stream()
+				.filter(k -> (getFlag(lookupKey(k.getDefaultKey())) & KeyBinding.FLAG_KEY_EDITABLE) == 0)
+				.collect(Collectors.toList());
 	}
 
 	public void initialize(@NotNull List<KeyBinding> keymap) {
@@ -93,6 +106,7 @@ public class KeyBindingManager {
 			CustomTranslationStorage.getInstance().put(v.getTranslationKey(), keyBinding.getName());
 			KeyBindingHelper.registerKeyBinding(v);
 			registeredKeys.add(v);
+			flagTable.put(keyBinding.getKey(), keyBinding.getFlags());
 		}
 
 		((GameOptionProcessor) MinecraftClient.getInstance().options).reprocessKeys();
@@ -116,7 +130,8 @@ public class KeyBindingManager {
 
 		((GameOptionProcessor) MinecraftClient.getInstance().options).resetKeys(registeredKeys);
 
-		stateTable = new HashMap<>();
+		stateTable = new EnumMap<>(Key.class);
+		flagTable = new EnumMap<>(Key.class);
 		registeredKeys = new ArrayList<>();
 
 		if (keyStateCheckTask != null) {
@@ -142,6 +157,11 @@ public class KeyBindingManager {
 			if (diff > 0) {
 				int dirty = (diff & 0xFFFF) > 0 ? KeyState.DIRTY_TIME_PRESSED : 0;
 				dirty |= (diff & 0x10000) > 0 ? KeyState.DIRTY_PRESSED : 0;
+
+				if ((getFlag(k) & KeyBinding.FLAG_OPTIMIZED_STATE_UPDATE) > 0 && (dirty & KeyState.DIRTY_PRESSED) == 0) {
+					continue;
+				}
+
 				states.put(k, new KeyState(n, key.isPressed(), (byte) dirty));
 			}
 		}
