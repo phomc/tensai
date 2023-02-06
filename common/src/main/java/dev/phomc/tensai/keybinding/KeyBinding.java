@@ -137,7 +137,7 @@ public class KeyBinding {
 
 	public enum RegisterStatus {
 		/**
-		 * The client denied the keybinding registration.
+		 * The client denied key-recording.
 		 */
 		CLIENT_REJECTED,
 
@@ -150,7 +150,7 @@ public class KeyBinding {
 
 		/**
 		 * The keybinding was duplicated with another one registered by Minecraft client or other client-side mods<br>
-		 * However, the key state can still be captured thanks to {@link KeyBinding#FLAG_CAPTURE_ENFORCEMENT}.<br>
+		 * However, {@link KeyBinding#FLAG_CAPTURE_ENFORCEMENT} was set and the client approves key-recording.<br>
 		 * A side note: Please distinct this case with "already-registered" error.
 		 * @see KeyBindingManager#registerKeyBindings(KeyBinding...)
 		 */
@@ -158,6 +158,10 @@ public class KeyBinding {
 
 		/**
 		 * The keybinding registration was successful.
+		 * <ol>
+		 *     <li>There was no key duplication</li>
+		 *     <li>The client approves key-recording</li>
+		 * </ol>
 		 */
 		SUCCESS
 	}

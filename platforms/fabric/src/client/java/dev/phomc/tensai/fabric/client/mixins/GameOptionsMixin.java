@@ -27,9 +27,6 @@ package dev.phomc.tensai.fabric.client.mixins;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-
-import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
-
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -41,6 +38,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 
 import dev.phomc.tensai.fabric.client.GameOptionProcessor;
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
 
 @Mixin(GameOptions.class)
 public class GameOptionsMixin implements GameOptionProcessor {

@@ -30,7 +30,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -56,56 +55,90 @@ import dev.phomc.tensai.server.TensaiServer;
 public class KeyBindingManager {
 	public static final Identifier KEYBINDING_NAMESPACE = new Identifier(Channel.KEYBINDING.getNamespace());
 	private static final KeyBindingManager INSTANCE = new KeyBindingManager();
-	private List<net.minecraft.client.option.KeyBinding> registeredKeys = new ArrayList<>();
-	private Map<Key, Integer> stateTable = new EnumMap<>(Key.class);
-	private Map<Key, Byte> flagTable = new EnumMap<>(Key.class);
+
+	// registered keys; only store ones belong to Tensai
+	private List<net.minecraft.client.option.KeyBinding> registeredTensaiKeys = new ArrayList<>();
+
+	// capture enforced keys belonging to Minecraft or other mods
+	// we keep their references here until the client quits the current server
+	// TODO what if another mod dynamically unregisters the key, should we try to claim?
+	private Map<InputUtil.Key, KeyState> captureEnforcedKeys = new HashMap<>();
+
+	private Map<Key, Integer> stateTable = new EnumMap<>(Key.class); // for both registered keys and capture enforced keys
+	private Map<Key, Byte> flagTable = new EnumMap<>(Key.class); // for both registered keys and capture enforced keys
 	private Task keyStateCheckTask;
 
 	public static KeyBindingManager getInstance() {
 		return INSTANCE;
 	}
 
+	// Convert Tensai Key to GLFW Key
 	public static InputUtil.Key getInputKey(@NotNull Key key) {
 		return key.isMouse() ? InputUtil.Type.MOUSE.createFromCode(key.getGLFWCode()) : InputUtil.Type.KEYSYM.createFromCode(key.getGLFWCode());
 	}
 
+	// Convert GLFW Key to Tensai Key
 	public static Key lookupKey(@NotNull InputUtil.Key key) {
 		return Key.lookupGLFW(key.getCode(), key.getCategory() == InputUtil.Type.MOUSE);
+	}
+
+	// Whether the key was registered (by Tensai, Minecraft or whatever mods)
+	public static boolean isRegistered(@NotNull Key key) {
+		return getRegisteredKey(key) != null;
+	}
+
+	// Gets registered keys (by Tensai, Minecraft or whatever mods)
+	public static net.minecraft.client.option.KeyBinding getRegisteredKey(@NotNull Key key) {
+		return KeyBindingMixin.getKeyCodeMapping().get(getInputKey(key));
 	}
 
 	public byte getFlag(@NotNull Key key) {
 		return flagTable.getOrDefault(key, KeyBinding.DEFAULT_FLAG);
 	}
 
-	public boolean isRegistered(@NotNull Key key) {
-		return KeyBindingMixin.getKeyCodeMapping().containsKey(getInputKey(key));
-	}
-
 	public List<net.minecraft.client.option.KeyBinding> getNonEditableKeyBindings() {
-		return registeredKeys.stream()
+		return registeredTensaiKeys.stream()
 				.filter(k -> (getFlag(lookupKey(k.getDefaultKey())) & KeyBinding.FLAG_KEY_EDITABLE) == 0)
 				.collect(Collectors.toList());
 	}
 
 	public void initialize(@NotNull List<KeyBinding> keymap) {
-		if (keyStateCheckTask != null) {
-			throw new RuntimeException("KeyBinding Manager already initialized");
+		if (keyStateCheckTask == null) {
+			keyStateCheckTask = KeyStateCheckTask.build();
+			((TensaiServer) MinecraftClient.getInstance()).getTaskScheduler().schedule(keyStateCheckTask);
 		}
 
-		reset();
-		keyStateCheckTask = KeyStateCheckTask.build();
-		((TensaiServer) MinecraftClient.getInstance()).getTaskScheduler().schedule(keyStateCheckTask);
-
 		for (KeyBinding keyBinding : keymap) {
-			net.minecraft.client.option.KeyBinding v = new net.minecraft.client.option.KeyBinding(
-					"key.tensai." + keyBinding.getKey(),
-					keyBinding.getKey().isMouse() ? InputUtil.Type.MOUSE : InputUtil.Type.KEYSYM,
-					keyBinding.getKey().getGLFWCode(),
-					"key.categories.tensai"
-			);
-			CustomTranslationStorage.getInstance().put(v.getTranslationKey(), keyBinding.getName());
-			KeyBindingHelper.registerKeyBinding(v);
-			registeredKeys.add(v);
+			if (stateTable.containsKey(keyBinding.getKey())) {
+				// we may throw exception here, however, a server may abuse to crash the client
+				continue;
+			}
+
+			if ((keyBinding.getFlags() & KeyBinding.FLAG_CAPTURE_ENFORCEMENT) > 0) {
+				net.minecraft.client.option.KeyBinding reference = getRegisteredKey(keyBinding.getKey());
+
+				if (reference == null) {
+					throw new RuntimeException("referred key-binding is not present as expected");
+				}
+
+				captureEnforcedKeys.put(reference.getDefaultKey(), new KeyState(0, false, (byte) 0));
+			} else {
+				net.minecraft.client.option.KeyBinding v = new net.minecraft.client.option.KeyBinding(
+						"key.tensai." + keyBinding.getKey(),
+						keyBinding.getKey().isMouse() ? InputUtil.Type.MOUSE : InputUtil.Type.KEYSYM,
+						keyBinding.getKey().getGLFWCode(),
+						"key.categories.tensai"
+				);
+
+				if ((keyBinding.getFlags() & KeyBinding.FLAG_KEY_EDITABLE) > 0) {
+					// we only need translation if the key is editable
+					CustomTranslationStorage.getInstance().put(v.getTranslationKey(), keyBinding.getName());
+				}
+
+				KeyBindingHelper.registerKeyBinding(v);
+				registeredTensaiKeys.add(v);
+			}
+
 			flagTable.put(keyBinding.getKey(), keyBinding.getFlags());
 		}
 
@@ -113,7 +146,7 @@ public class KeyBindingManager {
 	}
 
 	public void reset() {
-		for (net.minecraft.client.option.KeyBinding keyBinding : registeredKeys) {
+		for (net.minecraft.client.option.KeyBinding keyBinding : registeredTensaiKeys) {
 			CustomTranslationStorage.getInstance().remove(keyBinding.getTranslationKey());
 			KeyBindingMixin.getId2KeyMapping().remove(keyBinding.getTranslationKey());
 			KeyBindingMixin.getKeyCodeMapping().remove(keyBinding.getDefaultKey());
@@ -123,16 +156,17 @@ public class KeyBindingManager {
 			Field field = KeyBindingRegistryImpl.class.getDeclaredField("MODDED_KEY_BINDINGS");
 			field.setAccessible(true);
 			//noinspection unchecked
-			((List<net.minecraft.client.option.KeyBinding>) field.get(null)).removeAll(registeredKeys);
+			((List<net.minecraft.client.option.KeyBinding>) field.get(null)).removeAll(registeredTensaiKeys);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 
-		((GameOptionProcessor) MinecraftClient.getInstance().options).resetKeys(registeredKeys);
+		((GameOptionProcessor) MinecraftClient.getInstance().options).resetKeys(registeredTensaiKeys);
 
 		stateTable = new EnumMap<>(Key.class);
 		flagTable = new EnumMap<>(Key.class);
-		registeredKeys = new ArrayList<>();
+		registeredTensaiKeys = new ArrayList<>();
+		captureEnforcedKeys = new HashMap<>();
 
 		if (keyStateCheckTask != null) {
 			keyStateCheckTask.cancel();
@@ -143,7 +177,7 @@ public class KeyBindingManager {
 	public Map<Key, KeyState> fetchUpdatedStates() {
 		Map<Key, KeyState> states = new EnumMap<>(Key.class);
 
-		for (net.minecraft.client.option.KeyBinding key : registeredKeys) {
+		for (net.minecraft.client.option.KeyBinding key : registeredTensaiKeys) {
 			Key k = lookupKey(key.getDefaultKey());
 
 			short n = 0;
