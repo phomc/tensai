@@ -28,8 +28,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -59,10 +61,9 @@ public class KeyBindingManager {
 	// registered keys; only store ones belong to Tensai
 	private List<net.minecraft.client.option.KeyBinding> registeredTensaiKeys = new ArrayList<>();
 
-	// capture enforced keys belonging to Minecraft or other mods
+	// captured keys belonging to Minecraft or other mods
 	// we keep their references here until the client quits the current server
-	// TODO what if another mod dynamically unregisters the key, should we try to claim?
-	private Map<InputUtil.Key, KeyState> captureEnforcedKeys = new HashMap<>();
+	private Set<InputUtil.Key> capturedKeys = new HashSet<>();
 
 	private Map<Key, Integer> stateTable = new EnumMap<>(Key.class); // for both registered keys and capture enforced keys
 	private Map<Key, Byte> flagTable = new EnumMap<>(Key.class); // for both registered keys and capture enforced keys
@@ -89,7 +90,12 @@ public class KeyBindingManager {
 
 	// Gets registered keys (by Tensai, Minecraft or whatever mods)
 	public static net.minecraft.client.option.KeyBinding getRegisteredKey(@NotNull Key key) {
-		return KeyBindingMixin.getKeyCodeMapping().get(getInputKey(key));
+		return getRegisteredKey(getInputKey(key));
+	}
+
+	// Gets registered keys (by Tensai, Minecraft or whatever mods)
+	public static net.minecraft.client.option.KeyBinding getRegisteredKey(@NotNull InputUtil.Key key) {
+		return KeyBindingMixin.getKeyCodeMapping().get(key);
 	}
 
 	public byte getFlag(@NotNull Key key) {
@@ -115,13 +121,7 @@ public class KeyBindingManager {
 			}
 
 			if ((keyBinding.getFlags() & KeyBinding.FLAG_CAPTURE_ENFORCEMENT) > 0) {
-				net.minecraft.client.option.KeyBinding reference = getRegisteredKey(keyBinding.getKey());
-
-				if (reference == null) {
-					throw new RuntimeException("referred key-binding is not present as expected");
-				}
-
-				captureEnforcedKeys.put(reference.getDefaultKey(), new KeyState(0, false, (byte) 0));
+				capturedKeys.add(getInputKey(keyBinding.getKey()));
 			} else {
 				net.minecraft.client.option.KeyBinding v = new net.minecraft.client.option.KeyBinding(
 						"key.tensai." + keyBinding.getKey(),
@@ -166,7 +166,7 @@ public class KeyBindingManager {
 		stateTable = new EnumMap<>(Key.class);
 		flagTable = new EnumMap<>(Key.class);
 		registeredTensaiKeys = new ArrayList<>();
-		captureEnforcedKeys = new HashMap<>();
+		capturedKeys = new HashSet<>();
 
 		if (keyStateCheckTask != null) {
 			keyStateCheckTask.cancel();
@@ -174,30 +174,38 @@ public class KeyBindingManager {
 		}
 	}
 
+	private void fetchState(Map<Key, KeyState> ref, net.minecraft.client.option.KeyBinding key) {
+		Key k = lookupKey(key.getDefaultKey());
+
+		short n = 0;
+		while (key.wasPressed()) n++;
+
+		int hash = n + (key.isPressed() ? 0x10000 : 0);
+		Integer old = stateTable.put(k, hash);
+		if (old == null) old = 0;
+		int diff = hash ^ old;
+
+		if (diff > 0) {
+			int dirty = (diff & 0xFFFF) > 0 ? KeyState.DIRTY_TIME_PRESSED : 0;
+			dirty |= (diff & 0x10000) > 0 ? KeyState.DIRTY_PRESSED : 0;
+
+			if ((getFlag(k) & KeyBinding.FLAG_OPTIMIZED_STATE_UPDATE) > 0 && (dirty & KeyState.DIRTY_PRESSED) == 0) {
+				return;
+			}
+
+			ref.put(k, new KeyState(n, key.isPressed(), (byte) dirty));
+		}
+	}
+
 	public Map<Key, KeyState> fetchUpdatedStates() {
 		Map<Key, KeyState> states = new EnumMap<>(Key.class);
 
 		for (net.minecraft.client.option.KeyBinding key : registeredTensaiKeys) {
-			Key k = lookupKey(key.getDefaultKey());
+			fetchState(states, key);
+		}
 
-			short n = 0;
-			while (key.wasPressed()) n++;
-
-			int hash = n + (key.isPressed() ? 0x10000 : 0);
-			Integer old = stateTable.put(k, hash);
-			if (old == null) old = 0;
-			int diff = hash ^ old;
-
-			if (diff > 0) {
-				int dirty = (diff & 0xFFFF) > 0 ? KeyState.DIRTY_TIME_PRESSED : 0;
-				dirty |= (diff & 0x10000) > 0 ? KeyState.DIRTY_PRESSED : 0;
-
-				if ((getFlag(k) & KeyBinding.FLAG_OPTIMIZED_STATE_UPDATE) > 0 && (dirty & KeyState.DIRTY_PRESSED) == 0) {
-					continue;
-				}
-
-				states.put(k, new KeyState(n, key.isPressed(), (byte) dirty));
-			}
+		for (InputUtil.Key key : capturedKeys) {
+			fetchState(states, getRegisteredKey(key));
 		}
 
 		return states;
