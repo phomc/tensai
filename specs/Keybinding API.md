@@ -14,28 +14,31 @@ The keybinding API must meet the following requirements:
 ## Terminology
 
 ### 1. Input type
-Defines the source of input (input peripheral device). There are two notable types of input:
+The source of input (input peripheral device). There are two notable types of input:
 1. "Keyboard" keys
 2. Mouse buttons
 
 ### 2. Input code
-An input is assigned a number identifier. They are more convenient to work in programming than using their translated names.<br>
+An input unit is assigned a number identifier. It is more convenient to work in programming than using a translated name.<br>
 For example: The `Enter` key has a key code of `13` <br>
 Input code is the same in almost environment: web, Minecraft, other OpenGL applications, etc
 
-### 3. Tensai key
+### 3. Tensai Key
 Normally, to identify an input, we need two parameters:
 - Input type
 - Input code
 
 For convenience, in Tensai, keyboard input and mouse input is merged into the same category called `Key` with the following convention:
-- The first `1 << 9` keys are keyboard input
+- The first `1 << 9` keys are keyboard input: `[0, 1 << 9)`
 - The rest is mouse input
 
-**Ambiguous:** The term `Key` can be ambiguous: whether it refers to `Keyboard key` or `(Tensai) Key`. Therefore, from now on, we agree that `Key` means `(Tensai) key` referring either keyboard input or mouse input.
+**Ambiguous:** 
+- The term `Key` can be ambiguous: whether it refers to `"Keyboard" key` or `Tensai Key`. Therefore, from now on, we agree that `Key` means `(Tensai) key` referring either keyboard input or mouse input.
+- `input type` = `key type`
+- `input code` = `key code`
 <br>
 
-**Note:** Key is not identified by case. For example, key `A` or `a` has the same code `65`. However, two characters `A` and `a` are different:
+**Note:** Key is not identified by case. For example, key `A` or `a` has the same key code of `65`. However, two characters `A` and `a` are different:
 - `A` has a `char code` of 65, typed by the key combination `Shift + A` (Caps lock off), or `A` (Caps lock on)
 - `a` has a `char code` of 97, typed by the `A` key (Caps lock off), or `Shift + A` (Caps lock on)<br>
 
@@ -47,30 +50,53 @@ There are two main input events:
 
 A typical user input looks like this: ``Press Press Press Press ... Press Release``. When the user holds down a key, multiple `press` events will be sent. The number of times is non-deterministic. This ends with a single `release` event when the key is released.
 - For example, a click is `N mouse press + 1 mouse release`. We mostly do not care about how many `press` are there. A key can be hold down for a long time until it is pressed up.
-- The number of `press` is used in typing. If there are 5 `press`, the user is typing 5 identical characters. A `sensitivity` option may exist, so 5 `press` may make up only 3 characters.
+- The number of `press` is used in typing. If there are 5 `press`, the user is typing 5 identical characters. A `sensitivity` option may exist, so 5 `press` may make up only 3.
 
 ### 5. Key-binding
-Key-binding is a named button which binds to a specific key. For example, we can define:
+Key-binding is a named, dynamic, simulated key which binds to a specific physical key. For example, we can define:
 ```
 "Open Inventory" --> Key E (Code = 69)
 "Attack" ----------> Left Mouse Button (Code = 1 << 9)
 ```
 
-Key-binding is editable according to user preference.
-
+Key-binding is editable according to user preference such as:
 ```
 "Open Inventory" (default: E) -----> ESC
 "Close Inventory" (default: ESC) --> E
 ```
 
-Since a key-binding can bind to a different key than default. It is possible that we may run into a collision (duplication) in which two different key-bindings try to bind to the same key. In Minecraft, the key-binding which has the default key identical to the conflicted key gains prioritized, while the other key-binding is unbounded until the player resolves the issue.
+So basically, a key-binding has three properties: `name`, `default key` and `current key`
+- Name: the key-binding name (shown in settings menu)
+- Default key: the key to be bound by default
+- Current key: at first, `current key` = `default key`, and we allow `current key` to be adjustable depending on user preference
+<br>
+
+### 6. Collision
+
+Since a key-binding can bind to a different key than default. It is possible that we may run into a collision (duplication) in which two different key-bindings try to bind to the same key.<br>
+In Minecraft, key-bindings are sorted by name. If there are N duplicated, sorted key-bindings, the last one will take precedence over the preceding entries. So, other conflicted key-bindings will be unbounded (not usable) until the player manually fixes the issue.
 
 ```
-"Open Inventory" (default: E) --------> E (prioritized)
-"Close Inventory" (default: ESC) -------↑ (collided)
+Step 1: Add "Close Inventory", "Remove Inventory"
+"Open Inventory" (default: E) --------> E
+"Close Inventory" (default: ESC) -----> E
+"Remove Inventory"               -----> E
+
+Step 2: Sort by name
+"Close Inventory" (default: ESC) -----> E
+"Open Inventory" (default: E) --------> E
+"Remove Inventory"               -----> E
+
+--> "Remove Inventory" is the usable key-binding 
 ```
 
-## Tensai Key-binding
+## Implementation challenges
+
+There are a few concerns that must be addressed from the previous section.
+
+1. 
+
+## Tensai Key-binding API
 This section discusses the Keybinding API features in details.
 
 ### 1. Capture methods
@@ -86,10 +112,6 @@ Name: The name of the key-binding
 Default key: The key to bind by default
 Flags: Key-binding flags (see below)
 ```
-
-<br>**Identification**
-- The default key is used to identify keybinding since it is constant
-- It is impossible to have two key-binding with the same default key
 
 ### 3. Key State
 
@@ -205,13 +227,13 @@ The workflow of registration as follows:
    - "Already-registered" means there was a successful registration made by whatever server-side mod (plugin) using Tensai. It is possible to listen to its state updates. However, the key-binding behaviour and how the state update will return is defined by the very-first mod (plugin).
    - This is the only server-side error
 2. Status = 0: Client rejected
-   - The keybinding is not conflicted, and might be successfully registered. However, the client rejects the registration of the key.
+   - The keybinding was not conflicted, and might be registered. However, the client rejected the registration of the key.
 3. Status = 1: Key duplicated
-   - KeyBinding.RegisterStatus.KEY_DUPLICATED means the key-binding is conflicted with another one registered by the Minecraft client or other client-side mods. Key-capturing is unavailable.
+   - KeyBinding.RegisterStatus.KEY_DUPLICATED means the key-binding was conflicted with another one registered by the Minecraft client or other client-side mods. Key-capturing is unavailable.
 4. Status = 2: Key enforced
-   - KeyBinding.RegisterStatus.CAPTURE_ENFORCED is the same as KeyBinding.RegisterStatus.KEY_DUPLICATED except that key-capturing is forced to be operable.
+   - KeyBinding.RegisterStatus.CAPTURE_ENFORCED is the same as KeyBinding.RegisterStatus.KEY_DUPLICATED except that key-capturing was forced to be operable.
 5. Status = 3: Success
-   - The keybinding is successfully registered in client-side.
+   - The keybinding was successfully registered in client-side.
 
 ## Networking
 

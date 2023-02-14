@@ -29,13 +29,8 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a key binding which is under control by the Tensai client mod.<br>
- * A keybinding is listened by the client and its state updates will be broadcast back to the server.<br>
- * <br>
- * Note: Key-binding instances may have different name and flags. However, when it comes to play in the client-side,
- * the only property for distinction is {@link Key}. {@code Key} is used to check for duplication. If there are two
- * key-binding instances with different names but share the same key, then they are duplicated. Only one of them can be
- * registered successfully. To learn more about registration, have a look at {@link KeyBindingManager#registerKeyBindings(KeyBinding...)}
+ * Represents a key binding issued by the Tensai client mod.<br>
+ * The keybinding listening to a specific {@link Key} and its state updates will be broadcast back to the server.
  */
 public class KeyBinding {
 	/**
@@ -80,8 +75,8 @@ public class KeyBinding {
 	/**
 	 * Constructs a keybinding.
 	 *
-	 * @param key  A {@link Key}
-	 * @param name Keybinding name
+	 * @param key  The default {@link Key}
+	 * @param name Key-binding name
 	 */
 	public KeyBinding(@NotNull Key key, @NotNull String name) {
 		this(key, name, DEFAULT_FLAG);
@@ -97,9 +92,9 @@ public class KeyBinding {
 	 *         KeyBinding.FLAG_KEY_EDITABLE | KeyBinding.FLAG_OPTIMIZED_STATE_UPDATE
 	 *     );
 	 * </pre>
-	 * @param key  A {@link Key}
-	 * @param name Keybinding name
-	 * @param flags Keybinding flags
+	 * @param key  The default {@link Key}
+	 * @param name Key-binding name
+	 * @param flags Key-binding flags
 	 */
 	public KeyBinding(@NotNull Key key, @NotNull String name, byte flags) {
 		this.key = key;
@@ -129,15 +124,9 @@ public class KeyBinding {
 		return key == that.key && name.equals(that.name) && flags == that.flags;
 	}
 
-	@Override
-	public int hashCode() {
-		// flags is metadata which should not be included
-		return Objects.hash(key, name);
-	}
-
 	public enum RegisterStatus {
 		/**
-		 * The client denied key-recording.
+		 * The key-binding was not conflicted, and might be registered. However, the client rejected the registration.
 		 */
 		CLIENT_REJECTED,
 
@@ -150,7 +139,7 @@ public class KeyBinding {
 
 		/**
 		 * The keybinding was duplicated with another one registered by Minecraft client or other client-side mods<br>
-		 * However, {@link KeyBinding#FLAG_CAPTURE_ENFORCEMENT} was set and the client approves key-recording.<br>
+		 * However, {@link KeyBinding#FLAG_CAPTURE_ENFORCEMENT} was set and the client approved key-recording.<br>
 		 * A side note: Please distinct this case with "already-registered" error.
 		 * @see KeyBindingManager#registerKeyBindings(KeyBinding...)
 		 */
@@ -160,7 +149,7 @@ public class KeyBinding {
 		 * The keybinding registration was successful.
 		 * <ol>
 		 *     <li>There was no key duplication</li>
-		 *     <li>The client approves key-recording</li>
+		 *     <li>The client approved key-recording</li>
 		 * </ol>
 		 */
 		SUCCESS

@@ -41,6 +41,9 @@ import dev.phomc.tensai.server.client.ClientHandle;
  */
 public class KeyBindingManager {
 	protected final ClientHandle clientHandle;
+
+	// This array stores the states of all listening keys managed by Tensai
+	// This includes: normal & enforced key-bindings
 	protected final KeyState[] keyStates = new KeyState[Key.values().length];
 
 	public KeyBindingManager(@NotNull ClientHandle clientHandle) {
