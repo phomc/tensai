@@ -38,6 +38,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 
 import dev.phomc.tensai.fabric.client.GameOptionProcessor;
+import dev.phomc.tensai.fabric.client.keybinding.KeyBindingManager;
 
 @Mixin(GameOptions.class)
 public class GameOptionsMixin implements GameOptionProcessor {
@@ -48,7 +49,9 @@ public class GameOptionsMixin implements GameOptionProcessor {
 
 	@Override
 	public void reprocessKeys() {
-		allKeys = KeyBindingRegistryImpl.process(allKeys);
+		List<KeyBinding> newKeysAll = Lists.newArrayList(KeyBindingRegistryImpl.process(allKeys));
+		newKeysAll.removeAll(KeyBindingManager.getInstance().getNonEditableKeyBindings());
+		allKeys = newKeysAll.toArray(new KeyBinding[0]);
 	}
 
 	@Override

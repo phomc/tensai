@@ -68,21 +68,34 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 
 	private void prompt(KeyBindingRegisterMessage msg, PacketSender sender) {
 		String server = Objects.requireNonNull(((ClientPlayNetworkAddonMixin) sender).getHandler().getServerInfo()).address;
+
+		// registration status of all key-binding
+		Map<Key, KeyBinding.RegisterStatus> status = new HashMap<>();
+
+		// only available and enforced keys are asked for permission and stored in this map
 		Map<Permission, KeyBinding> mapping = new HashMap<>();
+
 		Set<Permission> set = msg.getKeymap().stream()
-				.map(keyBinding -> {
+				.filter(kb -> {
+					if (KeyBindingManager.isRegistered(kb.getKey()) && (kb.getFlags() & KeyBinding.FLAG_CAPTURE_ENFORCEMENT) == 0) {
+						status.put(kb.getKey(), KeyBinding.RegisterStatus.KEY_DUPLICATED);
+						return false;
+					}
+
+					return true;
+				})
+				.map(kb -> {
 					Permission perm = new Permission(
-							KeyBindingManager.KEYBINDING_NAMESPACE, keyBinding.getKey().name(),
-							Text.translatable("gui.permissionTable.keybinding", keyBinding.getKey().name(), keyBinding.getName()),
+							KeyBindingManager.KEYBINDING_NAMESPACE, kb.getKey().name(),
+							Text.translatable("gui.permissionTable.keybinding", kb.getKey().name(), kb.getName()),
 							Permission.Context.SERVER,
 							true
 					);
-					mapping.put(perm, keyBinding);
+					mapping.put(perm, kb);
 					return perm;
 				}).collect(Collectors.toSet());
 
 		TensaiFabricClient.getInstance().getClientAuthorizer().tryGrantMulti(set, server, table -> {
-			Map<Key, KeyBinding.RegisterStatus> status = new HashMap<>();
 			List<KeyBinding> keylist = new ArrayList<>();
 
 			for (Map.Entry<Permission, Boolean> entry : table.entrySet()) {
@@ -93,12 +106,12 @@ public class KeyBindingMessageSubscriber extends ClientSubscriber {
 					continue;
 				}
 
-				if (!KeyBindingManager.getInstance().testAvailability(kb.getKey())) {
-					status.put(kb.getKey(), KeyBinding.RegisterStatus.KEY_DUPLICATED);
-					continue;
+				if ((kb.getFlags() & KeyBinding.FLAG_CAPTURE_ENFORCEMENT) > 0) {
+					status.put(kb.getKey(), KeyBinding.RegisterStatus.CAPTURE_ENFORCED);
+				} else {
+					status.put(kb.getKey(), KeyBinding.RegisterStatus.SUCCESS);
 				}
 
-				status.put(kb.getKey(), KeyBinding.RegisterStatus.SUCCESS);
 				keylist.add(kb);
 			}
 

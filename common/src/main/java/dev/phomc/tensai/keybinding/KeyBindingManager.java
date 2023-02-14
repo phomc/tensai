@@ -41,6 +41,9 @@ import dev.phomc.tensai.server.client.ClientHandle;
  */
 public class KeyBindingManager {
 	protected final ClientHandle clientHandle;
+
+	// This array stores the states of all listening keys managed by Tensai
+	// This includes: normal & enforced key-bindings
 	protected final KeyState[] keyStates = new KeyState[Key.values().length];
 
 	public KeyBindingManager(@NotNull ClientHandle clientHandle) {
@@ -49,8 +52,20 @@ public class KeyBindingManager {
 
 	/**
 	 * Registers the given key-bindings.<br>
-	 * Already-registered ones are ignored implicitly. This operation will be done asynchronously and the response will
-	 * be returned using the event system.
+	 * This operation will be done asynchronously and the response will be returned using the event system.<br>
+	 * <br>
+	 * <b>Already-registered ones are ignored implicitly. Please distinct this case with duplication:</b>
+	 * <ul>
+	 *    <li>"Already-registered" means there was a successful registration made by whatever server-side mod (plugin)
+	 *    using Tensai. It is possible to listen to its state updates. However, the key-binding behaviour and
+	 *    how the state update will return is defined by the very-first mod (plugin).</li>
+	 *    <li>{@link KeyBinding.RegisterStatus#KEY_DUPLICATED} means the key-binding is conflicted with another one
+	 * 	  registered by the Minecraft client or other client-side mods. Key-capturing is unavailable.</li>
+	 *    <li>{@link KeyBinding.RegisterStatus#CAPTURE_ENFORCED} is the same as {@link KeyBinding.RegisterStatus#KEY_DUPLICATED}
+	 *    except that key-capturing is forced to be operable.</li>
+	 *    <li>To summarize, "already-registered" is a server-side error, while the rest is client-side.</li>
+	 * </ul>
+	 *
 	 * @param keyBindings an array of key-bindings
 	 */
 	public void registerKeyBindings(@NotNull KeyBinding... keyBindings) {

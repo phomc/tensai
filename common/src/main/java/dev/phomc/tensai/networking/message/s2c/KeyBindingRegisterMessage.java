@@ -58,6 +58,7 @@ public class KeyBindingRegisterMessage extends Message {
 		for (KeyBinding entry : keymap) {
 			stream.writeInt(entry.getKey().getCode());
 			stream.writeUTF(entry.getName());
+			stream.writeByte(entry.getFlags());
 		}
 	}
 
@@ -68,9 +69,10 @@ public class KeyBindingRegisterMessage extends Message {
 		for (int i = 0; i < size; i++) {
 			Key key = Key.lookup(stream.readInt());
 			String str = stream.readUTF();
+			byte flags = stream.readByte();
 
 			if (key != null) {
-				keymap.add(new KeyBinding(key, str));
+				keymap.add(new KeyBinding(key, str, flags));
 			}
 		}
 	}

@@ -52,9 +52,9 @@ public class KeyState {
 	 * <ul>
 	 *     <li>It increases while the key is pressed down. The number of times is indeterminate.</li>
 	 *     <li>It <b>only decreases</b> when {@link #wasPressed()} is called.</li>
-	 *     <li>It remains unchanged until there is a change to client's screen (client-side behaviour), and it will reset to {@code 0}.</li>
+	 *     <li>It remains unchanged until there is a change to client's screen (client-side behaviour) and will be reset to {@code 0}.</li>
 	 * </ul>
-	 * The range of timesPressed is {@code [0, Short.MAX_VALUE]}
+	 * The range of {@code timesPressed} is {@code [0, Short.MAX_VALUE]}
 	 *
 	 * @return press times
 	 */
@@ -72,7 +72,7 @@ public class KeyState {
 	 *     <li>{@link #isPressed()} denotes whether the key is currently being pressed (down).</li>
 	 *     <li>When {@link #isPressed()} returns {@code false}, the key is released. However, {@link #getTimesPressed()} may still not be reset, so {@code #wasPressed()} possibly returns {@code true}.</li>
 	 * </ul>
-	 * For example:
+	 * Example usage:
 	 * <pre>{@code
 	 * 	while (keyState.wasPressed()) {
 	 * 		player.sendMessage("Key-press event called");
